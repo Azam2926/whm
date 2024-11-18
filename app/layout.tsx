@@ -1,10 +1,33 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import {ThemeProvider} from "@/components/theme-provider";
+const title = "Warehouse app"
+const description = "Warehouse app for management"
+const image_url = "https://avatars.githubusercontent.com/u/28877486?v=4"
+const url = "whuz.vercel.app"
 
 export const metadata: Metadata = {
-  title: "Warehouse app",
-  description: "Warehouse app for management",
+  title: title,
+  description: description,
+  openGraph: {
+    title: title,
+    description: description,
+    url: url,
+    images: [
+      {
+        url: image_url,
+        width: 1200,
+        height: 630,
+        alt: "A description of the image_url",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: title,
+    description: description,
+    images: [image_url],
+  },
 };
 
 export default function RootLayout({
