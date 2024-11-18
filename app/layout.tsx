@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import {ThemeProvider} from "@/components/theme-provider";
-const title = "Warehouse app"
+const title = "Warehouse app Home"
 const description = "Warehouse app for management"
 const image_url = "https://avatars.githubusercontent.com/u/28877486?v=4"
-const url = "whuz.vercel.app"
+const url = "https://whuz.vercel.app"
 
 export const metadata: Metadata = {
   title: title,
@@ -12,6 +12,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: title,
     description: description,
+    siteName: "Warehouse app",
     url: url,
     images: [
       {
