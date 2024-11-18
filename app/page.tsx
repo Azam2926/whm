@@ -1,11 +1,5 @@
-import {ModeToggle} from "@/components/ModeToggle";
+import Dashboard from "@/components/dashboard/dashboard";
 
 export default function Home() {
-  return (
-    <div className="grid place-content-center min-h-screen">
-      <main>
-        <ModeToggle />
-      </main>
-    </div>
-  );
+  return <Dashboard />
 }
