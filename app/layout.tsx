@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import {ThemeProvider} from "@/components/theme-provider";
+import {Analytics} from "@vercel/analytics/next";
 const title = "Warehouse app Home"
 const description = "Warehouse app for management"
 const image_url = "https://avatars.githubusercontent.com/u/28877486?v=4"
@@ -47,6 +48,7 @@ export default function RootLayout({
           >
             {children}
           </ThemeProvider>
+          <Analytics />
       </body>
     </html>
   );
