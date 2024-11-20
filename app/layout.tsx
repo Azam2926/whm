@@ -1,7 +1,10 @@
-import type { Metadata } from "next";
+import type {Metadata} from "next";
 import "./globals.css";
 import {ThemeProvider} from "@/components/theme-provider";
 import {Analytics} from "@vercel/analytics/next";
+import {MainNav} from "@/components/layout/main-nav";
+import {ModeToggle} from "@/components/ModeToggle";
+
 const title = "Warehouse app Home"
 const description = "Warehouse app for management"
 const image_url = "https://avatars.githubusercontent.com/u/28877486?v=4"
@@ -33,23 +36,29 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({
-  children,
-}: Readonly<{
+                                     children,
+                                   }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className='antialiased'>
-        <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {children}
-          </ThemeProvider>
-          <Analytics />
-      </body>
+    <body className='antialiased'>
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="system"
+      enableSystem
+      disableTransitionOnChange
+    >
+      <div className="flex justify-between items-center border-b px-4">
+        <div className="flex h-16 items-center px-4">
+          <MainNav/>
+        </div>
+        <ModeToggle/>
+      </div>
+      {children}
+    </ThemeProvider>
+    <Analytics/>
+    </body>
     </html>
   );
 }
