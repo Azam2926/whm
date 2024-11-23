@@ -15,6 +15,7 @@ import {CategoryList} from '@/components/categories/category-list';
 import {CategoryDialog} from '@/components/categories/category-dialog';
 import {api} from '@/lib/services/api';
 import {Category} from '@/lib/types';
+import categoryService from "@/services/category.service";
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -25,11 +26,11 @@ export default function CategoriesPage() {
     search: '',
   });
 
-  console.log(filters);
   const loadCategories = async () => {
-    const data = await api.getCategories(
-      {status: filters.status === 'all' ? undefined : filters.status, search: filters.search}
-    );
+    const {data: {data}} = await categoryService.getAll({
+      status: filters.status === 'all' ? undefined : filters.status,
+      search: filters.search
+    });
     setCategories(data);
   };
 
@@ -38,7 +39,7 @@ export default function CategoriesPage() {
   }, [filters]);
 
   const handleCreate = async (category: Omit<Category, 'id' | 'created_at'>) => {
-    await api.createCategory(category);
+    await categoryService.create(category);
     await loadCategories();
     setIsDialogOpen(false);
   };
@@ -50,7 +51,7 @@ export default function CategoriesPage() {
   };
 
   const handleDelete = async (id: number) => {
-    await api.deleteCategory(id);
+    await categoryService.delete(id);
     await loadCategories();
   };
 

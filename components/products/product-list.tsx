@@ -1,23 +1,16 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table";
 import {Button} from "@/components/ui/button";
 import {Edit, Trash2} from "lucide-react";
-import {Category} from "@/lib/types";
+import {Product} from "@/lib/types";
 import {format} from "date-fns";
 
-interface CategoryListProps {
-  categories: Category[];
-  onEdit: (category: Category) => void;
+interface ProductListProps {
+  products: Product[];
+  onEdit: (category: Product) => void;
   onDelete: (id: number) => void;
 }
 
-export function CategoryList({categories, onEdit, onDelete}: CategoryListProps) {
+export function ProductList({products, onEdit, onDelete}: ProductListProps) {
   return (
     <Table>
       <TableHeader>
@@ -30,35 +23,25 @@ export function CategoryList({categories, onEdit, onDelete}: CategoryListProps) 
         </TableRow>
       </TableHeader>
       <TableBody>
-        {categories.map((category) => (
-          <TableRow key={category.id}>
-            <TableCell className="font-medium">{category.name}</TableCell>
-            <TableCell>{category.description}</TableCell>
+        {products.map((product) => (
+          <TableRow key={product.id}>
+            <TableCell className="font-medium">{product.name}</TableCell>
             <TableCell>
-              <span className={`px-2 py-1 rounded-full text-xs ${
-                category.status === 'ACTIVE'
-                  ? 'bg-green-100 text-green-800'
-                  : 'bg-red-100 text-red-800'
-              }`}>
-                {category.status}
-              </span>
-            </TableCell>
-            <TableCell>
-              {category.created_at ? format(new Date(category.created_at), 'MMM d, yyyy') : ''}
+              {product.created_at ? format(new Date(product.created_at), 'MMM d, yyyy') : ''}
             </TableCell>
             <TableCell>
               <div className="flex gap-2">
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => onEdit(category)}
+                  onClick={() => onEdit(product)}
                 >
                   <Edit className="h-4 w-4"/>
                 </Button>
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => onDelete(category.id)}
+                  onClick={() => onDelete(product.id)}
                 >
                   <Trash2 className="h-4 w-4"/>
                 </Button>

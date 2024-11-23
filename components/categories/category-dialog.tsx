@@ -32,7 +32,7 @@ import { Category } from "@/lib/types";
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
   description: z.string().min(1, "Description is required"),
-  status: z.enum(["active", "inactive"]),
+  status: z.enum(["ACTIVE", "INACTIVE"]),
 });
 
 interface CategoryDialogProps {
@@ -53,7 +53,7 @@ export function CategoryDialog({
     form.reset({
       name: category?.name || "",
       description: category?.description || "",
-      status: category?.status as "active" | "inactive" || "active",
+      status: category?.status as "ACTIVE" | "INACTIVE" || "ACTIVE",
     })
   }, [open])
 
@@ -62,7 +62,7 @@ export function CategoryDialog({
     defaultValues: {
       name: category?.name || "",
       description: category?.description || "",
-      status: category?.status as "active" | "inactive" || "active",
+      status: category?.status as "ACTIVE" | "INACTIVE" || "ACTIVE",
     },
   });
   const handleSubmit = async (data: z.infer<typeof formSchema>) => {
@@ -127,8 +127,8 @@ export function CategoryDialog({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="active">Active</SelectItem>
-                      <SelectItem value="inactive">Inactive</SelectItem>
+                      <SelectItem value="ACTIVE">Active</SelectItem>
+                      <SelectItem value="INACTIVE">Inactive</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
