@@ -1,51 +1,102 @@
-"use client";
+import { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-import {useEffect, useState} from "react";
-import {useForm} from "react-hook-form";
-import {zodResolver} from "@hookform/resolvers/zod";
-import * as z from "zod";
-import {Dialog, DialogContent, DialogHeader, DialogTitle,} from "@/components/ui/dialog";
-import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage,} from "@/components/ui/form";
-import {Input} from "@/components/ui/input";
-import {Button} from "@/components/ui/button";
-import {Product} from "@/lib/types";
-
-const formSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-});
-
-interface ProductsDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  product?: Product | null;
-  onSubmit: (data: z.infer<typeof formSchema>) => Promise<void>;
+interface Category {
+  id: number;
+  name: string;
 }
 
-export function ProductDialog(
-  {
-    open,
-    onOpenChange,
-    product,
-    onSubmit,
-  }: ProductsDialogProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  useEffect(() => {
-    form.reset({
-      name: product?.name || "",
-    })
-  }, [open])
+export interface Product {
+  id: number;
+  category_id: number;
+  name: string;
+  price: number;
+  quantity: number;
+  created_at: string;
+  category?: Category;
+}
 
-  const form = useForm<z.infer<typeof formSchema>>({
+// Form schema only includes editable fields
+const formSchema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  category_id: z.number().min(1, 'Category is required'),
+  price: z.number().min(0, 'Price must be positive').or(z.string().regex(/^\d*\.?\d*$/).transform(Number)),
+  quantity: z.number().int().min(0, 'Quantity must be a positive integer').or(z.string().regex(/^\d+$/).transform(Number))
+});
+
+type FormData = z.infer<typeof formSchema>;
+
+interface ProductDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  product?: Product;
+  categories: Category[];
+  onSubmit: (data: FormData & { id?: number }) => Promise<void>;
+}
+
+export function ProductDialog({
+                                open,
+                                onOpenChange,
+                                product,
+                                categories,
+                                onSubmit,
+                              }: ProductDialogProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: product?.name || "",
+      name: '',
+      category_id: undefined,
+      price: 0,
+      quantity: 0
     },
   });
-  const handleSubmit = async (data: z.infer<typeof formSchema>) => {
+
+  // Reset form when dialog opens/closes or product changes
+  useEffect(() => {
+    if (open && product) {
+      form.reset({
+        name: product.name,
+        category_id: product.category_id,
+        price: product.price,
+        quantity: product.quantity
+      });
+    } else if (!open) {
+      form.reset(); // Reset to default values when closing
+    }
+  }, [open, product, form]);
+
+  const handleSubmit = async (data: FormData) => {
     try {
       setIsSubmitting(true);
-      await onSubmit(data);
-      form.reset();
+      await onSubmit({
+        ...data,
+        id: product?.id // Include the id if we're editing an existing product
+      });
+      onOpenChange(false);
+    } catch (error) {
+      console.error('Error submitting form:', error);
     } finally {
       setIsSubmitting(false);
     }
@@ -53,7 +104,7 @@ export function ProductDialog(
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent aria-describedby={undefined}>
+      <DialogContent className="sm:max-w-[425px]" aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>
             {product ? "Edit Product" : "Create Product"}
@@ -64,16 +115,97 @@ export function ProductDialog(
             <FormField
               control={form.control}
               name="name"
-              render={({field}) => (
+              render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name {field.name} asd</FormLabel>
+                  <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input {...field} placeholder="Enter product name" />
                   </FormControl>
-                  <FormMessage/>
+                  <FormMessage />
                 </FormItem>
               )}
             />
+
+            <FormField
+              control={form.control}
+              name="category_id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Category</FormLabel>
+                  <Select
+                    onValueChange={(value) => field.onChange(Number(value))}
+                    defaultValue={field.value?.toString()}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a category" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {categories.map((category) => (
+                        <SelectItem
+                          key={category.id}
+                          value={category.id.toString()}
+                        >
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="price"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Price</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      placeholder="0.00"
+                      onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="quantity"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Quantity</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type="number"
+                      min="0"
+                      step="1"
+                      placeholder="0"
+                      onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {product && (
+              <div className="space-y-2 text-sm text-muted-foreground">
+                <div>Created: {new Date(product.created_at).toLocaleDateString()}</div>
+                <div>ID: {product.id}</div>
+              </div>
+            )}
+
             <div className="flex justify-end gap-4">
               <Button
                 type="button"

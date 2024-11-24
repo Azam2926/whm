@@ -16,8 +16,9 @@ export function ProductList({products, onEdit, onDelete}: ProductListProps) {
       <TableHeader>
         <TableRow>
           <TableHead>Name</TableHead>
-          <TableHead>Description</TableHead>
-          <TableHead>Status</TableHead>
+          <TableHead>Category</TableHead>
+          <TableHead>Price</TableHead>
+          <TableHead>Quantity</TableHead>
           <TableHead>Created At</TableHead>
           <TableHead>Actions</TableHead>
         </TableRow>
@@ -26,6 +27,9 @@ export function ProductList({products, onEdit, onDelete}: ProductListProps) {
         {products.map((product) => (
           <TableRow key={product.id}>
             <TableCell className="font-medium">{product.name}</TableCell>
+            <TableCell>{product.category?.name}</TableCell>
+            <TableCell>{product.price}</TableCell>
+            <TableCell>{product.quantity}</TableCell>
             <TableCell>
               {product.created_at ? format(new Date(product.created_at), 'MMM d, yyyy') : ''}
             </TableCell>
