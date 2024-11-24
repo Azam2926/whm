@@ -11,6 +11,7 @@ interface ProductListProps {
 }
 
 export function ProductList({products, onEdit, onDelete}: ProductListProps) {
+    console.log(products)
   return (
     <Table>
       <TableHeader>
@@ -31,7 +32,7 @@ export function ProductList({products, onEdit, onDelete}: ProductListProps) {
             <TableCell>{product.price}</TableCell>
             <TableCell>{product.quantity}</TableCell>
             <TableCell>
-              {product.created_at ? format(new Date(product.created_at), 'MMM d, yyyy') : ''}
+              {product.createdAt ? format(new Date(product.createdAt), 'MMM d, yyyy') : ''}
             </TableCell>
             <TableCell>
               <div className="flex gap-2">

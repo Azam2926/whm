@@ -8,11 +8,13 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue,} from '@/
 import {ProductList} from '@/components/products/product-list';
 import {ProductDialog} from '@/components/products/product-dialog';
 import {api} from '@/lib/services/api';
-import {Product} from '@/lib/types';
+import {Category, Product} from '@/lib/types';
 import productsService from "@/services/products.service";
+import categoryService from "@/services/category.service";
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState<Product | null>(null);
   const [filters, setFilters] = useState({
@@ -21,15 +23,24 @@ export default function ProductsPage() {
   });
 
   const loadProducts = async () => {
-    const {data} = await productsService.getAll();
-    setProducts(data);
+    const {data: {data}} = await productsService.getAll({
+      status: filters.status === 'all' ? undefined : filters.status,
+      search: filters.search
+    });
+
+    setProducts(data)
+    const {data: {data: categories}} = await categoryService.getAll({
+          status: filters.status === 'all' ? undefined : filters.status,
+          search: filters.search
+      });
+    setCategories(categories);
   };
 
   useEffect(() => {
     loadProducts();
   }, [filters]);
 
-  const handleCreate = async (product: Omit<Product, 'id' | 'created_at'>) => {
+  const handleCreate = async (product: Omit<Product, 'id' | 'created_at' | 'category' >) => {
     await productsService.create(product);
     await loadProducts();
     setIsDialogOpen(false);
@@ -68,6 +79,7 @@ export default function ProductsPage() {
           if (!open) setSelectedProducts(null);
         }}
         product={selectedProducts}
+        categories={categories}
         onSubmit={selectedProducts ?
           (data) => handleUpdate(selectedProducts.id, data) :
           handleCreate

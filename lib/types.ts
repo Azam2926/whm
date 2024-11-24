@@ -13,6 +13,7 @@ export interface Product {
   price: number;
   quantity: number;
   created_at: string;
+  createdAt: string;
   category?: Category;
 }
 

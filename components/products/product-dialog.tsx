@@ -20,21 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-interface Category {
-  id: number;
-  name: string;
-}
-
-export interface Product {
-  id: number;
-  category_id: number;
-  name: string;
-  price: number;
-  quantity: number;
-  created_at: string;
-  category?: Category;
-}
+import {Category, Product} from "@/lib/types";
 
 // Form schema only includes editable fields
 const formSchema = z.object({
@@ -49,7 +35,7 @@ type FormData = z.infer<typeof formSchema>;
 interface ProductDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  product?: Product;
+  product: Product | null;
   categories: Category[];
   onSubmit: (data: FormData & { id?: number }) => Promise<void>;
 }
@@ -201,7 +187,7 @@ export function ProductDialog({
 
             {product && (
               <div className="space-y-2 text-sm text-muted-foreground">
-                <div>Created: {new Date(product.created_at).toLocaleDateString()}</div>
+                <div>Created: {new Date(product.createdAt).toLocaleDateString()}</div>
                 <div>ID: {product.id}</div>
               </div>
             )}
