@@ -27,10 +27,7 @@ export default function CategoriesPage() {
   });
 
   const loadCategories = async () => {
-    const {data: {data}} = await categoryService.getAll({
-      status: filters.status === 'all' ? undefined : filters.status,
-      search: filters.search
-    });
+    const {data: {data}} = await categoryService.getAll(filters);
     setCategories(data);
   };
 
@@ -38,7 +35,7 @@ export default function CategoriesPage() {
     loadCategories();
   }, [filters]);
 
-  const handleCreate = async (category: Omit<Category, 'id' | 'created_at'>) => {
+  const handleCreate = async (category: Omit<Category, 'id' | 'created_at' | 'createdAt' >) => {
     await categoryService.create(category);
     await loadCategories();
     setIsDialogOpen(false);

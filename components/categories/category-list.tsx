@@ -44,7 +44,7 @@ export function CategoryList({categories, onEdit, onDelete}: CategoryListProps) 
               </span>
             </TableCell>
             <TableCell>
-              {category.created_at ? format(new Date(category.created_at), 'MMM d, yyyy') : ''}
+              {category.createdAt ? format(new Date(category.createdAt), 'MMM d, yyyy') : ''}
             </TableCell>
             <TableCell>
               <div className="flex gap-2">
