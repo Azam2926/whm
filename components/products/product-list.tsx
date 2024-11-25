@@ -11,7 +11,6 @@ interface ProductListProps {
 }
 
 export function ProductList({products, onEdit, onDelete}: ProductListProps) {
-    console.log(products)
   return (
     <Table>
       <TableHeader>

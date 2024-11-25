@@ -64,7 +64,7 @@ export function ProductDialog({
     if (open && product) {
       form.reset({
         name: product.name,
-        category_id: product.category_id,
+        category_id: product.category?.id,
         price: product.price,
         quantity: product.quantity
       });
