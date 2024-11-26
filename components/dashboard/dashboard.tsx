@@ -35,7 +35,7 @@ export default function Dashboard() {
   const totalProducts = products.length;
   const totalSales = sales.reduce((acc, sale) => acc + sale.price, 0);
   const totalStock = products.reduce((acc, product) => acc + product.quantity, 0);
-  const totalCustomers = new Set(sales.map(sale => sale.customer_id)).size;
+  const totalCustomers = new Set(sales.map(sale => sale.customer?.id)).size;
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
