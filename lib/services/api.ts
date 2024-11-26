@@ -174,24 +174,8 @@ export const api = {
   },
 
   // Customers
-  getCustomers: async (filters?: { status?: string; search?: string }) => {
-    await delay();
-    let filtered = [...customers];
-    
-    if (filters?.status) {
-      filtered = filtered.filter(c => c.status === filters.status);
-    }
-    if (filters?.search) {
-      const search = filters.search.toLowerCase();
-      filtered = filtered.filter(c => 
-        c.name.toLowerCase().includes(search) || 
-        c.email.toLowerCase().includes(search)
-      );
-    }
-    
-    return filtered;
-  },
-  
+  getCustomers: async () => customerService.getAll(),
+
   createCustomer: async (customer: Omit<Customer, 'id'>) => {
     await delay();
     const newCustomer = {
