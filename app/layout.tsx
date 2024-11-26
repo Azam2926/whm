@@ -4,6 +4,7 @@ import {ThemeProvider} from "@/components/theme-provider";
 import {Analytics} from "@vercel/analytics/next";
 import {MainNav} from "@/components/layout/main-nav";
 import {ModeToggle} from "@/components/ModeToggle";
+import {Toaster} from "@/components/ui/toaster";
 
 const title = "Warehouse app Home"
 const description = "Warehouse app for management"
@@ -56,6 +57,7 @@ export default function RootLayout({
         <ModeToggle/>
       </div>
       {children}
+      <Toaster/>
     </ThemeProvider>
     <Analytics/>
     </body>
