@@ -1,4 +1,7 @@
-import { Category, Product, Customer, Sale, ProductAnalytics } from '../types';
+import {Category, Customer, Product, ProductAnalytics, Sale, SaleCreate} from '../types';
+import productsService from "@/services/products.service";
+import customerService from "@/services/customer.service";
+import saleService from "@/services/sale.service";
 
 // Simulated API delay
 const delay = () => new Promise(resolve => setTimeout(resolve, 500));
@@ -48,14 +51,12 @@ let customers: Customer[] = [
   {
     id: 1,
     name: 'John Doe',
-    email: 'john@example.com',
-    status: 'active'
+    status: 'CREDIT'
   },
   {
     id: 2,
     name: 'Jane Smith',
-    email: 'jane@example.com',
-    status: 'active'
+    status: 'CASH'
   }
 ];
 
@@ -106,21 +107,21 @@ export const api = {
     console.log(filters?.search);
     await delay();
     let filtered = [...categories];
-    
+
     if (filters?.status) {
       filtered = filtered.filter(c => c.status === filters.status);
     }
     if (filters?.search) {
       const search = filters.search.toLowerCase();
-      filtered = filtered.filter(c => 
-        c.name.toLowerCase().includes(search) || 
+      filtered = filtered.filter(c =>
+        c.name.toLowerCase().includes(search) ||
         c.description.toLowerCase().includes(search)
       );
     }
-    
+
     return filtered;
   },
-  
+
   createCategory: async (category: Omit<Category, 'id' | 'created_at'>) => {
     await delay();
     const newCategory = {
@@ -131,41 +132,23 @@ export const api = {
     categories.push(newCategory);
     return newCategory;
   },
-  
+
   updateCategory: async (id: number, category: Partial<Category>) => {
     await delay();
-    categories = categories.map(c => 
-      c.id === id ? { ...c, ...category } : c
+    categories = categories.map(c =>
+      c.id === id ? {...c, ...category} : c
     );
     return categories.find(c => c.id === id)!;
   },
-  
+
   deleteCategory: async (id: number) => {
     await delay();
     categories = categories.filter(c => c.id !== id);
   },
-  
+
   // Products
-  getProducts: async (filters?: { category_id?: number; search?: string }) => {
-    await delay();
-    let filtered = [...products];
-    
-    if (filters?.category_id) {
-      filtered = filtered.filter(p => p.category_id === filters.category_id);
-    }
-    if (filters?.search) {
-      const search = filters.search.toLowerCase();
-      filtered = filtered.filter(p => 
-        p.name.toLowerCase().includes(search)
-      );
-    }
-    
-    return filtered.map(product => ({
-      ...product,
-      category: categories.find(c => c.id === product.category_id)
-    }));
-  },
-  
+  getProducts: async (filters?: { category_id?: number; search?: string }) => productsService.getAll(),
+
   createProduct: async (product: Omit<Product, 'id' | 'created_at'>) => {
     await delay();
     const newProduct = {
@@ -176,39 +159,23 @@ export const api = {
     products.push(newProduct);
     return newProduct;
   },
-  
+
   updateProduct: async (id: number, product: Partial<Product>) => {
     await delay();
-    products = products.map(p => 
-      p.id === id ? { ...p, ...product } : p
+    products = products.map(p =>
+      p.id === id ? {...p, ...product} : p
     );
     return products.find(p => p.id === id)!;
   },
-  
+
   deleteProduct: async (id: number) => {
     await delay();
     products = products.filter(p => p.id !== id);
   },
-  
+
   // Customers
-  getCustomers: async (filters?: { status?: string; search?: string }) => {
-    await delay();
-    let filtered = [...customers];
-    
-    if (filters?.status) {
-      filtered = filtered.filter(c => c.status === filters.status);
-    }
-    if (filters?.search) {
-      const search = filters.search.toLowerCase();
-      filtered = filtered.filter(c => 
-        c.name.toLowerCase().includes(search) || 
-        c.email.toLowerCase().includes(search)
-      );
-    }
-    
-    return filtered;
-  },
-  
+  getCustomers: async (filters?: { status?: string; search?: string }) => customerService.getAll(),
+
   createCustomer: async (customer: Omit<Customer, 'id'>) => {
     await delay();
     const newCustomer = {
@@ -218,71 +185,53 @@ export const api = {
     customers.push(newCustomer);
     return newCustomer;
   },
-  
+
   updateCustomer: async (id: number, customer: Partial<Customer>) => {
     await delay();
-    customers = customers.map(c => 
-      c.id === id ? { ...c, ...customer } : c
+    customers = customers.map(c =>
+      c.id === id ? {...c, ...customer} : c
     );
     return customers.find(c => c.id === id)!;
   },
-  
+
   deleteCustomer: async (id: number) => {
     await delay();
     customers = customers.filter(c => c.id !== id);
   },
-  
+
   // Sales
-  getSales: async (filters?: { 
-    customer_id?: number; 
+  getSales: async (filters?: {
+    customer_id?: number;
     product_id?: number;
     start_date: string;
     end_date: string;
-  }) => {
+  }) => await saleService.getAll(filters),
+
+  createSale: async (data: SaleCreate) => {
+    saleService.create(data)
     await delay();
-    let filtered = [...sales];
-    
-    if (filters?.customer_id) {
-      filtered = filtered.filter(s => s.customer_id === filters.customer_id);
+    for (const sale of data.sales) {
+      const newSale = {
+        ...sale,
+        id: generateId(sales),
+        sale_date: new Date().toISOString().split('T')[0],
+        customer_id: data.customerId,
+        product_id: sale.productId
+      };
+      sales.push(newSale);
+
+      // Update product quantity
+      const product = products.find(p => p.id === sale.productId);
+      if (product) {
+        product.quantity -= sale.quantity;
+      }
     }
-    if (filters?.product_id) {
-      filtered = filtered.filter(s => s.product_id === filters.product_id);
-    }
-    if (filters?.start_date) {
-      filtered = filtered.filter(s => s.sale_date >= filters.start_date);
-    }
-    if (filters?.end_date) {
-      filtered = filtered.filter(s => s.sale_date <= filters.end_date);
-    }
-    
-    return filtered.map(sale => ({
-      ...sale,
-      product: products.find(p => p.id === sale.product_id),
-      customer: customers.find(c => c.id === sale.customer_id)
-    }));
   },
-  
-  createSale: async (sale: Omit<Sale, 'id'>) => {
-    await delay();
-    const newSale = {
-      ...sale,
-      id: generateId(sales)
-    };
-    sales.push(newSale);
-    
-    // Update product quantity
-    const product = products.find(p => p.id === sale.product_id);
-    if (product) {
-      product.quantity -= sale.quantity;
-    }
-    
-    return newSale;
-  },
-  
+
   updateSale: async (id: number, sale: Partial<Sale>) => {
     await delay();
     const oldSale = sales.find(s => s.id === id);
-    
+
     if (oldSale && sale.quantity !== undefined) {
       // Adjust product quantity
       const product = products.find(p => p.id === oldSale.product_id);
@@ -290,17 +239,17 @@ export const api = {
         product.quantity += oldSale.quantity - sale.quantity;
       }
     }
-    
-    sales = sales.map(s => 
-      s.id === id ? { ...s, ...sale } : s
+
+    sales = sales.map(s =>
+      s.id === id ? {...s, ...sale} : s
     );
     return sales.find(s => s.id === id)!;
   },
-  
+
   deleteSale: async (id: number) => {
     await delay();
     const sale = sales.find(s => s.id === id);
-    
+
     if (sale) {
       // Restore product quantity
       const product = products.find(p => p.id === sale.product_id);
@@ -308,10 +257,10 @@ export const api = {
         product.quantity += sale.quantity;
       }
     }
-    
+
     sales = sales.filter(s => s.id !== id);
   },
-  
+
   // Analytics
   getAnalytics: async () => {
     await delay();

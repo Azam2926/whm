@@ -21,9 +21,10 @@ export interface Product {
 export interface Customer {
   id: number;
   name: string;
-  email: string;
-  status: string;
+  status: CustomerStatus;
 }
+
+export type CustomerStatus = 'CREDIT' | 'CASH';
 
 export interface Sale {
   id: number;
@@ -31,9 +32,14 @@ export interface Sale {
   customer_id: number;
   quantity: number;
   price: number;
-  sale_date: string;
+  sale_date?: string;
   product?: Product;
   customer?: Customer;
+}
+
+export interface SaleCreate {
+  customerId: number;
+  sales: { productId: number; quantity: number; price: number }[];
 }
 
 export interface ProductAnalytics {

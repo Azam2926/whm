@@ -9,6 +9,7 @@ import { ProductList } from "@/components/dashboard/product-list";
 import { api } from '@/lib/services/api';
 import { Product, Sale, ProductAnalytics } from '@/lib/types';
 import { Package, ShoppingCart, Users } from 'lucide-react';
+import productsService from "@/services/products.service";
 
 export default function Dashboard() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -17,8 +18,8 @@ export default function Dashboard() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const [productsData, salesData, analyticsData] = await Promise.all([
-        api.getProducts(),
+      const [{data: {data: productsData}}, salesData, analyticsData] = await Promise.all([
+        productsService.getAll(),
         api.getSales(),
         api.getAnalytics()
       ]);
