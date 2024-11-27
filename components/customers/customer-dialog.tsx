@@ -1,68 +1,47 @@
 "use client";
 
 import {useEffect, useState} from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import {useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
 import * as z from "zod";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Category } from "@/lib/types";
+import {Dialog, DialogContent, DialogHeader, DialogTitle,} from "@/components/ui/dialog";
+import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage,} from "@/components/ui/form";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue,} from "@/components/ui/select";
+import {Input} from "@/components/ui/input";
+import {Button} from "@/components/ui/button";
+import {Customer} from "@/lib/types";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  description: z.string().min(1, "Description is required"),
-  status: z.enum(["ACTIVE", "INACTIVE"]),
+  status: z.enum(["CREDIT", "CASH"]),
 });
 
 interface CategoryDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  category?: Category | null;
+  customer?: Customer | null;
   onSubmit: (data: z.infer<typeof formSchema>) => Promise<void>;
 }
 
-export function CategoryDialog({
-  open,
-  onOpenChange,
-  category,
-  onSubmit,
-}: CategoryDialogProps) {
+export function CustomerDialog({
+                                 open,
+                                 onOpenChange,
+                                 customer,
+                                 onSubmit,
+                               }: CategoryDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   useEffect(() => {
     form.reset({
-      name: category?.name || "",
-      description: category?.description || "",
-      status: category?.status as "ACTIVE" | "INACTIVE" || "ACTIVE",
+      name: customer?.name || "",
+      status: customer?.status as "CASH" | "CREDIT" || "CASH",
     })
   }, [open])
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: category?.name || "",
-      description: category?.description || "",
-      status: category?.status as "ACTIVE" | "INACTIVE" || "ACTIVE",
+      name: customer?.name || "",
+      status: customer?.status as "CASH" | "CREDIT" || "CASH",
     },
   });
   const handleSubmit = async (data: z.infer<typeof formSchema>) => {
@@ -80,7 +59,7 @@ export function CategoryDialog({
       <DialogContent aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>
-            {category ? "Edit Category" : "Create Category"}
+            {customer ? "Edit Customer" : "Create Customer"}
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
@@ -88,33 +67,20 @@ export function CategoryDialog({
             <FormField
               control={form.control}
               name="name"
-              render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Name</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage/>
-                  </FormItem>
-                )}
-            />
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
+              render={({field}) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>Name</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage/>
                 </FormItem>
               )}
             />
             <FormField
               control={form.control}
               name="status"
-              render={({ field }) => (
+              render={({field}) => (
                 <FormItem>
                   <FormLabel>Status</FormLabel>
                   <Select
@@ -123,15 +89,15 @@ export function CategoryDialog({
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select status" />
+                        <SelectValue placeholder="Select status"/>
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="ACTIVE">Active</SelectItem>
-                      <SelectItem value="INACTIVE">Inactive</SelectItem>
+                      <SelectItem value="CASH">Cash</SelectItem>
+                      <SelectItem value="CREDIT">Credit</SelectItem>
                     </SelectContent>
                   </Select>
-                  <FormMessage />
+                  <FormMessage/>
                 </FormItem>
               )}
             />

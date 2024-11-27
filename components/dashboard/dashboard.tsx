@@ -9,6 +9,7 @@ import { ProductList } from "@/components/dashboard/product-list";
 import { api } from '@/lib/services/api';
 import { Product, Sale, ProductAnalytics } from '@/lib/types';
 import { Package, ShoppingCart, Users } from 'lucide-react';
+import productsService from "@/services/products.service";
 
 export default function Dashboard() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -17,8 +18,8 @@ export default function Dashboard() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const [productsData, salesData, analyticsData] = await Promise.all([
-        api.getProducts(),
+      const [{data: {data: productsData}}, {data: {sales: salesData}}, analyticsData] = await Promise.all([
+        productsService.getAll(),
         api.getSales(),
         api.getAnalytics()
       ]);
@@ -34,7 +35,7 @@ export default function Dashboard() {
   const totalProducts = products.length;
   const totalSales = sales.reduce((acc, sale) => acc + sale.price, 0);
   const totalStock = products.reduce((acc, product) => acc + product.quantity, 0);
-  const totalCustomers = new Set(sales.map(sale => sale.customer_id)).size;
+  const totalCustomers = new Set(sales.map(sale => sale.customer?.id)).size;
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">

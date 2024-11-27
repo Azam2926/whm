@@ -4,6 +4,7 @@ export interface Category {
   description: string;
   status: string;
   created_at: string;
+  createdAt: string;
 }
 
 export interface Product {
@@ -13,15 +14,17 @@ export interface Product {
   price: number;
   quantity: number;
   created_at: string;
+  createdAt: string;
   category?: Category;
 }
 
 export interface Customer {
   id: number;
   name: string;
-  email: string;
-  status: string;
+  status: CustomerStatus;
 }
+
+export type CustomerStatus = 'CREDIT' | 'CASH';
 
 export interface Sale {
   id: number;
@@ -29,9 +32,14 @@ export interface Sale {
   customer_id: number;
   quantity: number;
   price: number;
-  sale_date: string;
+  sale_date?: string;
   product?: Product;
   customer?: Customer;
+}
+
+export interface SaleCreate {
+  customerId: number;
+  sales: { productId: number; quantity: number; price: number }[];
 }
 
 export interface ProductAnalytics {
