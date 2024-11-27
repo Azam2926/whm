@@ -8,8 +8,8 @@ interface RecentSalesProps {
 export function RecentSales({ data }: RecentSalesProps) {
   return (
     <div className="space-y-8">
-      {data.slice(0, 5).map((sale) => (
-        <div key={sale.id} className="flex items-center">
+      {data.slice(0, 5).map((sale, index) => (
+        <div key={index} className="flex items-center">
           <Avatar className="h-9 w-9">
             <AvatarFallback>
               {sale.customer?.name.slice(0, 2).toUpperCase()}

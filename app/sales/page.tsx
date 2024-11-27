@@ -15,16 +15,20 @@ export default function SalesPage() {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const PAGE_SIZE = 10;
 
   const loadData = async () => {
     try {
       setIsLoading(true);
-      const [{data: {sales: salesData}}, {data: {data: productsData}}, {data: {data: customersData}}] = await Promise.all([
-        api.getSales(),
+      const [{data: {sales: salesData, total_pages}}, {data: {data: productsData}}, {data: {data: customersData}}] = await Promise.all([
+        api.getSales({ page: currentPage, size: PAGE_SIZE }),
         api.getProducts(),
         api.getCustomers(),
       ]);
       setSales(salesData);
+      setTotalPages(total_pages);
       setProducts(productsData);
       setCustomers(customersData);
     } finally {
@@ -34,15 +38,19 @@ export default function SalesPage() {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [currentPage]);
 
   const handleCreate = async (saleData: {
     customerId: number;
     sales: { productId: number; quantity: number; price: number }[];
   }) => {
     await api.createSale(saleData)
-    loadData();
+    await loadData()
     setIsDialogOpen(false);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
   };
 
   return (
@@ -59,7 +67,12 @@ export default function SalesPage() {
           <LoadingSpinner/>
         </div>
       ) : (
-        <SalesList sales={sales}/>
+        <SalesList 
+          sales={sales} 
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
       )}
 
       <SaleDialog

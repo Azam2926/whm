@@ -177,7 +177,7 @@ export function SaleDialog({
                                 key={product.id}
                                 value={product.id.toString()}
                               >
-                                {product.name} (${product.price})
+                                {product.name} <span className="text-gray-500">${product.price}, {product.quantity} ta</span>
                               </SelectItem>
                             ))}
                           </SelectContent>
