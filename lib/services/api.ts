@@ -203,28 +203,19 @@ export const api = {
   getSales: async (filters?: {
     customer_id?: number;
     product_id?: number;
-    start_date: string;
-    end_date: string;
-  }) => await saleService.getAll(filters),
+    start_date?: string;
+    end_date?: string;
+    page?: number;
+    size?: number;
+  } | undefined) => await saleService.getAll(filters),
 
   createSale: async (data: SaleCreate) => {
-    saleService.create(data)
-    await delay();
-    for (const sale of data.sales) {
-      const newSale = {
-        ...sale,
-        id: generateId(sales),
-        sale_date: new Date().toISOString().split('T')[0],
-        customer_id: data.customerId,
-        product_id: sale.productId
-      };
-      sales.push(newSale);
-
-      // Update product quantity
-      const product = products.find(p => p.id === sale.productId);
-      if (product) {
-        product.quantity -= sale.quantity;
-      }
+    try {
+      await saleService.create(data)
+    } catch (error) {
+      // Xato yuz berganda, barcha o'zgarishlarni bekor qilish
+      console.error('Sotuvni yaratishda xato:', error)
+      throw error
     }
   },
 
