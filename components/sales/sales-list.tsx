@@ -1,8 +1,20 @@
-import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table";
-import {Sale} from "@/lib/types";
-import {format} from "date-fns";
+import {
+  flexRender,
+  getCoreRowModel,
+  useReactTable
+} from "@tanstack/react-table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from "@/components/ui/table";
+import { Sale } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { columns } from "@/app/sales/columns";
 
 interface SalesListProps {
   sales: Sale[];
@@ -11,44 +23,75 @@ interface SalesListProps {
   onPageChange: (page: number) => void;
 }
 
-export function SalesList({ sales, currentPage, totalPages, onPageChange }: SalesListProps) {
+export function SalesList({
+  sales,
+  currentPage,
+  totalPages,
+  onPageChange
+}: SalesListProps) {
+  const table = useReactTable({
+    data: sales,
+    columns,
+    getCoreRowModel: getCoreRowModel()
+  });
+
   if (sales.length === 0) {
     return (
       <div className="text-center py-10 text-muted-foreground">
-        No sales found. Create your first sale by clicking the &#34;Add Sale&#34; button.
+        No sales found. Create your first sale by clicking the &#34;Add
+        Sale&#34; button.
       </div>
     );
   }
 
   return (
     <div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Date</TableHead>
-            <TableHead>Customer</TableHead>
-            <TableHead>Product</TableHead>
-            <TableHead>Quantity</TableHead>
-            <TableHead>Price</TableHead>
-            <TableHead>Total</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {sales.map((sale, index) => (
-            <TableRow key={index}>
-              <TableCell>
-                {sale.sale_date ? format(new Date(sale.sale_date), 'MMM d, yyyy') : '-'}
-              </TableCell>
-              <TableCell>{sale.customer?.name}</TableCell>
-              <TableCell>{sale.product?.name}</TableCell>
-              <TableCell>{sale.quantity}</TableCell>
-              <TableCell>${sale.price.toFixed(2)}</TableCell>
-              <TableCell>${(sale.quantity * sale.price).toFixed(2)}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-      
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map(headerGroup => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map(header => (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map(row => (
+                <TableRow key={row.id}>
+                  {row.getVisibleCells().map(cell => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  No results.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+
       <div className="flex items-center justify-end space-x-2 py-4">
         <Button
           variant="outline"

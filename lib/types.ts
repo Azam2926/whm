@@ -1,3 +1,5 @@
+import { CustomerStatus } from './enums';
+
 export interface Category {
   id: number;
   name: string;
@@ -23,8 +25,6 @@ export interface Customer {
   name: string;
   status: CustomerStatus;
 }
-
-export type CustomerStatus = 'CREDIT' | 'CASH';
 
 export interface Sale {
   id: number;

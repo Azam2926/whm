@@ -10,10 +10,11 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue,} from "@/
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {Customer} from "@/lib/types";
+import { CustomerStatus } from '@/lib/enums';
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  status: z.enum(["CREDIT", "CASH"]),
+  status: z.nativeEnum(CustomerStatus),
 });
 
 interface CategoryDialogProps {
@@ -33,7 +34,7 @@ export function CustomerDialog({
   useEffect(() => {
     form.reset({
       name: customer?.name || "",
-      status: customer?.status as "CASH" | "CREDIT" || "CASH",
+      status: customer?.status || CustomerStatus.CASH,
     })
   }, [open])
 
@@ -41,7 +42,7 @@ export function CustomerDialog({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: customer?.name || "",
-      status: customer?.status as "CASH" | "CREDIT" || "CASH",
+      status: customer?.status || CustomerStatus.CASH,
     },
   });
   const handleSubmit = async (data: z.infer<typeof formSchema>) => {
@@ -93,8 +94,8 @@ export function CustomerDialog({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="CASH">Cash</SelectItem>
-                      <SelectItem value="CREDIT">Credit</SelectItem>
+                      <SelectItem value={CustomerStatus.CASH}>Cash</SelectItem>
+                      <SelectItem value={CustomerStatus.CREDIT}>Credit</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage/>
