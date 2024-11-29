@@ -10,6 +10,7 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { columns } from "@/app/sales/columns";
 import { ServerDataTable } from "@/components/ui/server-data-table";
 import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
+import * as React from "react";
 
 export default function SalesPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -24,6 +25,7 @@ export default function SalesPage() {
     sorting?: SortingState;
     columnFilters?: ColumnFiltersState;
   }) => {
+    console.log(params);
     const {
       data: {
         sales,
@@ -80,10 +82,45 @@ export default function SalesPage() {
           <LoadingSpinner />
         </div>
       ) : (
+        //         interface FilterOption {
+        //   label: string;
+        //   value: string;
+        //   icon?: React.ComponentType;
+        // }
+        //
+        // export interface ToolbarFilterConfig {
+        //   columnName: string;
+        //   type: "input" | "select" | "faceted";
+        //   placeholder?: string;
+        //   options?: FilterOption[];
+        // }
         <ServerDataTable
           fetchDataAction={fetchDataAction}
           columns={columns}
           initialPageSize={PAGE_SIZE}
+          toolbarConfig={{
+            searchColumn: "",
+            filters: [
+              {
+                columnName: "product",
+                type: "faceted",
+                placeholder: "Product",
+                options: products.map(p => ({
+                  label: p.name,
+                  value: p.id.toString()
+                }))
+              },
+              {
+                columnName: "customer",
+                type: "faceted",
+                placeholder: "Customer",
+                options: customers.map(c => ({
+                  label: c.name,
+                  value: c.id.toString()
+                }))
+              }
+            ]
+          }}
         />
       )}
 

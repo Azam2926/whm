@@ -1,6 +1,6 @@
 import api from "./http.service";
 import { Sale } from "@/lib/types";
-import { SortingState } from "@tanstack/react-table";
+import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
 
 interface SalesData {
   sales: Sale[];
@@ -15,7 +15,7 @@ interface SalesData {
 const saleService = {
   getAll: async (
     filters?:
-      | {
+      | Partial<{
           customer_id?: number;
           product_id?: number;
           start_date?: string;
@@ -23,7 +23,8 @@ const saleService = {
           page?: number;
           size?: number;
           sorting?: SortingState;
-        }
+          columnFilters: ColumnFiltersState;
+        }>
       | undefined
   ) => {
     let sortDirection = "DESC";
@@ -34,8 +35,23 @@ const saleService = {
       sortBy = filters?.sorting[0].id;
       if (sortBy === "sale_date") sortBy = "saleDate";
     }
+    console.log(filters?.columnFilters);
+
+    if (filters?.columnFilters && filters?.columnFilters.length) {
+      if (filters.columnFilters[0].id === "customer")
+        filters.customer_id = parseInt(
+          (filters.columnFilters[0].value as Array<string>)[0]
+        );
+      if (filters.columnFilters[0].id === "product")
+        filters.product_id = parseInt(
+          (filters.columnFilters[0].value as Array<string>)[0]
+        );
+    }
+
     return api.get<SalesData>("sale", {
       params: {
+        customerId: filters?.customer_id,
+        productId: filters?.product_id,
         pageNumber: filters?.page || 1,
         pageSize: filters?.size || 10,
         sortDirection,

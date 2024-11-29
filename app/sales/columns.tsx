@@ -15,12 +15,14 @@ export const columns: ColumnDef<Sale>[] = [
     }
   },
   {
+    id: "customer",
     accessorKey: "customer.name",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Customer" />
     )
   },
   {
+    id: "product",
     accessorKey: "product.name",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Product" />

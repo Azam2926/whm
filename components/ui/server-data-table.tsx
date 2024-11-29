@@ -21,6 +21,10 @@ import {
 } from "@/components/ui/table";
 
 import { DataTablePagination } from "./data-table-pagination";
+import {
+  DataTableToolbar,
+  ToolbarFilterConfig
+} from "@/components/ui/data-table-toolbar";
 
 interface ServerSideDataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -34,12 +38,17 @@ interface ServerSideDataTableProps<TData, TValue> {
     totalRows: number;
   }>;
   initialPageSize?: number;
+  toolbarConfig?: {
+    searchColumn?: string;
+    filters?: ToolbarFilterConfig[];
+  };
 }
 
 export function ServerDataTable<TData, TValue>({
   columns,
   fetchDataAction,
-  initialPageSize = 10
+  initialPageSize = 10,
+  toolbarConfig = { searchColumn: "", filters: [] }
 }: ServerSideDataTableProps<TData, TValue>) {
   const [data, setData] = React.useState<TData[]>([]);
   const [totalRows, setTotalRows] = React.useState(0);
@@ -105,6 +114,7 @@ export function ServerDataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
+      <DataTableToolbar table={table} config={toolbarConfig} />
       <div className="rounded-md border">
         <Table>
           <TableHeader>

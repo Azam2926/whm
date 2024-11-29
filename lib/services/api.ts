@@ -2,7 +2,7 @@ import { Product, ProductAnalytics, SaleCreate } from "../types";
 import productsService from "@/services/products.service";
 import customerService from "@/services/customer.service";
 import saleService from "@/services/sale.service";
-import { SortingState } from "@tanstack/react-table";
+import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
 
 // Simulated API delay
 const delay = () => new Promise(resolve => setTimeout(resolve, 500));
@@ -55,7 +55,7 @@ export const api = {
   // Sales
   getSales: async (
     filters?:
-      | {
+      | Partial<{
           customer_id?: number;
           product_id?: number;
           start_date?: string;
@@ -63,7 +63,8 @@ export const api = {
           page?: number;
           size?: number;
           sorting?: SortingState;
-        }
+          columnFilters: ColumnFiltersState;
+        }>
       | undefined
   ) => await saleService.getAll(filters),
 
