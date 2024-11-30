@@ -37,12 +37,6 @@ export interface Sale {
   customer?: Customer;
 }
 
-export interface SaleCreate {
-  customer_id: number;
-  status: CustomerStatus;
-  sales: { product_id: number; quantity: number; price: number }[];
-}
-
 export interface ProductAnalytics {
   id: number;
   product_id: number;

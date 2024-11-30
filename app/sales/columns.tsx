@@ -2,6 +2,8 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Sale } from "@/lib/types";
 import { format } from "date-fns";
 import { DataTableColumnHeader } from "@/components/ui/data-table-column-header";
+import { SaleStatus } from "@/lib/enums";
+import { Badge } from "@/components/ui/badge";
 
 export const columns: ColumnDef<Sale>[] = [
   {
@@ -12,6 +14,25 @@ export const columns: ColumnDef<Sale>[] = [
     cell: ({ row }) => {
       const date = row.getValue("sale_date");
       return date ? format(new Date(date as string), "MMM d, yyyy") : "-";
+    }
+  },
+  {
+    accessorKey: "status",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Status" />
+    ),
+    cell: ({ row }) => {
+      return (
+        <Badge
+          variant={
+            row.getValue("status") === SaleStatus.CASH
+              ? "outline"
+              : "destructive"
+          }
+        >
+          {row.getValue("status")}
+        </Badge>
+      );
     }
   },
   {

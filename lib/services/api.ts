@@ -1,7 +1,7 @@
-import { Product, ProductAnalytics, SaleCreate } from "../types";
+import { Product, ProductAnalytics } from "../types";
 import productsService from "@/services/products.service";
 import customerService from "@/services/customer.service";
-import saleService from "@/services/sale.service";
+import saleService, { SaleCreateRequest } from "@/services/sale.service";
 import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
 
 // Simulated API delay
@@ -66,9 +66,13 @@ export const api = {
           columnFilters: ColumnFiltersState;
         }>
       | undefined
-  ) => await saleService.getAll(filters),
+  ) => {
+    const response = await saleService.getAll(filters);
 
-  createSale: async (data: SaleCreate) => {
+    return response.data;
+  },
+
+  createSale: async (data: SaleCreateRequest) => {
     try {
       await saleService.create(data);
     } catch (error) {
