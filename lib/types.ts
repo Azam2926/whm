@@ -39,6 +39,7 @@ export interface Sale {
 
 export interface SaleCreate {
   customer_id: number;
+  status: CustomerStatus;
   sales: { product_id: number; quantity: number; price: number }[];
 }
 

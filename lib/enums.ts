@@ -1,4 +1,4 @@
 export enum CustomerStatus {
-  CASH = 'CASH',
-  CREDIT = 'CREDIT'
-} 
+  CASH = "Naqd",
+  CREDIT = "Nasiya"
+}
