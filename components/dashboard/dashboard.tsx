@@ -1,14 +1,14 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Overview } from "@/components/dashboard/overview";
 import { RecentSales } from "@/components/dashboard/recent-sales";
 import { ProductList } from "@/components/dashboard/product-list";
-import { api } from '@/lib/services/api';
-import { Product, Sale, ProductAnalytics } from '@/lib/types';
-import { Package, ShoppingCart, Users } from 'lucide-react';
+import { api } from "@/lib/services/api";
+import { Product, Sale, ProductAnalytics } from "@/lib/types";
+import { Package, ShoppingCart, Users } from "lucide-react";
 import productsService from "@/services/products.service";
 
 export default function Dashboard() {
@@ -18,7 +18,13 @@ export default function Dashboard() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const [{data: {data: productsData}}, {data: {sales: salesData}}, analyticsData] = await Promise.all([
+      const [
+        {
+          data: { data: productsData }
+        },
+        { sales: salesData },
+        analyticsData
+      ] = await Promise.all([
         productsService.getAll(),
         api.getSales(),
         api.getAnalytics()
@@ -34,7 +40,10 @@ export default function Dashboard() {
 
   const totalProducts = products.length;
   const totalSales = sales.reduce((acc, sale) => acc + sale.price, 0);
-  const totalStock = products.reduce((acc, product) => acc + product.quantity, 0);
+  const totalStock = products.reduce(
+    (acc, product) => acc + product.quantity,
+    0
+  );
   const totalCustomers = new Set(sales.map(sale => sale.customer?.id)).size;
 
   return (

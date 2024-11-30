@@ -13,7 +13,6 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -28,10 +27,11 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Customer, Product, SaleCreate } from "@/lib/types";
+import { Customer, Product } from "@/lib/types";
 import { Plus, Trash2 } from "lucide-react";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { CustomerStatus } from "@/lib/enums";
+import { SaleStatus } from "@/lib/enums";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { SaleCreateRequest } from "@/services/sale.service";
 
 const saleItemSchema = z.object({
   product_id: z.string().min(1, "Product is required"),
@@ -43,14 +43,14 @@ type SaleItemType = z.infer<typeof saleItemSchema>;
 
 const formSchema = z.object({
   customer_id: z.string().min(1, "Customer is required"),
-  status: z.nativeEnum(CustomerStatus),
+  status: z.nativeEnum(SaleStatus),
   sales: z.array(saleItemSchema).min(1, "At least one product is required")
 });
 
 interface SaleDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (data: SaleCreate) => Promise<void>;
+  onSubmit: (data: SaleCreateRequest) => Promise<void>;
   products: Product[];
   customers: Customer[];
 }
@@ -68,6 +68,7 @@ export function SaleDialog({
     resolver: zodResolver(formSchema),
     defaultValues: {
       customer_id: "",
+      status: SaleStatus.CASH,
       sales: [{ product_id: "", quantity: 0, price: 0 }]
     }
   });
@@ -133,105 +134,75 @@ export function SaleDialog({
             onSubmit={form.handleSubmit(handleSubmit)}
             className="space-y-6"
           >
-            <FormField
-              control={form.control}
-              name="customer_id"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Customer</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select customer" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {customers.map(customer => (
-                        <SelectItem
-                          key={customer.id}
-                          value={customer.id.toString()}
-                        >
-                          {customer.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="status"
-              render={({ field }) => (
-                <FormItem className="space-y-1">
-                  <FormLabel>Status</FormLabel>
-                  <FormDescription>Select the status.</FormDescription>
-                  <FormMessage />
-                  <RadioGroup
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    className="grid max-w-md grid-cols-2 gap-8 pt-2"
-                  >
-                    <FormItem>
-                      <FormLabel className="[&:has([data-state=checked])>div]:border-primary">
+            <div className="flex gap-4 items-end">
+              <FormField
+                control={form.control}
+                name="customer_id"
+                render={({ field }) => (
+                  <FormItem className="w-1/2">
+                    <FormLabel>Customer</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select customer" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {customers.map(customer => (
+                          <SelectItem
+                            key={customer.id}
+                            value={customer.id.toString()}
+                          >
+                            {customer.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem className="space-y-1">
+                    <FormLabel>Status</FormLabel>
+                    <FormMessage />
+                    <ToggleGroup
+                      type="single"
+                      variant="outline"
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormItem>
                         <FormControl>
-                          <RadioGroupItem value="Naqd" className="sr-only" />
+                          <ToggleGroupItem
+                            value={SaleStatus.CASH}
+                            aria-label="Toggle Naqd"
+                          >
+                            {SaleStatus.CASH}
+                          </ToggleGroupItem>
                         </FormControl>
-                        <div className="items-center rounded-md border-2 border-muted p-1 hover:border-accent">
-                          <div className="space-y-2 rounded-sm bg-[#ecedef] p-2">
-                            <div className="space-y-2 rounded-md bg-white p-2 shadow-sm">
-                              <div className="h-2 w-[80px] rounded-lg bg-[#ecedef]" />
-                              <div className="h-2 w-[100px] rounded-lg bg-[#ecedef]" />
-                            </div>
-                            <div className="flex items-center space-x-2 rounded-md bg-white p-2 shadow-sm">
-                              <div className="h-4 w-4 rounded-full bg-[#ecedef]" />
-                              <div className="h-2 w-[100px] rounded-lg bg-[#ecedef]" />
-                            </div>
-                            <div className="flex items-center space-x-2 rounded-md bg-white p-2 shadow-sm">
-                              <div className="h-4 w-4 rounded-full bg-[#ecedef]" />
-                              <div className="h-2 w-[100px] rounded-lg bg-[#ecedef]" />
-                            </div>
-                          </div>
-                        </div>
-                        <span className="block w-full p-2 text-center font-normal">
-                          Naqd
-                        </span>
-                      </FormLabel>
-                    </FormItem>
-                    <FormItem>
-                      <FormLabel className="[&:has([data-state=checked])>div]:border-primary">
+                      </FormItem>
+                      <FormItem>
                         <FormControl>
-                          <RadioGroupItem value="Nasiya" className="sr-only" />
+                          <ToggleGroupItem
+                            value={SaleStatus.CREDIT}
+                            aria-label="Toggle Nasiya"
+                          >
+                            {SaleStatus.CREDIT}
+                          </ToggleGroupItem>
                         </FormControl>
-                        <div className="items-center rounded-md border-2 border-muted bg-popover p-1 hover:bg-accent hover:text-accent-foreground">
-                          <div className="space-y-2 rounded-sm bg-slate-950 p-2">
-                            <div className="space-y-2 rounded-md bg-slate-800 p-2 shadow-sm">
-                              <div className="h-2 w-[80px] rounded-lg bg-slate-400" />
-                              <div className="h-2 w-[100px] rounded-lg bg-slate-400" />
-                            </div>
-                            <div className="flex items-center space-x-2 rounded-md bg-slate-800 p-2 shadow-sm">
-                              <div className="h-4 w-4 rounded-full bg-slate-400" />
-                              <div className="h-2 w-[100px] rounded-lg bg-slate-400" />
-                            </div>
-                            <div className="flex items-center space-x-2 rounded-md bg-slate-800 p-2 shadow-sm">
-                              <div className="h-4 w-4 rounded-full bg-slate-400" />
-                              <div className="h-2 w-[100px] rounded-lg bg-slate-400" />
-                            </div>
-                          </div>
-                        </div>
-                        <span className="block w-full p-2 text-center font-normal">
-                          Nasiya
-                        </span>
-                      </FormLabel>
-                    </FormItem>
-                  </RadioGroup>
-                </FormItem>
-              )}
-            />
+                      </FormItem>
+                    </ToggleGroup>
+                  </FormItem>
+                )}
+              />
+            </div>
             <div className="space-y-4">
               {form.watch("sales").map((sale, index) => (
                 <div key={index} className="flex gap-4 items-end">

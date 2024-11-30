@@ -1,20 +1,38 @@
 "use client";
 
-import {useEffect, useState} from "react";
-import {useForm} from "react-hook-form";
-import {zodResolver} from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import {Dialog, DialogContent, DialogHeader, DialogTitle,} from "@/components/ui/dialog";
-import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage,} from "@/components/ui/form";
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue,} from "@/components/ui/select";
-import {Input} from "@/components/ui/input";
-import {Button} from "@/components/ui/button";
-import {Customer} from "@/lib/types";
-import { CustomerStatus } from '@/lib/enums';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Customer } from "@/lib/types";
+import { CustomerStatus } from "@/lib/enums";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  status: z.nativeEnum(CustomerStatus),
+  status: z.nativeEnum(CustomerStatus)
 });
 
 interface CategoryDialogProps {
@@ -25,25 +43,25 @@ interface CategoryDialogProps {
 }
 
 export function CustomerDialog({
-                                 open,
-                                 onOpenChange,
-                                 customer,
-                                 onSubmit,
-                               }: CategoryDialogProps) {
+  open,
+  onOpenChange,
+  customer,
+  onSubmit
+}: CategoryDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   useEffect(() => {
     form.reset({
       name: customer?.name || "",
-      status: customer?.status || CustomerStatus.CASH,
-    })
-  }, [open])
+      status: customer?.status || CustomerStatus.ACTIVE
+    });
+  }, [open]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: customer?.name || "",
-      status: customer?.status || CustomerStatus.CASH,
-    },
+      status: customer?.status || CustomerStatus.ACTIVE
+    }
   });
   const handleSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
@@ -64,24 +82,27 @@ export function CustomerDialog({
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="space-y-4"
+          >
             <FormField
               control={form.control}
               name="name"
-              render={({field}) => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
-                  <FormMessage/>
+                  <FormMessage />
                 </FormItem>
               )}
             />
             <FormField
               control={form.control}
               name="status"
-              render={({field}) => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Status</FormLabel>
                   <Select
@@ -90,15 +111,19 @@ export function CustomerDialog({
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select status"/>
+                        <SelectValue placeholder="Select status" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value={CustomerStatus.CASH}>Cash</SelectItem>
-                      <SelectItem value={CustomerStatus.CREDIT}>Credit</SelectItem>
+                      <SelectItem value={CustomerStatus.ACTIVE}>
+                        {CustomerStatus.ACTIVE}
+                      </SelectItem>
+                      <SelectItem value={CustomerStatus.INACTIVE}>
+                        {CustomerStatus.INACTIVE}
+                      </SelectItem>
                     </SelectContent>
                   </Select>
-                  <FormMessage/>
+                  <FormMessage />
                 </FormItem>
               )}
             />

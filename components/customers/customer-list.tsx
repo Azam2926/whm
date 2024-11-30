@@ -10,17 +10,13 @@ import { Button } from "@/components/ui/button";
 import { Edit, Trash2 } from "lucide-react";
 import { Customer } from "@/lib/types";
 import { CustomerStatus } from "@/lib/enums";
+import { Badge } from "@/components/ui/badge";
 
 interface CustomerListProps {
   customers: Customer[];
   onEdit: (customer: Customer) => void;
   onDelete: (id: number) => void;
 }
-
-const customerStatusColor: Record<CustomerStatus, string> = {
-  [CustomerStatus.CASH]: "bg-green-100 text-green-800",
-  [CustomerStatus.CREDIT]: "bg-red-100 text-red-800"
-};
 
 export function CustomerList({
   customers,
@@ -41,11 +37,15 @@ export function CustomerList({
           <TableRow key={customer.id}>
             <TableCell className="font-medium">{customer.name}</TableCell>
             <TableCell>
-              <span
-                className={`px-2 py-1 rounded-full text-xs ${customerStatusColor[customer.status]}`}
+              <Badge
+                variant={
+                  customer.status === CustomerStatus.ACTIVE
+                    ? "outline"
+                    : "destructive"
+                }
               >
                 {customer.status}
-              </span>
+              </Badge>
             </TableCell>
             <TableCell>
               <div className="flex gap-2">

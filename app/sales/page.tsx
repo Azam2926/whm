@@ -2,15 +2,17 @@
 
 import * as React from "react";
 import { useEffect, useState } from "react";
-import { Plus } from "lucide-react";
+import { Coins, CreditCard, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SaleDialog } from "@/components/sales/sale-dialog";
 import { api } from "@/lib/services/api";
-import { Customer, Product, SaleCreate } from "@/lib/types";
+import { Customer, Product } from "@/lib/types";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { columns } from "@/app/sales/columns";
 import { ServerDataTable } from "@/components/ui/server-data-table";
 import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
+import { SaleCreateRequest } from "@/services/sale.service";
+import { SaleStatus } from "@/lib/enums";
 
 export default function SalesPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -25,12 +27,9 @@ export default function SalesPage() {
     sorting?: SortingState;
     columnFilters?: ColumnFiltersState;
   }) => {
-    console.log(params);
     const {
-      data: {
-        sales,
-        page: { totalElements }
-      }
+      sales,
+      page: { totalElements }
     } = await api.getSales(params);
 
     return {
@@ -49,17 +48,23 @@ export default function SalesPage() {
           data: { data: customersData }
         }
       ] = await Promise.all([api.getProducts(), api.getCustomers()]);
-      setProducts(productsData);
-      setCustomers(customersData);
+
+      return {
+        products: productsData,
+        customers: customersData
+      };
     } finally {
       setIsLoading(false);
     }
   };
   useEffect(() => {
-    loadData();
+    loadData().then(data => {
+      setProducts(data.products);
+      setCustomers(data.customers);
+    });
   }, []);
 
-  const handleCreate = async (saleData: SaleCreate) => {
+  const handleCreate = async (saleData: SaleCreateRequest) => {
     await api.createSale(saleData);
     await loadData();
     setIsDialogOpen(false);
@@ -103,6 +108,23 @@ export default function SalesPage() {
                   label: c.name,
                   value: c.id.toString()
                 }))
+              },
+              {
+                columnName: "status",
+                type: "faceted",
+                placeholder: "Status",
+                options: [
+                  {
+                    label: SaleStatus.CASH,
+                    value: SaleStatus.CASH,
+                    icon: Coins
+                  },
+                  {
+                    label: SaleStatus.CREDIT,
+                    value: SaleStatus.CREDIT,
+                    icon: CreditCard
+                  }
+                ]
               }
             ]
           }}

@@ -1,6 +1,7 @@
 import api from "./http.service";
-import { Sale } from "@/lib/types";
+import { Customer, Product, Sale } from "@/lib/types";
 import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
+import { SaleStatus } from "@/lib/enums";
 
 interface SalesData {
   sales: Sale[];
@@ -10,6 +11,23 @@ interface SalesData {
     totalElements: number;
     totalPages: number;
   };
+}
+
+export interface SaleCreateRequest {
+  customer_id: number;
+  status: SaleStatus;
+  sales: { product_id: number; quantity: number; price: number }[];
+}
+
+export interface SaleCreateResponse {
+  customer: Customer;
+  status: SaleStatus;
+  sales: {
+    product: Product;
+    quantity: number;
+    price: number;
+    sale_date?: string;
+  }[];
 }
 
 const saleService = {
@@ -57,7 +75,8 @@ const saleService = {
       }
     });
   },
-  create: (data: unknown) => api.post("sale", data)
+  create: (data: SaleCreateRequest) =>
+    api.post<SaleCreateResponse>("sale", data)
 };
 
 export default saleService;
