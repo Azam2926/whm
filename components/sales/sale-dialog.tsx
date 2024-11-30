@@ -27,11 +27,11 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Customer, Product } from "@/lib/types";
+import { Customer, Product, SaleCreate } from "@/lib/types";
 import { Plus, Trash2 } from "lucide-react";
 
 const saleItemSchema = z.object({
-  productId: z.string().min(1, "Product is required"),
+  product_id: z.string().min(1, "Product is required"),
   quantity: z.string().min(1, "Quantity is required").transform(Number),
   price: z.number()
 });
@@ -39,17 +39,14 @@ const saleItemSchema = z.object({
 type SaleItemType = z.infer<typeof saleItemSchema>;
 
 const formSchema = z.object({
-  customerId: z.string().min(1, "Customer is required"),
+  customer_id: z.string().min(1, "Customer is required"),
   sales: z.array(saleItemSchema).min(1, "At least one product is required")
 });
 
 interface SaleDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (data: {
-    customerId: number;
-    sales: { productId: number; quantity: number; price: number }[];
-  }) => Promise<void>;
+  onSubmit: (data: SaleCreate) => Promise<void>;
   products: Product[];
   customers: Customer[];
 }
@@ -66,8 +63,8 @@ export function SaleDialog({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      customerId: "",
-      sales: [{ productId: "", quantity: 0, price: 0 }]
+      customer_id: "",
+      sales: [{ product_id: "", quantity: 0, price: 0 }]
     }
   });
 
@@ -75,9 +72,9 @@ export function SaleDialog({
     try {
       setIsSubmitting(true);
       await onSubmit({
-        customerId: parseInt(data.customerId),
+        customer_id: parseInt(data.customer_id),
         sales: data.sales.map(sale => ({
-          productId: parseInt(sale.productId),
+          product_id: parseInt(sale.product_id),
           quantity: sale.quantity,
           price: sale.price
         }))
@@ -92,7 +89,7 @@ export function SaleDialog({
     const currentSales = form.getValues("sales");
     form.setValue("sales", [
       ...currentSales,
-      { productId: "", quantity: 0, price: 0 }
+      { product_id: "", quantity: 0, price: 0 }
     ]);
   };
 
@@ -106,15 +103,15 @@ export function SaleDialog({
     }
   };
 
-  const updatePrice = (productId: string, index: number) => {
-    const product = products.find(p => p.id === parseInt(productId));
+  const updatePrice = (product_id: string, index: number) => {
+    const product = products.find(p => p.id === parseInt(product_id));
     if (product) {
       form.setValue(`sales.${index}.price`, product.price);
     }
   };
 
   const calculateTotal = (sale: SaleItemType) => {
-    const product = products.find(p => p.id.toString() === sale.productId);
+    const product = products.find(p => p.id.toString() === sale.product_id);
     if (!product) return "0.00";
 
     return (product.price * sale.quantity).toFixed(2);
@@ -133,7 +130,7 @@ export function SaleDialog({
           >
             <FormField
               control={form.control}
-              name="customerId"
+              name="customer_id"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Customer</FormLabel>
@@ -167,7 +164,7 @@ export function SaleDialog({
                 <div key={index} className="flex gap-4 items-end">
                   <FormField
                     control={form.control}
-                    name={`sales.${index}.productId`}
+                    name={`sales.${index}.product_id`}
                     render={({ field }) => (
                       <FormItem className="flex-1">
                         <FormLabel>Product</FormLabel>

@@ -1,4 +1,4 @@
-import { CustomerStatus } from './enums';
+import { CustomerStatus } from "./enums";
 
 export interface Category {
   id: number;
@@ -38,8 +38,8 @@ export interface Sale {
 }
 
 export interface SaleCreate {
-  customerId: number;
-  sales: { productId: number; quantity: number; price: number }[];
+  customer_id: number;
+  sales: { product_id: number; quantity: number; price: number }[];
 }
 
 export interface ProductAnalytics {

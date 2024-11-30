@@ -1,16 +1,16 @@
 "use client";
 
+import * as React from "react";
 import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SaleDialog } from "@/components/sales/sale-dialog";
 import { api } from "@/lib/services/api";
-import { Customer, Product } from "@/lib/types";
+import { Customer, Product, SaleCreate } from "@/lib/types";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { columns } from "@/app/sales/columns";
 import { ServerDataTable } from "@/components/ui/server-data-table";
 import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
-import * as React from "react";
 
 export default function SalesPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -59,10 +59,7 @@ export default function SalesPage() {
     loadData();
   }, []);
 
-  const handleCreate = async (saleData: {
-    customerId: number;
-    sales: { productId: number; quantity: number; price: number }[];
-  }) => {
+  const handleCreate = async (saleData: SaleCreate) => {
     await api.createSale(saleData);
     await loadData();
     setIsDialogOpen(false);
@@ -82,18 +79,6 @@ export default function SalesPage() {
           <LoadingSpinner />
         </div>
       ) : (
-        //         interface FilterOption {
-        //   label: string;
-        //   value: string;
-        //   icon?: React.ComponentType;
-        // }
-        //
-        // export interface ToolbarFilterConfig {
-        //   columnName: string;
-        //   type: "input" | "select" | "faceted";
-        //   placeholder?: string;
-        //   options?: FilterOption[];
-        // }
         <ServerDataTable
           fetchDataAction={fetchDataAction}
           columns={columns}

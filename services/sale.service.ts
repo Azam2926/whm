@@ -35,17 +35,15 @@ const saleService = {
       sortBy = filters?.sorting[0].id;
       if (sortBy === "sale_date") sortBy = "saleDate";
     }
-    console.log(filters?.columnFilters);
 
     if (filters?.columnFilters && filters?.columnFilters.length) {
-      if (filters.columnFilters[0].id === "customer")
-        filters.customer_id = parseInt(
-          (filters.columnFilters[0].value as Array<string>)[0]
-        );
-      if (filters.columnFilters[0].id === "product")
-        filters.product_id = parseInt(
-          (filters.columnFilters[0].value as Array<string>)[0]
-        );
+      const customer = filters.columnFilters.find(f => f.id === "customer");
+      if (customer)
+        filters.customer_id = parseInt((customer.value as Array<string>)[0]);
+
+      const product = filters.columnFilters.find(f => f.id === "product");
+      if (product)
+        filters.product_id = parseInt((product.value as Array<string>)[0]);
     }
 
     return api.get<SalesData>("sale", {

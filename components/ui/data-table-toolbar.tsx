@@ -80,7 +80,7 @@ export function DataTableToolbar<TData>({
               <DataTableFacetedFilter
                 key={filterConfig.columnName}
                 column={column}
-                title={filterConfig.columnName}
+                title={filterConfig.placeholder}
                 options={filterConfig.options}
               />
             );
