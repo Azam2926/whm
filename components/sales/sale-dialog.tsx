@@ -8,7 +8,7 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTitle,
+  DialogTitle
 } from "@/components/ui/dialog";
 import {
   Form,
@@ -16,38 +16,41 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
+  FormMessage
 } from "@/components/ui/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
+  SelectValue
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Product, Customer } from "@/lib/types";
+import { Customer, Product } from "@/lib/types";
 import { Plus, Trash2 } from "lucide-react";
+import { SaleStatus } from "@/lib/enums";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { SaleCreateRequest } from "@/services/sale.service";
 
 const saleItemSchema = z.object({
-  productId: z.string().min(1, "Product is required"),
+  product_id: z.string().min(1, "Product is required"),
   quantity: z.string().min(1, "Quantity is required").transform(Number),
-  price: z.number(),
+  price: z.number()
 });
 
+type SaleItemType = z.infer<typeof saleItemSchema>;
+
 const formSchema = z.object({
-  customerId: z.string().min(1, "Customer is required"),
-  sales: z.array(saleItemSchema).min(1, "At least one product is required"),
+  customer_id: z.string().min(1, "Customer is required"),
+  status: z.nativeEnum(SaleStatus),
+  sales: z.array(saleItemSchema).min(1, "At least one product is required")
 });
 
 interface SaleDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (data: {
-    customerId: number;
-    sales: { productId: number; quantity: number; price: number }[];
-  }) => Promise<void>;
+  onSubmit: (data: SaleCreateRequest) => Promise<void>;
   products: Product[];
   customers: Customer[];
 }
@@ -57,28 +60,30 @@ export function SaleDialog({
   onOpenChange,
   onSubmit,
   products,
-  customers,
+  customers
 }: SaleDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      customerId: "",
-      sales: [{ productId: "", quantity: 0, price: 0 }],
-    },
+      customer_id: "",
+      status: SaleStatus.CASH,
+      sales: [{ product_id: "", quantity: 0, price: 0 }]
+    }
   });
 
   const handleSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
       setIsSubmitting(true);
       await onSubmit({
-        customerId: parseInt(data.customerId),
+        customer_id: parseInt(data.customer_id),
+        status: data.status,
         sales: data.sales.map(sale => ({
-          productId: parseInt(sale.productId),
+          product_id: parseInt(sale.product_id),
           quantity: sale.quantity,
-          price: sale.price,
-        })),
+          price: sale.price
+        }))
       });
       form.reset();
     } finally {
@@ -90,7 +95,7 @@ export function SaleDialog({
     const currentSales = form.getValues("sales");
     form.setValue("sales", [
       ...currentSales,
-      { productId: "", quantity: 0, price: 0 },
+      { product_id: "", quantity: 0, price: 0 }
     ]);
   };
 
@@ -104,11 +109,18 @@ export function SaleDialog({
     }
   };
 
-  const updatePrice = (productId: string, index: number) => {
-    const product = products.find((p) => p.id === parseInt(productId));
+  const updatePrice = (product_id: string, index: number) => {
+    const product = products.find(p => p.id === parseInt(product_id));
     if (product) {
       form.setValue(`sales.${index}.price`, product.price);
     }
+  };
+
+  const calculateTotal = (sale: SaleItemType) => {
+    const product = products.find(p => p.id.toString() === sale.product_id);
+    if (!product) return "0.00";
+
+    return (product.price * sale.quantity).toFixed(2);
   };
 
   return (
@@ -118,49 +130,90 @@ export function SaleDialog({
           <DialogTitle>Create Sale</DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="customerId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Customer</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select customer" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {customers.map((customer) => (
-                        <SelectItem
-                          key={customer.id}
-                          value={customer.id.toString()}
-                        >
-                          {customer.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="space-y-6"
+          >
+            <div className="flex gap-4 items-end">
+              <FormField
+                control={form.control}
+                name="customer_id"
+                render={({ field }) => (
+                  <FormItem className="w-1/2">
+                    <FormLabel>Customer</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select customer" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {customers.map(customer => (
+                          <SelectItem
+                            key={customer.id}
+                            value={customer.id.toString()}
+                          >
+                            {customer.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem className="space-y-1">
+                    <FormLabel>Status</FormLabel>
+                    <FormMessage />
+                    <ToggleGroup
+                      type="single"
+                      variant="outline"
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormItem>
+                        <FormControl>
+                          <ToggleGroupItem
+                            value={SaleStatus.CASH}
+                            aria-label="Toggle Naqd"
+                          >
+                            {SaleStatus.CASH}
+                          </ToggleGroupItem>
+                        </FormControl>
+                      </FormItem>
+                      <FormItem>
+                        <FormControl>
+                          <ToggleGroupItem
+                            value={SaleStatus.CREDIT}
+                            aria-label="Toggle Nasiya"
+                          >
+                            {SaleStatus.CREDIT}
+                          </ToggleGroupItem>
+                        </FormControl>
+                      </FormItem>
+                    </ToggleGroup>
+                  </FormItem>
+                )}
+              />
+            </div>
             <div className="space-y-4">
-              {form.watch("sales").map((_, index) => (
+              {form.watch("sales").map((sale, index) => (
                 <div key={index} className="flex gap-4 items-end">
                   <FormField
                     control={form.control}
-                    name={`sales.${index}.productId`}
+                    name={`sales.${index}.product_id`}
                     render={({ field }) => (
                       <FormItem className="flex-1">
                         <FormLabel>Product</FormLabel>
                         <Select
-                          onValueChange={(value) => {
+                          onValueChange={value => {
                             field.onChange(value);
                             updatePrice(value, index);
                           }}
@@ -172,12 +225,15 @@ export function SaleDialog({
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {products.map((product) => (
+                            {products.map(product => (
                               <SelectItem
                                 key={product.id}
                                 value={product.id.toString()}
                               >
-                                {product.name} <span className="text-gray-500">${product.price}, {product.quantity} ta</span>
+                                {product.name}{" "}
+                                <span className="text-gray-500">
+                                  ${product.price}, {product.quantity} ta
+                                </span>
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -201,14 +257,19 @@ export function SaleDialog({
                     )}
                   />
 
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => removeSaleItem(index)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">
+                      ${calculateTotal(sale)}
+                    </span>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => removeSaleItem(index)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>

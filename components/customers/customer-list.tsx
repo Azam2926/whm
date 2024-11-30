@@ -1,7 +1,16 @@
-import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table";
-import {Button} from "@/components/ui/button";
-import {Edit, Trash2} from "lucide-react";
-import {Customer} from "@/lib/types";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Edit, Trash2 } from "lucide-react";
+import { Customer } from "@/lib/types";
+import { CustomerStatus } from "@/lib/enums";
+import { Badge } from "@/components/ui/badge";
 
 interface CustomerListProps {
   customers: Customer[];
@@ -9,12 +18,11 @@ interface CustomerListProps {
   onDelete: (id: number) => void;
 }
 
-const customerStatusColor = {
-  'CASH': 'bg-green-100 text-green-800',
-  'CREDIT': 'bg-red-100 text-red-800',
-}
-
-export function CustomerList({customers, onEdit, onDelete}: CustomerListProps) {
+export function CustomerList({
+  customers,
+  onEdit,
+  onDelete
+}: CustomerListProps) {
   return (
     <Table>
       <TableHeader>
@@ -25,13 +33,19 @@ export function CustomerList({customers, onEdit, onDelete}: CustomerListProps) {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {customers.map((customer) => (
+        {customers.map(customer => (
           <TableRow key={customer.id}>
             <TableCell className="font-medium">{customer.name}</TableCell>
             <TableCell>
-              <span className={`px-2 py-1 rounded-full text-xs ${customerStatusColor[customer.status]}`}>
+              <Badge
+                variant={
+                  customer.status === CustomerStatus.ACTIVE
+                    ? "outline"
+                    : "destructive"
+                }
+              >
                 {customer.status}
-              </span>
+              </Badge>
             </TableCell>
             <TableCell>
               <div className="flex gap-2">
@@ -40,14 +54,14 @@ export function CustomerList({customers, onEdit, onDelete}: CustomerListProps) {
                   size="icon"
                   onClick={() => onEdit(customer)}
                 >
-                  <Edit className="h-4 w-4"/>
+                  <Edit className="h-4 w-4" />
                 </Button>
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => onDelete(customer.id)}
                 >
-                  <Trash2 className="h-4 w-4"/>
+                  <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
             </TableCell>

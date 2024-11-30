@@ -15,28 +15,28 @@ const items = [
   {
     title: "Dashboard",
     href: "/",
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Categories",
-    href: "/categories",
-    icon: Tags,
-  },
-  {
-    title: "Products",
-    href: "/products",
-    icon: Package,
-  },
-  {
-    title: "Customers",
-    href: "/customers",
-    icon: Users,
+    icon: LayoutDashboard
   },
   {
     title: "Sales",
     href: "/sales",
-    icon: ShoppingCart,
+    icon: ShoppingCart
   },
+  {
+    title: "Categories",
+    href: "/categories",
+    icon: Tags
+  },
+  {
+    title: "Products",
+    href: "/products",
+    icon: Package
+  },
+  {
+    title: "Customers",
+    href: "/customers",
+    icon: Users
+  }
 ];
 
 export function MainNav() {
@@ -44,7 +44,7 @@ export function MainNav() {
 
   return (
     <nav className="flex items-center space-x-4 lg:space-x-6">
-      {items.map((item) => {
+      {items.map(item => {
         const Icon = item.icon;
         return (
           <Link
@@ -52,9 +52,7 @@ export function MainNav() {
             href={item.href}
             className={cn(
               "flex items-center text-sm font-medium transition-colors hover:text-primary",
-              pathname === item.href
-                ? "text-primary"
-                : "text-muted-foreground"
+              pathname === item.href ? "text-primary" : "text-muted-foreground"
             )}
           >
             <Icon className="mr-2 h-4 w-4" />
