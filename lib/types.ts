@@ -23,6 +23,8 @@ export interface Product {
 export interface Customer {
   id: number;
   name: string;
+  phone_number?: string;
+  address?: string;
   status: CustomerStatus;
 }
 

@@ -32,14 +32,18 @@ import { CustomerStatus } from "@/lib/enums";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
+  phone_number: z.string().min(12, "Phone number is required").optional(),
+  address: z.string().optional(),
   status: z.nativeEnum(CustomerStatus)
 });
+
+type CustomerCreate = z.infer<typeof formSchema>;
 
 interface CategoryDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   customer?: Customer | null;
-  onSubmit: (data: z.infer<typeof formSchema>) => Promise<void>;
+  onSubmit: (data: CustomerCreate) => Promise<void>;
 }
 
 export function CustomerDialog({
@@ -49,21 +53,22 @@ export function CustomerDialog({
   onSubmit
 }: CategoryDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const default_form_values = {
+    name: customer?.name || "",
+    phone_number: customer?.phone_number || "",
+    address: customer?.address || "",
+    status: customer?.status || CustomerStatus.ACTIVE
+  };
+
   useEffect(() => {
-    form.reset({
-      name: customer?.name || "",
-      status: customer?.status || CustomerStatus.ACTIVE
-    });
+    form.reset(default_form_values);
   }, [open]);
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<CustomerCreate>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: customer?.name || "",
-      status: customer?.status || CustomerStatus.ACTIVE
-    }
+    defaultValues: default_form_values
   });
-  const handleSubmit = async (data: z.infer<typeof formSchema>) => {
+  const handleSubmit = async (data: CustomerCreate) => {
     try {
       setIsSubmitting(true);
       await onSubmit(data);
@@ -91,7 +96,33 @@ export function CustomerDialog({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>Nomi</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="phone_number"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Tel nomer</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="address"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Manzil</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
