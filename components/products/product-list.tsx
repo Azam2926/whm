@@ -1,8 +1,16 @@
-import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table";
-import {Button} from "@/components/ui/button";
-import {Edit, Trash2} from "lucide-react";
-import {Product} from "@/lib/types";
-import {format} from "date-fns";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Edit, Trash2 } from "lucide-react";
+import { Product } from "@/lib/types";
+import { format } from "date-fns";
+import { formatDate } from "@/utils/formatDate";
 
 interface ProductListProps {
   products: Product[];
@@ -10,7 +18,7 @@ interface ProductListProps {
   onDelete: (id: number) => void;
 }
 
-export function ProductList({products, onEdit, onDelete}: ProductListProps) {
+export function ProductList({ products, onEdit, onDelete }: ProductListProps) {
   return (
     <Table>
       <TableHeader>
@@ -24,15 +32,13 @@ export function ProductList({products, onEdit, onDelete}: ProductListProps) {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {products.map((product) => (
+        {products.map(product => (
           <TableRow key={product.id}>
             <TableCell className="font-medium">{product.name}</TableCell>
             <TableCell>{product.category?.name}</TableCell>
             <TableCell>{product.price}</TableCell>
             <TableCell>{product.quantity}</TableCell>
-            <TableCell>
-              {product.createdAt ? format(new Date(product.createdAt), 'MMM d, yyyy') : ''}
-            </TableCell>
+            <TableCell>{formatDate(product.created_at)} </TableCell>
             <TableCell>
               <div className="flex gap-2">
                 <Button
@@ -40,14 +46,14 @@ export function ProductList({products, onEdit, onDelete}: ProductListProps) {
                   size="icon"
                   onClick={() => onEdit(product)}
                 >
-                  <Edit className="h-4 w-4"/>
+                  <Edit className="h-4 w-4" />
                 </Button>
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => onDelete(product.id)}
                 >
-                  <Trash2 className="h-4 w-4"/>
+                  <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
             </TableCell>
