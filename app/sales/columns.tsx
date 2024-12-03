@@ -26,7 +26,7 @@ export const columns: ColumnDef<Sale>[] = [
         <Badge
           variant={
             row.getValue("status") === SaleStatus.CASH
-              ? "outline"
+              ? "default"
               : "destructive"
           }
         >

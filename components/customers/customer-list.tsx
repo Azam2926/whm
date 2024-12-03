@@ -27,7 +27,9 @@ export function CustomerList({
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Name</TableHead>
+          <TableHead>Nomi</TableHead>
+          <TableHead>Tel. nomer</TableHead>
+          <TableHead>Manzil</TableHead>
           <TableHead>Status</TableHead>
           <TableHead>Actions</TableHead>
         </TableRow>
@@ -36,6 +38,8 @@ export function CustomerList({
         {customers.map(customer => (
           <TableRow key={customer.id}>
             <TableCell className="font-medium">{customer.name}</TableCell>
+            <TableCell>{customer.phone_number}</TableCell>
+            <TableCell>{customer.address}</TableCell>
             <TableCell>
               <Badge
                 variant={
