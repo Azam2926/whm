@@ -250,7 +250,16 @@ export function SaleDialog({
                       <FormItem className="flex-1">
                         <FormLabel>Quantity</FormLabel>
                         <FormControl>
-                          <Input type="number" min="1" {...field} />
+                          <Input
+                            type="number"
+                            min="1"
+                            max={
+                              products.find(
+                                p => p.id.toString() === sale.product_id
+                              )?.quantity
+                            }
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
