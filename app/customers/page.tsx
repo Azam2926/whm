@@ -39,7 +39,9 @@ export default function CustomersPage() {
     loadCategories();
   }, [filters]);
 
-  const handleCreate = async (customer: Omit<Customer, "id">) => {
+  const handleCreate = async (
+    customer: Omit<Customer, "id" | "created_at">
+  ) => {
     await customerService.create(customer);
     await loadCategories();
     setIsDialogOpen(false);

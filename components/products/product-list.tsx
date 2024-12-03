@@ -9,7 +9,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2 } from "lucide-react";
 import { Product } from "@/lib/types";
-import { format } from "date-fns";
 import { formatDate } from "@/utils/formatDate";
 
 interface ProductListProps {
