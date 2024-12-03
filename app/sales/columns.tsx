@@ -1,9 +1,9 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Sale } from "@/lib/types";
-import { format } from "date-fns";
 import { DataTableColumnHeader } from "@/components/ui/data-table-column-header";
 import { SaleStatus } from "@/lib/enums";
 import { Badge } from "@/components/ui/badge";
+import { formatDate } from "@/utils/formatDate";
 
 export const columns: ColumnDef<Sale>[] = [
   {
@@ -13,7 +13,7 @@ export const columns: ColumnDef<Sale>[] = [
     ),
     cell: ({ row }) => {
       const date = row.getValue("sale_date");
-      return date ? format(new Date(date as string), "MMM d, yyyy") : "-";
+      return formatDate(date as string, "dd MMMM, yyyy");
     }
   },
   {

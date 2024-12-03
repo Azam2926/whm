@@ -1,33 +1,50 @@
-import { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
+  FormMessage
+} from "@/components/ui/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
+  SelectValue
 } from "@/components/ui/select";
-import {Category, Product} from "@/lib/types";
+import { Category, Product } from "@/lib/types";
 
 // Form schema only includes editable fields
 const formSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  category_id: z.number().min(1, 'Category is required'),
-  price: z.number().min(0, 'Price must be positive').or(z.string().regex(/^\d*\.?\d*$/).transform(Number)),
-  quantity: z.number().int().min(0, 'Quantity must be a positive integer').or(z.string().regex(/^\d+$/).transform(Number))
+  name: z.string().min(1, "Name is required"),
+  category_id: z.number().min(1, "Category is required"),
+  price: z
+    .number()
+    .min(0, "Price must be positive")
+    .or(
+      z
+        .string()
+        .regex(/^\d*\.?\d*$/)
+        .transform(Number)
+    ),
+  quantity: z
+    .number()
+    .int()
+    .min(0, "Quantity must be a positive integer")
+    .or(z.string().regex(/^\d+$/).transform(Number))
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -41,22 +58,22 @@ interface ProductDialogProps {
 }
 
 export function ProductDialog({
-                                open,
-                                onOpenChange,
-                                product,
-                                categories,
-                                onSubmit,
-                              }: ProductDialogProps) {
+  open,
+  onOpenChange,
+  product,
+  categories,
+  onSubmit
+}: ProductDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: '',
+      name: "",
       category_id: undefined,
       price: 0,
       quantity: 0
-    },
+    }
   });
 
   // Reset form when dialog opens/closes or product changes
@@ -82,7 +99,7 @@ export function ProductDialog({
       });
       onOpenChange(false);
     } catch (error) {
-      console.error('Error submitting form:', error);
+      console.error("Error submitting form:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -97,15 +114,18 @@ export function ProductDialog({
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-          <FormField
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="space-y-4"
+          >
+            <FormField
               control={form.control}
               name="category_id"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Category</FormLabel>
                   <Select
-                    onValueChange={(value) => field.onChange(Number(value))}
+                    onValueChange={value => field.onChange(Number(value))}
                     defaultValue={field.value?.toString()}
                   >
                     <FormControl>
@@ -114,7 +134,7 @@ export function ProductDialog({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {categories.map((category) => (
+                      {categories.map(category => (
                         <SelectItem
                           key={category.id}
                           value={category.id.toString()}
@@ -156,7 +176,7 @@ export function ProductDialog({
                       step="0.01"
                       min="0"
                       placeholder="0.00"
-                      onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                      onChange={e => field.onChange(e.target.valueAsNumber)}
                     />
                   </FormControl>
                   <FormMessage />
@@ -177,7 +197,7 @@ export function ProductDialog({
                       min="0"
                       step="1"
                       placeholder="0"
-                      onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                      onChange={e => field.onChange(e.target.valueAsNumber)}
                     />
                   </FormControl>
                   <FormMessage />
@@ -187,7 +207,9 @@ export function ProductDialog({
 
             {product && (
               <div className="space-y-2 text-sm text-muted-foreground">
-                <div>Created: {new Date(product.createdAt).toLocaleDateString()}</div>
+                <div>
+                  Created: {new Date(product.created_at).toLocaleDateString()}
+                </div>
                 <div>ID: {product.id}</div>
               </div>
             )}

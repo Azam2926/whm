@@ -1,12 +1,12 @@
 "use client";
 
-import {useEffect, useState} from 'react';
-import {Plus} from 'lucide-react';
-import {Button} from '@/components/ui/button';
-import {Input} from '@/components/ui/input';
-import {ProductList} from '@/components/products/product-list';
-import {ProductDialog} from '@/components/products/product-dialog';
-import {Category, Product} from '@/lib/types';
+import { useEffect, useState } from "react";
+import { Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ProductList } from "@/components/products/product-list";
+import { ProductDialog } from "@/components/products/product-dialog";
+import { Category, Product } from "@/lib/types";
 import productsService from "@/services/products.service";
 import categoryService from "@/services/category.service";
 
@@ -14,18 +14,24 @@ export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [selectedProducts, setSelectedProducts] = useState<Product | null>(null);
+  const [selectedProducts, setSelectedProducts] = useState<Product | null>(
+    null
+  );
   const [filters, setFilters] = useState({
-    search: '',
+    search: ""
   });
 
   const loadProducts = async () => {
-    const {data: {data: products}} = await productsService.getAll({
-      search: filters.search ? filters.search : undefined,
+    const {
+      data: { data: products }
+    } = await productsService.getAll({
+      search: filters.search ? filters.search : undefined
     });
-    setProducts(products)
+    setProducts(products);
 
-    const {data: {data: categories}} = await categoryService.getAll();
+    const {
+      data: { data: categories }
+    } = await categoryService.getAll();
     setCategories(categories);
   };
 
@@ -33,7 +39,9 @@ export default function ProductsPage() {
     loadProducts();
   }, [filters]);
 
-  const handleCreate = async (product: Omit<Product, 'id' | 'created_at' | 'createdAt' | 'category'>) => {
+  const handleCreate = async (
+    product: Omit<Product, "id" | "created_at" | "category">
+  ) => {
     await productsService.create(product);
     await loadProducts();
     setIsDialogOpen(false);
@@ -55,7 +63,7 @@ export default function ProductsPage() {
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Products</h1>
         <Button onClick={() => setIsDialogOpen(true)}>
-          <Plus className="mr-2 h-4 w-4"/> Add Products
+          <Plus className="mr-2 h-4 w-4" /> Add Products
         </Button>
       </div>
 
@@ -63,7 +71,7 @@ export default function ProductsPage() {
         <Input
           placeholder="Search products..."
           value={filters.search}
-          onChange={(e) => setFilters({...filters, search: e.target.value})}
+          onChange={e => setFilters({ ...filters, search: e.target.value })}
           className="max-w-sm"
         />
       </div>
@@ -76,15 +84,16 @@ export default function ProductsPage() {
 
       <ProductDialog
         open={isDialogOpen || !!selectedProducts}
-        onOpenChange={(open) => {
+        onOpenChange={open => {
           setIsDialogOpen(open);
           if (!open) setSelectedProducts(null);
         }}
         product={selectedProducts}
         categories={categories}
-        onSubmit={selectedProducts ?
-          (data) => handleUpdate(selectedProducts.id, data) :
-          handleCreate
+        onSubmit={
+          selectedProducts
+            ? data => handleUpdate(selectedProducts.id, data)
+            : handleCreate
         }
       />
     </div>

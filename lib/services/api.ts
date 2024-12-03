@@ -14,7 +14,6 @@ const products: Product[] = [
     name: "Laptop",
     price: 999.99,
     quantity: 50,
-    createdAt: "2024-02-15T10:00:00Z",
     created_at: "2024-02-15T10:00:00Z"
   },
   {
@@ -23,7 +22,6 @@ const products: Product[] = [
     name: "Office Chair",
     price: 199.99,
     quantity: 30,
-    createdAt: "2024-02-15T10:00:00Z",
     created_at: "2024-02-15T10:00:00Z"
   }
 ];

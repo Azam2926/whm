@@ -36,6 +36,7 @@ const saleService = {
       | Partial<{
           customer_id?: number[] | unknown;
           product_id?: number[] | unknown;
+          status?: string[] | unknown;
           start_date?: string;
           end_date?: string;
           page?: number;
@@ -62,12 +63,17 @@ const saleService = {
       filters.product_id = filters.columnFilters.find(
         f => f.id === "product"
       )?.value;
+
+      filters.status = filters.columnFilters.find(
+        f => f.id === "status"
+      )?.value;
     }
 
     return api.get<SalesData>("sale", {
       params: {
         customer_ids: filters?.customer_id,
         product_ids: filters?.product_id,
+        status: filters?.status,
         pageNumber: filters?.page || 1,
         pageSize: filters?.size || 10,
         sortDirection,
