@@ -7,14 +7,17 @@ import { Overview } from "@/components/dashboard/overview";
 import { RecentSales } from "@/components/dashboard/recent-sales";
 import { ProductList } from "@/components/dashboard/product-list";
 import { api } from "@/lib/services/api";
-import { Product, Sale, ProductAnalytics } from "@/lib/types";
+import { Product } from "@/lib/types";
 import { Package, ShoppingCart, Users } from "lucide-react";
 import productsService from "@/services/products.service";
+import { Report } from "@/lib/types/reports";
 
 export default function Dashboard() {
   const [products, setProducts] = useState<Product[]>([]);
-  const [sales, setSales] = useState<Sale[]>([]);
-  const [analytics, setAnalytics] = useState<ProductAnalytics[]>([]);
+  const [analytics, setAnalytics] = useState<Report>({
+    recent_sales: [],
+    category_wise_total_sales: []
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -22,16 +25,10 @@ export default function Dashboard() {
         {
           data: { data: productsData }
         },
-        { sales: salesData },
         analyticsData
-      ] = await Promise.all([
-        productsService.getAll(),
-        api.getSales(),
-        api.getAnalytics()
-      ]);
+      ] = await Promise.all([productsService.getAll(), api.getAnalytics()]);
 
       setProducts(productsData);
-      setSales(salesData);
       setAnalytics(analyticsData);
     };
 
@@ -39,12 +36,12 @@ export default function Dashboard() {
   }, []);
 
   const totalProducts = products.length;
-  const totalSales = sales.reduce((acc, sale) => acc + sale.price, 0);
+  const totalSales = 0;
   const totalStock = products.reduce(
     (acc, product) => acc + product.quantity,
     0
   );
-  const totalCustomers = new Set(sales.map(sale => sale.customer?.id)).size;
+  const totalCustomers = 0;
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
@@ -111,7 +108,7 @@ export default function Dashboard() {
                 <CardTitle>Overview</CardTitle>
               </CardHeader>
               <CardContent className="pl-2">
-                <Overview data={analytics} />
+                <Overview data={analytics.category_wise_total_sales} />
               </CardContent>
             </Card>
             <Card className="col-span-3">
@@ -119,7 +116,7 @@ export default function Dashboard() {
                 <CardTitle>Recent Sales</CardTitle>
               </CardHeader>
               <CardContent>
-                <RecentSales data={sales} />
+                <RecentSales data={analytics.recent_sales} />
               </CardContent>
             </Card>
           </div>

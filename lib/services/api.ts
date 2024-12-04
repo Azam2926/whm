@@ -1,46 +1,9 @@
-import { Product, ProductAnalytics } from "../types";
 import productsService from "@/services/products.service";
 import customerService from "@/services/customer.service";
 import saleService, { SaleCreateRequest } from "@/services/sale.service";
 import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
-
-// Simulated API delay
-const delay = () => new Promise(resolve => setTimeout(resolve, 500));
-
-const products: Product[] = [
-  {
-    id: 1,
-    category_id: 1,
-    name: "Laptop",
-    price: 999.99,
-    quantity: 50,
-    created_at: "2024-02-15T10:00:00Z"
-  },
-  {
-    id: 2,
-    category_id: 2,
-    name: "Office Chair",
-    price: 199.99,
-    quantity: 30,
-    created_at: "2024-02-15T10:00:00Z"
-  }
-];
-const analytics: ProductAnalytics[] = [
-  {
-    id: 1,
-    product_id: 1,
-    total_sales_quantity: 10,
-    total_sales_amount: 9999.9,
-    last_sale_date: "2024-02-15T10:00:00Z"
-  },
-  {
-    id: 2,
-    product_id: 2,
-    total_sales_quantity: 5,
-    total_sales_amount: 999.95,
-    last_sale_date: "2024-02-15T10:00:00Z"
-  }
-];
+import reportService from "@/services/report.service";
+import { Report } from "@/lib/types/reports";
 
 // API service
 export const api = {
@@ -81,11 +44,15 @@ export const api = {
   },
 
   // Analytics
-  getAnalytics: async () => {
-    await delay();
-    return analytics.map(analytic => ({
-      ...analytic,
-      product: products.find(p => p.id === analytic.product_id)
-    }));
+  getAnalytics: async (): Promise<Report> => {
+    const [recent_sales, category_wise_total_sales] = await Promise.all([
+      reportService.get_recent_sales(),
+      reportService.get_category_wise_total_sales()
+    ]);
+
+    return {
+      recent_sales,
+      category_wise_total_sales
+    };
   }
 };
