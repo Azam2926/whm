@@ -28,13 +28,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Customer } from "@/lib/types";
-import { CustomerStatus } from "@/lib/enums";
+import { RootStatus } from "@/lib/enums";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
   phone_number: z.string().min(12, "Phone number is required").optional(),
   address: z.string().optional(),
-  status: z.nativeEnum(CustomerStatus)
+  status: z.nativeEnum(RootStatus)
 });
 
 type CustomerCreate = z.infer<typeof formSchema>;
@@ -57,7 +57,7 @@ export function CustomerDialog({
     name: customer?.name || "",
     phone_number: customer?.phone_number || "",
     address: customer?.address || "",
-    status: customer?.status || CustomerStatus.ACTIVE
+    status: customer?.status || RootStatus.ACTIVE
   };
 
   useEffect(() => {
@@ -146,11 +146,11 @@ export function CustomerDialog({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value={CustomerStatus.ACTIVE}>
-                        {CustomerStatus.ACTIVE}
+                      <SelectItem value={RootStatus.ACTIVE}>
+                        {RootStatus.ACTIVE}
                       </SelectItem>
-                      <SelectItem value={CustomerStatus.INACTIVE}>
-                        {CustomerStatus.INACTIVE}
+                      <SelectItem value={RootStatus.INACTIVE}>
+                        {RootStatus.INACTIVE}
                       </SelectItem>
                     </SelectContent>
                   </Select>

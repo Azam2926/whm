@@ -15,7 +15,7 @@ import { Customer } from "@/lib/types";
 import customerService from "@/services/customer.service";
 import { CustomerList } from "@/components/customers/customer-list";
 import { CustomerDialog } from "@/components/customers/customer-dialog";
-import { CustomerStatus } from "@/lib/enums";
+import { RootStatus } from "@/lib/enums";
 
 export default function CustomersPage() {
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -83,11 +83,11 @@ export default function CustomersPage() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value={CustomerStatus.ACTIVE}>
-              {CustomerStatus.ACTIVE}
+            <SelectItem value={RootStatus.ACTIVE}>
+              {RootStatus.ACTIVE}
             </SelectItem>
-            <SelectItem value={CustomerStatus.INACTIVE}>
-              {CustomerStatus.INACTIVE}
+            <SelectItem value={RootStatus.INACTIVE}>
+              {RootStatus.INACTIVE}
             </SelectItem>
           </SelectContent>
         </Select>

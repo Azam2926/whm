@@ -1,6 +1,6 @@
 "use client";
 
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -8,7 +8,7 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTitle,
+  DialogTitle
 } from "@/components/ui/dialog";
 import {
   Form,
@@ -16,23 +16,24 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
+  FormMessage
 } from "@/components/ui/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
+  SelectValue
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Category } from "@/lib/types";
+import { RootStatus } from "@/lib/enums";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
   description: z.string().min(1, "Description is required"),
-  status: z.enum(["ACTIVE", "INACTIVE"]),
+  status: z.nativeEnum(RootStatus)
 });
 
 interface CategoryDialogProps {
@@ -46,24 +47,21 @@ export function CategoryDialog({
   open,
   onOpenChange,
   category,
-  onSubmit,
+  onSubmit
 }: CategoryDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const defaultCategory = {
+    name: category?.name || "",
+    description: category?.description || "",
+    status: category?.status || RootStatus.ACTIVE
+  };
   useEffect(() => {
-    form.reset({
-      name: category?.name || "",
-      description: category?.description || "",
-      status: category?.status as "ACTIVE" | "INACTIVE" || "ACTIVE",
-    })
-  }, [open])
+    form.reset(defaultCategory);
+  }, [open]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: category?.name || "",
-      description: category?.description || "",
-      status: category?.status as "ACTIVE" | "INACTIVE" || "ACTIVE",
-    },
+    defaultValues: defaultCategory
   });
   const handleSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
@@ -84,19 +82,22 @@ export function CategoryDialog({
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="space-y-4"
+          >
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Name</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage/>
-                  </FormItem>
-                )}
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
             <FormField
               control={form.control}
@@ -127,8 +128,12 @@ export function CategoryDialog({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="ACTIVE">Active</SelectItem>
-                      <SelectItem value="INACTIVE">Inactive</SelectItem>
+                      <SelectItem value={RootStatus.ACTIVE}>
+                        {RootStatus.ACTIVE}
+                      </SelectItem>
+                      <SelectItem value={RootStatus.INACTIVE}>
+                        {RootStatus.INACTIVE}
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

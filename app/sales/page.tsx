@@ -7,17 +7,18 @@ import { Button } from "@/components/ui/button";
 import { SaleDialog } from "@/components/sales/sale-dialog";
 import { api } from "@/lib/services/api";
 import { Customer, Product } from "@/lib/types";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { columns } from "@/app/sales/columns";
 import { ServerDataTable } from "@/components/ui/server-data-table";
 import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
 import { SaleCreateRequest } from "@/services/sale.service";
 import { SaleStatus } from "@/lib/enums";
+import { SalesTableSkeleton } from "@/components/sales/sales-table-skeleton";
 
 export default function SalesPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isLoading, setIsLoading] = useState(true);
   const PAGE_SIZE = 10;
 
@@ -79,57 +80,52 @@ export default function SalesPage() {
         </Button>
       </div>
 
-      {isLoading ? (
-        <div className="flex justify-center items-center min-h-[400px]">
-          <LoadingSpinner />
-        </div>
-      ) : (
-        <ServerDataTable
-          fetchDataAction={fetchDataAction}
-          columns={columns}
-          initialPageSize={PAGE_SIZE}
-          toolbarConfig={{
-            searchColumn: "",
-            filters: [
-              {
-                columnName: "product",
-                type: "faceted",
-                placeholder: "Product",
-                options: products.map(p => ({
-                  label: p.name,
-                  value: p.id.toString()
-                }))
-              },
-              {
-                columnName: "customer",
-                type: "faceted",
-                placeholder: "Customer",
-                options: customers.map(c => ({
-                  label: c.name,
-                  value: c.id.toString()
-                }))
-              },
-              {
-                columnName: "status",
-                type: "faceted",
-                placeholder: "Status",
-                options: [
-                  {
-                    label: SaleStatus.CASH,
-                    value: SaleStatus.CASH,
-                    icon: Coins
-                  },
-                  {
-                    label: SaleStatus.CREDIT,
-                    value: SaleStatus.CREDIT,
-                    icon: CreditCard
-                  }
-                ]
-              }
-            ]
-          }}
-        />
-      )}
+      <ServerDataTable
+        fetchDataAction={fetchDataAction}
+        columns={columns}
+        initialPageSize={PAGE_SIZE}
+        toolbarConfig={{
+          searchColumn: "",
+          filters: [
+            {
+              columnName: "product",
+              type: "faceted",
+              placeholder: "Product",
+              options: products.map(p => ({
+                label: p.name,
+                value: p.id.toString()
+              }))
+            },
+            {
+              columnName: "customer",
+              type: "faceted",
+              placeholder: "Customer",
+              options: customers.map(c => ({
+                label: c.name,
+                value: c.id.toString()
+              }))
+            },
+            {
+              columnName: "status",
+              type: "faceted",
+              placeholder: "Status",
+              options: [
+                {
+                  label: SaleStatus.CASH,
+                  value: SaleStatus.CASH,
+                  icon: Coins
+                },
+                {
+                  label: SaleStatus.CREDIT,
+                  value: SaleStatus.CREDIT,
+                  icon: CreditCard
+                }
+              ]
+            }
+          ]
+        }}
+        loadingComponent={<SalesTableSkeleton />}
+      />
 
       <SaleDialog
         open={isDialogOpen}

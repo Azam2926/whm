@@ -1,12 +1,11 @@
-import { CustomerStatus } from "./enums";
+import { RootStatus } from "./enums";
 
 export interface Category {
   id: number;
   name: string;
   description: string;
-  status: string;
+  status: RootStatus;
   created_at: string;
-  createdAt: string;
 }
 
 export interface Product {
@@ -24,7 +23,7 @@ export interface Customer {
   name: string;
   phone_number?: string;
   address?: string;
-  status: CustomerStatus;
+  status: RootStatus;
   created_at: string;
 }
 
