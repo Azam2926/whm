@@ -42,13 +42,25 @@ interface ServerSideDataTableProps<TData, TValue> {
     searchColumn?: string;
     filters?: ToolbarFilterConfig[];
   };
+  loadingComponent?: React.JSX.Element;
+}
+
+function TableLoading(props: { colLength: number }) {
+  return (
+    <TableRow>
+      <TableCell colSpan={props.colLength} className="h-24 text-center">
+        Loading...
+      </TableCell>
+    </TableRow>
+  );
 }
 
 export function ServerDataTable<TData, TValue>({
   columns,
   fetchDataAction,
   initialPageSize = 10,
-  toolbarConfig = { searchColumn: "", filters: [] }
+  toolbarConfig = { searchColumn: "", filters: [] },
+  loadingComponent
 }: ServerSideDataTableProps<TData, TValue>) {
   const [data, setData] = React.useState<TData[]>([]);
   const [totalRows, setTotalRows] = React.useState(0);
@@ -63,7 +75,7 @@ export function ServerDataTable<TData, TValue>({
     pageIndex: 0,
     pageSize: initialPageSize
   });
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(true);
 
   // Fetch data whenever pagination, sorting, or filters change
   React.useEffect(() => {
@@ -112,7 +124,7 @@ export function ServerDataTable<TData, TValue>({
     getCoreRowModel: getCoreRowModel()
   });
 
-  return (
+  return !isLoading && loadingComponent ? (
     <div className="space-y-4">
       <DataTableToolbar table={table} config={toolbarConfig} />
       <div className="rounded-md border">
@@ -135,14 +147,7 @@ export function ServerDataTable<TData, TValue>({
           </TableHeader>
           <TableBody>
             {isLoading ? (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  Loading...
-                </TableCell>
-              </TableRow>
+              <TableLoading colLength={columns.length} />
             ) : data.length ? (
               table.getRowModel().rows.map(row => (
                 <TableRow
@@ -174,5 +179,7 @@ export function ServerDataTable<TData, TValue>({
       </div>
       <DataTablePagination table={table} />
     </div>
+  ) : (
+    loadingComponent
   );
 }

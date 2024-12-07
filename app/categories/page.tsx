@@ -15,6 +15,7 @@ import { CategoryList } from "@/components/categories/category-list";
 import { CategoryDialog } from "@/components/categories/category-dialog";
 import { Category } from "@/lib/types";
 import categoryService from "@/services/category.service";
+import { RootStatus } from "@/lib/enums";
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -39,7 +40,7 @@ export default function CategoriesPage() {
   }, [filters]);
 
   const handleCreate = async (
-    category: Omit<Category, "id" | "created_at" | "createdAt">
+    category: Omit<Category, "id" | "created_at">
   ) => {
     await categoryService.create(category);
     await loadCategories();
@@ -48,6 +49,7 @@ export default function CategoriesPage() {
 
   const handleUpdate = async (id: number, category: Partial<Category>) => {
     console.log("Updating category", id, category);
+    await categoryService.update(id, category);
     await loadCategories();
     setSelectedCategory(null);
   };
@@ -82,8 +84,12 @@ export default function CategoriesPage() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value="active">Active</SelectItem>
-            <SelectItem value="inactive">Inactive</SelectItem>
+            <SelectItem value={RootStatus.ACTIVE}>
+              {RootStatus.ACTIVE}
+            </SelectItem>
+            <SelectItem value={RootStatus.INACTIVE}>
+              {RootStatus.INACTIVE}
+            </SelectItem>
           </SelectContent>
         </Select>
       </div>

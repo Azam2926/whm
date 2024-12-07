@@ -9,7 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2 } from "lucide-react";
 import { Customer } from "@/lib/types";
-import { CustomerStatus } from "@/lib/enums";
+import { RootStatus } from "@/lib/enums";
 import { Badge } from "@/components/ui/badge";
 
 interface CustomerListProps {
@@ -43,7 +43,7 @@ export function CustomerList({
             <TableCell>
               <Badge
                 variant={
-                  customer.status === CustomerStatus.ACTIVE
+                  customer.status === RootStatus.ACTIVE
                     ? "outline"
                     : "destructive"
                 }

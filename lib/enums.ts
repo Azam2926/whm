@@ -1,4 +1,4 @@
-export enum CustomerStatus {
+export enum RootStatus {
   ACTIVE = "Faol",
   INACTIVE = "Faol emas"
 }

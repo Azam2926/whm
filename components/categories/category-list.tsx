@@ -4,12 +4,14 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
+  TableRow
 } from "@/components/ui/table";
-import {Button} from "@/components/ui/button";
-import {Edit, Trash2} from "lucide-react";
-import {Category} from "@/lib/types";
-import {format} from "date-fns";
+import { Button } from "@/components/ui/button";
+import { Edit, Trash2 } from "lucide-react";
+import { Category } from "@/lib/types";
+import { formatDate } from "@/utils/formatDate";
+import { RootStatus } from "@/lib/enums";
+import { Badge } from "@/components/ui/badge";
 
 interface CategoryListProps {
   categories: Category[];
@@ -17,7 +19,11 @@ interface CategoryListProps {
   onDelete: (id: number) => void;
 }
 
-export function CategoryList({categories, onEdit, onDelete}: CategoryListProps) {
+export function CategoryList({
+  categories,
+  onEdit,
+  onDelete
+}: CategoryListProps) {
   return (
     <Table>
       <TableHeader>
@@ -30,22 +36,22 @@ export function CategoryList({categories, onEdit, onDelete}: CategoryListProps) 
         </TableRow>
       </TableHeader>
       <TableBody>
-        {categories.map((category) => (
+        {categories.map(category => (
           <TableRow key={category.id}>
             <TableCell className="font-medium">{category.name}</TableCell>
             <TableCell>{category.description}</TableCell>
             <TableCell>
-              <span className={`px-2 py-1 rounded-full text-xs ${
-                category.status === 'ACTIVE'
-                  ? 'bg-green-100 text-green-800'
-                  : 'bg-red-100 text-red-800'
-              }`}>
+              <Badge
+                variant={
+                  category.status === RootStatus.ACTIVE
+                    ? "outline"
+                    : "destructive"
+                }
+              >
                 {category.status}
-              </span>
+              </Badge>
             </TableCell>
-            <TableCell>
-              {category.createdAt ? format(new Date(category.createdAt), 'MMM d, yyyy') : ''}
-            </TableCell>
+            <TableCell>{formatDate(category.created_at)}</TableCell>
             <TableCell>
               <div className="flex gap-2">
                 <Button
@@ -53,14 +59,14 @@ export function CategoryList({categories, onEdit, onDelete}: CategoryListProps) 
                   size="icon"
                   onClick={() => onEdit(category)}
                 >
-                  <Edit className="h-4 w-4"/>
+                  <Edit className="h-4 w-4" />
                 </Button>
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => onDelete(category.id)}
                 >
-                  <Trash2 className="h-4 w-4"/>
+                  <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
             </TableCell>
