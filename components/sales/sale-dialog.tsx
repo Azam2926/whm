@@ -34,17 +34,19 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { SaleCreateRequest } from "@/services/sale.service";
 
 const saleItemSchema = z.object({
-  product_id: z.string().min(1, "Product is required"),
-  quantity: z.string().min(1, "Quantity is required").transform(Number),
+  product_id: z.string().min(1, "Mahsulot to'ldirilishi shart"),
+  quantity: z.string().min(1, "Soni to'ldirishi shart").transform(Number),
   price: z.number()
 });
 
 type SaleItemType = z.infer<typeof saleItemSchema>;
 
 const formSchema = z.object({
-  customer_id: z.string().min(1, "Customer is required"),
+  customer_id: z.string().min(1, "Mijoz to'ldirilishi shart"),
   status: z.nativeEnum(SaleStatus),
-  sales: z.array(saleItemSchema).min(1, "At least one product is required")
+  sales: z
+    .array(saleItemSchema)
+    .min(1, "Kamida 1 ta mahsulot to'ldirilishi shart")
 });
 
 interface SaleDialogProps {
@@ -127,7 +129,7 @@ export function SaleDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Create Sale</DialogTitle>
+          <DialogTitle>Sotuv yaratish</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form
@@ -140,14 +142,14 @@ export function SaleDialog({
                 name="customer_id"
                 render={({ field }) => (
                   <FormItem className="w-1/2">
-                    <FormLabel>Customer</FormLabel>
+                    <FormLabel>Mijoz</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select customer" />
+                          <SelectValue placeholder="Mijozni tanlang" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -170,7 +172,7 @@ export function SaleDialog({
                 name="status"
                 render={({ field }) => (
                   <FormItem className="space-y-1">
-                    <FormLabel>Status</FormLabel>
+                    <FormLabel>Holati</FormLabel>
                     <FormMessage />
                     <ToggleGroup
                       type="single"
@@ -211,7 +213,7 @@ export function SaleDialog({
                     name={`sales.${index}.product_id`}
                     render={({ field }) => (
                       <FormItem className="flex-1">
-                        <FormLabel>Product</FormLabel>
+                        <FormLabel>Mahsulot</FormLabel>
                         <Select
                           onValueChange={value => {
                             field.onChange(value);
@@ -221,7 +223,7 @@ export function SaleDialog({
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select product" />
+                              <SelectValue placeholder="Mahsulotni tanlang" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -284,7 +286,7 @@ export function SaleDialog({
             </div>
 
             <Button type="button" variant="outline" onClick={addSaleItem}>
-              <Plus className="mr-2 h-4 w-4" /> Add Product
+              <Plus className="mr-2 h-4 w-4" /> Mahsulot qo&#39;shish
             </Button>
 
             <div className="flex justify-end gap-4">
@@ -293,10 +295,10 @@ export function SaleDialog({
                 variant="outline"
                 onClick={() => onOpenChange(false)}
               >
-                Cancel
+                Bekor qilish
               </Button>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Creating..." : "Create Sale"}
+                {isSubmitting ? "Yartilyapti..." : "Sotuv yaratish"}
               </Button>
             </div>
           </form>

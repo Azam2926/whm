@@ -61,15 +61,15 @@ export default function CustomersPage() {
   return (
     <div className="container mx-auto py-10">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Customers</h1>
+        <h1 className="text-3xl font-bold">Mijozlar</h1>
         <Button onClick={() => setIsDialogOpen(true)}>
-          <Plus className="mr-2 h-4 w-4" /> Add Customer
+          <Plus className="mr-2 h-4 w-4" /> Mijoz qo&#39;shish
         </Button>
       </div>
 
       <div className="flex gap-4 mb-6">
         <Input
-          placeholder="Search customers..."
+          placeholder="Mijoz qidirish..."
           value={filters.search}
           onChange={e => setFilters({ ...filters, search: e.target.value })}
           className="max-w-sm"
@@ -82,7 +82,7 @@ export default function CustomersPage() {
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Status</SelectItem>
+            <SelectItem value="all">Hamma holat</SelectItem>
             <SelectItem value={RootStatus.ACTIVE}>
               {RootStatus.ACTIVE}
             </SelectItem>

@@ -28,11 +28,11 @@ export function CategoryList({
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Name</TableHead>
-          <TableHead>Description</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Created At</TableHead>
-          <TableHead>Actions</TableHead>
+          <TableHead>Nomi</TableHead>
+          <TableHead>Tavsif</TableHead>
+          <TableHead>Holati</TableHead>
+          <TableHead>Yaratilgan Vaqt</TableHead>
+          <TableHead>Harakatlar</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>

@@ -9,8 +9,7 @@ const categoryService = {
         search: filters?.search ? filters.search : undefined
       }
     }),
-  create: async (data: Omit<Category, "id" | "created_at">) =>
-    await api.post("category", data),
+  create: async (data: Partial<Category>) => await api.post("category", data),
   update: async (id: number, category: Partial<Category>) =>
     await api.put(`category/${id}`, category),
   delete: (id: number) => api.delete(`category/${id}`)

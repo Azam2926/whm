@@ -4,7 +4,7 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
+  TableRow
 } from "@/components/ui/table";
 import { Product } from "@/lib/types";
 
@@ -17,14 +17,14 @@ export function ProductList({ products }: ProductListProps) {
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Name</TableHead>
-          <TableHead>Category</TableHead>
-          <TableHead>Price</TableHead>
-          <TableHead>Stock</TableHead>
+          <TableHead>Nomi</TableHead>
+          <TableHead>Toifa</TableHead>
+          <TableHead>Narxi</TableHead>
+          <TableHead>Soni</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        {products.map((product) => (
+        {products.map(product => (
           <TableRow key={product.id}>
             <TableCell className="font-medium">{product.name}</TableCell>
             <TableCell>{product.category?.name}</TableCell>
