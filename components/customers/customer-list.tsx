@@ -30,8 +30,8 @@ export function CustomerList({
           <TableHead>Nomi</TableHead>
           <TableHead>Tel. nomer</TableHead>
           <TableHead>Manzil</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Actions</TableHead>
+          <TableHead>Holati</TableHead>
+          <TableHead>Harakatlar</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>

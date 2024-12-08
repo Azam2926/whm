@@ -61,15 +61,15 @@ export default function ProductsPage() {
   return (
     <div className="container mx-auto py-10">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Products</h1>
+        <h1 className="text-3xl font-bold">Mahsulotlar</h1>
         <Button onClick={() => setIsDialogOpen(true)}>
-          <Plus className="mr-2 h-4 w-4" /> Add Products
+          <Plus className="mr-2 h-4 w-4" /> Mahsulot qo&#39;shish
         </Button>
       </div>
 
       <div className="flex gap-4 mb-6">
         <Input
-          placeholder="Search products..."
+          placeholder="Mahsulot qidirish..."
           value={filters.search}
           onChange={e => setFilters({ ...filters, search: e.target.value })}
           className="max-w-sm"

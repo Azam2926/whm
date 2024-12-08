@@ -39,9 +39,7 @@ export default function CategoriesPage() {
     loadCategories();
   }, [filters]);
 
-  const handleCreate = async (
-    category: Omit<Category, "id" | "created_at">
-  ) => {
+  const handleCreate = async (category: Partial<Category>) => {
     await categoryService.create(category);
     await loadCategories();
     setIsDialogOpen(false);
@@ -62,9 +60,9 @@ export default function CategoriesPage() {
   return (
     <div className="container mx-auto py-10">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Categories</h1>
+        <h1 className="text-3xl font-bold">Toifalar</h1>
         <Button onClick={() => setIsDialogOpen(true)}>
-          <Plus className="mr-2 h-4 w-4" /> Add Category
+          <Plus className="mr-2 h-4 w-4" /> Toifa qo&#39;shish
         </Button>
       </div>
 
@@ -83,7 +81,7 @@ export default function CategoriesPage() {
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Status</SelectItem>
+            <SelectItem value="all">Hamma holat</SelectItem>
             <SelectItem value={RootStatus.ACTIVE}>
               {RootStatus.ACTIVE}
             </SelectItem>

@@ -9,7 +9,7 @@ export const columns: ColumnDef<Sale>[] = [
   {
     accessorKey: "sale_date",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Date" />
+      <DataTableColumnHeader column={column} title="Vaqti" />
     ),
     cell: ({ row }) => {
       const date = row.getValue("sale_date");
@@ -19,7 +19,7 @@ export const columns: ColumnDef<Sale>[] = [
   {
     accessorKey: "status",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Status" />
+      <DataTableColumnHeader column={column} title="Holati" />
     ),
     cell: ({ row }) => {
       return (
@@ -39,26 +39,26 @@ export const columns: ColumnDef<Sale>[] = [
     id: "customer",
     accessorKey: "customer.name",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Customer" />
+      <DataTableColumnHeader column={column} title="Mijoz" />
     )
   },
   {
     id: "product",
     accessorKey: "product.name",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Product" />
+      <DataTableColumnHeader column={column} title="Mahsulot" />
     )
   },
   {
     accessorKey: "quantity",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Quantity" />
+      <DataTableColumnHeader column={column} title="Soni" />
     )
   },
   {
     accessorKey: "price",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Price" />
+      <DataTableColumnHeader column={column} title="Narxi" />
     ),
     cell: ({ row }) => {
       const price = row.getValue("price") as number;
@@ -67,7 +67,7 @@ export const columns: ColumnDef<Sale>[] = [
   },
   {
     id: "total",
-    header: "Total",
+    header: "Umumiy narxi:",
     cell: ({ row }) => {
       const quantity = row.getValue("quantity") as number;
       const price = row.getValue("price") as number;

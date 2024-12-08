@@ -29,7 +29,7 @@ import { Category, Product } from "@/lib/types";
 
 // Form schema only includes editable fields
 const formSchema = z.object({
-  name: z.string().min(1, "Name is required"),
+  name: z.string().min(1, "Nomi to'lidirilishi shart"),
   category_id: z.number().min(1, "Category is required"),
   price: z
     .number()
@@ -110,7 +110,7 @@ export function ProductDialog({
       <DialogContent className="sm:max-w-[425px]" aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>
-            {product ? "Edit Product" : "Create Product"}
+            {product ? "Mahlutoni tahrirlash" : "Mahluton yaratish"}
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
@@ -123,14 +123,14 @@ export function ProductDialog({
               name="category_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Category</FormLabel>
+                  <FormLabel>Toifa</FormLabel>
                   <Select
                     onValueChange={value => field.onChange(Number(value))}
                     defaultValue={field.value?.toString()}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a category" />
+                        <SelectValue placeholder="Toifani tanglash" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -154,9 +154,9 @@ export function ProductDialog({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>Nomi</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="Enter product name" />
+                    <Input {...field} placeholder="Mahsulot nomini kiriting" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -168,7 +168,7 @@ export function ProductDialog({
               name="price"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Price</FormLabel>
+                  <FormLabel>Narxi</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -189,7 +189,7 @@ export function ProductDialog({
               name="quantity"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Quantity</FormLabel>
+                  <FormLabel>Soni</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -220,10 +220,10 @@ export function ProductDialog({
                 variant="outline"
                 onClick={() => onOpenChange(false)}
               >
-                Cancel
+                Bekor qilish
               </Button>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Saving..." : "Save"}
+                {isSubmitting ? "Saqlanyapti..." : "Saqlash"}
               </Button>
             </div>
           </form>

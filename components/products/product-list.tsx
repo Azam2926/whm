@@ -22,12 +22,12 @@ export function ProductList({ products, onEdit, onDelete }: ProductListProps) {
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Name</TableHead>
-          <TableHead>Category</TableHead>
-          <TableHead>Price</TableHead>
-          <TableHead>Quantity</TableHead>
-          <TableHead>Created At</TableHead>
-          <TableHead>Actions</TableHead>
+          <TableHead>Nomi</TableHead>
+          <TableHead>Toifa</TableHead>
+          <TableHead>Narx</TableHead>
+          <TableHead>Soni</TableHead>
+          <TableHead>Yaratilgan Vaqt</TableHead>
+          <TableHead>Harakatlar</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>

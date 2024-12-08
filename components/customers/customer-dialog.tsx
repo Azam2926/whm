@@ -31,8 +31,11 @@ import { Customer } from "@/lib/types";
 import { RootStatus } from "@/lib/enums";
 
 const formSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  phone_number: z.string().min(12, "Phone number is required").optional(),
+  name: z.string().min(1, "Nomi to'lidirilishi shart"),
+  phone_number: z
+    .string()
+    .min(12, "Tel. nomer to'lidirilishi shart")
+    .optional(),
   address: z.string().optional(),
   status: z.nativeEnum(RootStatus)
 });
@@ -83,7 +86,7 @@ export function CustomerDialog({
       <DialogContent aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>
-            {customer ? "Edit Customer" : "Create Customer"}
+            {customer ? "Mijozni tahrirlash" : "Mijoz yaratish"}
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
@@ -109,7 +112,7 @@ export function CustomerDialog({
               name="phone_number"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Tel nomer</FormLabel>
+                  <FormLabel>Tel. nomer</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -135,7 +138,7 @@ export function CustomerDialog({
               name="status"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Status</FormLabel>
+                  <FormLabel>Holati</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
@@ -164,10 +167,10 @@ export function CustomerDialog({
                 variant="outline"
                 onClick={() => onOpenChange(false)}
               >
-                Cancel
+                Bekor qilish
               </Button>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Saving..." : "Save"}
+                {isSubmitting ? "Saqlanyapti..." : "Saqlash"}
               </Button>
             </div>
           </form>

@@ -74,9 +74,9 @@ export default function SalesPage() {
   return (
     <div className="container mx-auto py-10">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Sales</h1>
+        <h1 className="text-3xl font-bold">Sotuvlar</h1>
         <Button onClick={() => setIsDialogOpen(true)}>
-          <Plus className="mr-2 h-4 w-4" /> Add Sale
+          <Plus className="mr-2 h-4 w-4" /> Sotuv qo&#39;shish
         </Button>
       </div>
 
@@ -90,7 +90,7 @@ export default function SalesPage() {
             {
               columnName: "product",
               type: "faceted",
-              placeholder: "Product",
+              placeholder: "Mahsulot",
               options: products.map(p => ({
                 label: p.name,
                 value: p.id.toString()
@@ -99,7 +99,7 @@ export default function SalesPage() {
             {
               columnName: "customer",
               type: "faceted",
-              placeholder: "Customer",
+              placeholder: "Mijoz",
               options: customers.map(c => ({
                 label: c.name,
                 value: c.id.toString()
@@ -108,7 +108,7 @@ export default function SalesPage() {
             {
               columnName: "status",
               type: "faceted",
-              placeholder: "Status",
+              placeholder: "Holat",
               options: [
                 {
                   label: SaleStatus.CASH,

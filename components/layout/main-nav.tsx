@@ -13,27 +13,27 @@ import {
 
 const items = [
   {
-    title: "Dashboard",
+    title: "Umumiy",
     href: "/",
     icon: LayoutDashboard
   },
   {
-    title: "Sales",
+    title: "Sotuvlar",
     href: "/sales",
     icon: ShoppingCart
   },
   {
-    title: "Categories",
+    title: "Toifalar",
     href: "/categories",
     icon: Tags
   },
   {
-    title: "Products",
+    title: "Mahsulotlar",
     href: "/products",
     icon: Package
   },
   {
-    title: "Customers",
+    title: "Mijozlar",
     href: "/customers",
     icon: Users
   }

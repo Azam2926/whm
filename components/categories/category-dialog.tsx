@@ -31,8 +31,8 @@ import { Category } from "@/lib/types";
 import { RootStatus } from "@/lib/enums";
 
 const formSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  description: z.string().min(1, "Description is required"),
+  name: z.string().min(1, "Nom to'ldirishi shart"),
+  description: z.string().optional(),
   status: z.nativeEnum(RootStatus)
 });
 
@@ -78,7 +78,7 @@ export function CategoryDialog({
       <DialogContent aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>
-            {category ? "Edit Category" : "Create Category"}
+            {category ? "Toifani tahrirlash" : "Toifa yaratish"}
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
@@ -91,7 +91,7 @@ export function CategoryDialog({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>Nomi</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -104,7 +104,7 @@ export function CategoryDialog({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>Tavsif</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -117,7 +117,7 @@ export function CategoryDialog({
               name="status"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Status</FormLabel>
+                  <FormLabel>Holati</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
@@ -146,10 +146,10 @@ export function CategoryDialog({
                 variant="outline"
                 onClick={() => onOpenChange(false)}
               >
-                Cancel
+                Bekor qilish
               </Button>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Saving..." : "Save"}
+                {isSubmitting ? "Saqlanyapti..." : "Saqlash"}
               </Button>
             </div>
           </form>
