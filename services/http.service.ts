@@ -24,4 +24,9 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+api.interceptors.request.use(req => {
+  req.headers.Authorization = `Bearer ${localStorage.getItem("token")}`;
+  return req;
+});
 export default api;

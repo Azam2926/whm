@@ -29,7 +29,7 @@ export const api = {
       | undefined
   ) => {
     const response = await saleService.getAll(filters);
-
+    console.log(response);
     return response.data;
   },
 

@@ -1,4 +1,4 @@
-import { RootStatus } from "./enums";
+import { RootStatus, SaleStatus } from "./enums";
 
 export interface Category {
   id: number;
@@ -27,15 +27,31 @@ export interface Customer {
   created_at: string;
 }
 
+curl -X 'POST' \
+  'https://warehouse-app-l6ug.onrender.com/auth/login' \
+  -H 'accept: */*' \
+  -H 'Content-Type: application/json' \
+  -d '{
+"email": "warehouse@gmail.com",
+  "password": "warehouse12345"
+}'
+
 export interface Sale {
   id: number;
-  product_id: number;
-  customer_id: number;
+  customer?: Customer;
+  sale_items: SaleItem[];
+  sale_date?: string;
+  total_sum: number;
+  status: SaleStatus;
+}
+
+export interface SaleItem {
+  id?: number;
+  product?: Product;
   quantity: number;
   price: number;
-  sale_date?: string;
-  product?: Product;
-  customer?: Customer;
+  total_price: number;
+  created_at: string;
 }
 
 export interface ProductAnalytics {

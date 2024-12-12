@@ -50,9 +50,9 @@ export const columns: ColumnDef<Sale>[] = [
     )
   },
   {
-    accessorKey: "quantity",
+    accessorKey: "total_sum",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Soni" />
+      <DataTableColumnHeader column={column} title="Umumiy summa" />
     )
   },
   {
