@@ -81,7 +81,7 @@ export function SaleDialog({
       await onSubmit({
         customer_id: parseInt(data.customer_id),
         status: data.status,
-        sales: data.sales.map(sale => ({
+        sale_items: data.sales.map(sale => ({
           product_id: parseInt(sale.product_id),
           quantity: sale.quantity,
           price: sale.price

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,16 +11,16 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
-import { Customer } from "@/lib/types";
-import customerService from "@/services/customer.service";
-import { CustomerList } from "@/components/customers/customer-list";
-import { CustomerDialog } from "@/components/customers/customer-dialog";
+import { CategoryList } from "@/components/categories/category-list";
+import { CategoryDialog } from "@/components/categories/category-dialog";
+import { Category } from "@/lib/types";
+import categoryService from "@/services/category.service";
 import { RootStatus } from "@/lib/enums";
 
-export default function CustomersPage() {
-  const [customers, setCustomers] = useState<Customer[]>([]);
+export default function CategoriesPage() {
+  const [categories, setCategories] = useState<Category[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(
     null
   );
   const [filters, setFilters] = useState({
@@ -30,46 +30,45 @@ export default function CustomersPage() {
 
   const loadCategories = async () => {
     const {
-      data: { data }
-    } = await customerService.getAll(filters);
-    setCustomers(data);
+      data: { sales }
+    } = await categoryService.getAll(filters);
+    setCategories(sales);
   };
 
   useEffect(() => {
     loadCategories();
   }, [filters]);
 
-  const handleCreate = async (
-    customer: Omit<Customer, "id" | "created_at">
-  ) => {
-    await customerService.create(customer);
+  const handleCreate = async (category: Partial<Category>) => {
+    await categoryService.create(category);
     await loadCategories();
     setIsDialogOpen(false);
   };
 
-  const handleUpdate = async (id: number, customer: Partial<Customer>) => {
-    await customerService.update(id, customer);
+  const handleUpdate = async (id: number, category: Partial<Category>) => {
+    console.log("Updating category", id, category);
+    await categoryService.update(id, category);
     await loadCategories();
-    setSelectedCustomer(null);
+    setSelectedCategory(null);
   };
 
   const handleDelete = async (id: number) => {
-    await customerService.delete(id);
+    await categoryService.delete(id);
     await loadCategories();
   };
 
   return (
     <div className="container mx-auto py-10">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Mijozlar</h1>
+        <h1 className="text-3xl font-bold">Toifalar</h1>
         <Button onClick={() => setIsDialogOpen(true)}>
-          <Plus className="mr-2 h-4 w-4" /> Mijoz qo&#39;shish
+          <Plus className="mr-2 h-4 w-4" /> Toifa qo&#39;shish
         </Button>
       </div>
 
       <div className="flex gap-4 mb-6">
         <Input
-          placeholder="Mijoz qidirish..."
+          placeholder="Search categories..."
           value={filters.search}
           onChange={e => setFilters({ ...filters, search: e.target.value })}
           className="max-w-sm"
@@ -93,22 +92,22 @@ export default function CustomersPage() {
         </Select>
       </div>
 
-      <CustomerList
-        customers={customers}
-        onEdit={setSelectedCustomer}
+      <CategoryList
+        categories={categories}
+        onEdit={setSelectedCategory}
         onDelete={handleDelete}
       />
 
-      <CustomerDialog
-        open={isDialogOpen || !!selectedCustomer}
+      <CategoryDialog
+        open={isDialogOpen || !!selectedCategory}
         onOpenChange={open => {
           setIsDialogOpen(open);
-          if (!open) setSelectedCustomer(null);
+          if (!open) setSelectedCategory(null);
         }}
-        customer={selectedCustomer}
+        category={selectedCategory}
         onSubmit={
-          selectedCustomer
-            ? data => handleUpdate(selectedCustomer.id, data)
+          selectedCategory
+            ? data => handleUpdate(selectedCategory.id, data)
             : handleCreate
         }
       />

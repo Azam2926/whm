@@ -53,25 +53,16 @@ export const columns: ColumnDef<Sale>[] = [
     accessorKey: "total_sum",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Umumiy summa" />
-    )
-  },
-  {
-    accessorKey: "price",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Narxi" />
     ),
     cell: ({ row }) => {
-      const price = row.getValue("price") as number;
-      return `$${price.toFixed(2)}`;
-    }
-  },
-  {
-    id: "total",
-    header: "Umumiy narxi:",
-    cell: ({ row }) => {
-      const quantity = row.getValue("quantity") as number;
-      const price = row.getValue("price") as number;
-      return `$${(quantity * price).toFixed(2)}`;
+      const total = row.getValue("total_sum") as number;
+      const formatter = new Intl.NumberFormat("uz-UZ", {
+        style: "currency",
+        currency: "UZS",
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      });
+      return formatter.format(total);
     }
   }
 ];

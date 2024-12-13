@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { SaleDialog } from "@/components/sales/sale-dialog";
 import { api } from "@/lib/services/api";
 import { Customer, Product } from "@/lib/types";
-import { columns } from "@/app/sales/columns";
+import { columns } from "@/app/(dashboard)/sales/columns";
 import { ServerDataTable } from "@/components/ui/server-data-table";
 import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
 import { SaleCreateRequest } from "@/services/sale.service";
@@ -43,10 +43,10 @@ export default function SalesPage() {
       setIsLoading(true);
       const [
         {
-          data: { data: productsData }
+          data: { sales: productsData }
         },
         {
-          data: { data: customersData }
+          data: { sales: customersData }
         }
       ] = await Promise.all([api.getProducts(), api.getCustomers()]);
 

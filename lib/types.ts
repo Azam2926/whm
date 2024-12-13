@@ -27,15 +27,6 @@ export interface Customer {
   created_at: string;
 }
 
-curl -X 'POST' \
-  'https://warehouse-app-l6ug.onrender.com/auth/login' \
-  -H 'accept: */*' \
-  -H 'Content-Type: application/json' \
-  -d '{
-"email": "warehouse@gmail.com",
-  "password": "warehouse12345"
-}'
-
 export interface Sale {
   id: number;
   customer?: Customer;

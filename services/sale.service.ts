@@ -16,7 +16,7 @@ interface SalesData {
 export interface SaleCreateRequest {
   customer_id: number;
   status: SaleStatus;
-  sales: { product_id: number; quantity: number; price: number }[];
+  sale_items: { product_id: number; quantity: number; price: number }[];
 }
 
 export interface SaleCreateResponse {

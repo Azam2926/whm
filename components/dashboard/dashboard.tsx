@@ -23,7 +23,7 @@ export default function Dashboard() {
     const fetchData = async () => {
       const [
         {
-          data: { data: productsData }
+          data: { sales: productsData }
         },
         analyticsData
       ] = await Promise.all([productsService.getAll(), api.getAnalytics()]);

@@ -23,14 +23,14 @@ export default function ProductsPage() {
 
   const loadProducts = async () => {
     const {
-      data: { data: products }
+      data: { sales: products }
     } = await productsService.getAll({
       search: filters.search ? filters.search : undefined
     });
     setProducts(products);
 
     const {
-      data: { data: categories }
+      data: { sales: categories }
     } = await categoryService.getAll();
     setCategories(categories);
   };

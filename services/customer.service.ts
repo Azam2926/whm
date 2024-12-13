@@ -3,7 +3,7 @@ import { Customer } from "@/lib/types";
 
 const customerService = {
   getAll: (filters?: { status: string | undefined; search: string }) =>
-    api.get<{ data: Customer[] }>("customer", {
+    api.get<{ sales: Customer[]; page: object }>("customer", {
       params: {
         status: filters?.status === "all" ? undefined : filters?.status,
         search: filters?.search ? filters.search : undefined

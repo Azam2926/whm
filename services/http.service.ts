@@ -26,7 +26,10 @@ api.interceptors.response.use(
 );
 
 api.interceptors.request.use(req => {
-  req.headers.Authorization = `Bearer ${localStorage.getItem("token")}`;
+  const token = localStorage.getItem('auth_token');
+  if (token) {
+    req.headers.Authorization = `Bearer ${token}`;
+  }
   return req;
 });
 export default api;

@@ -3,7 +3,9 @@ import { Product } from "@/lib/types";
 
 const productService = {
   getAll: (params?: { search: string | undefined }) =>
-    api.get<{ data: Product[] }>("product", { params }),
+    api.get<{ sales: Product[]; page: object }>("product", {
+      params
+    }),
   getById: (id: number) => api.get(`product/${id}`),
   create: (data: Omit<Product, "id" | "created_at">) =>
     api.post("product", {
