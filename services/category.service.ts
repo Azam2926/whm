@@ -1,9 +1,10 @@
 import api from "./http.service";
 import { Category } from "@/lib/types";
+import { GeneralResponse, GeneralSearchParam } from "@/lib/definitions";
 
 const categoryService = {
-  getAll: async (filters?: { status: string | undefined; search: string }) =>
-    await api.get<{ sales: Category[]; page: object }>("category", {
+  getAll: async (filters?: GeneralSearchParam) =>
+    await api.get<GeneralResponse<Category>>("category", {
       params: {
         status: filters?.status === "all" ? undefined : filters?.status,
         search: filters?.search ? filters.search : undefined
@@ -12,7 +13,7 @@ const categoryService = {
   create: async (data: Partial<Category>) => await api.post("category", data),
   update: async (id: number, category: Partial<Category>) =>
     await api.put(`category/${id}`, category),
-  delete: (id: number) => api.delete(`category/${id}`)
+  delete: (id: string) => api.delete(`category/${id}`)
 };
 
 export default categoryService;

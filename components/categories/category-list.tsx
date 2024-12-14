@@ -1,78 +1,47 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Edit, Trash2 } from "lucide-react";
 import { Category } from "@/lib/types";
-import { formatDate } from "@/utils/formatDate";
-import { RootStatus } from "@/lib/enums";
-import { Badge } from "@/components/ui/badge";
+import { columns } from "@/app/(dashboard)/categories/columns";
+import { ServerDataTable } from "@/components/ui/server-data-table";
+import * as React from "react";
+import { useCallback } from "react";
+import { api } from "@/lib/services/api";
+import { GeneralSearchParam, PAGE_SIZE } from "@/lib/definitions";
+import { CategoriesTableSkeleton } from "@/components/categories/categories-table-skeleton";
 
 interface CategoryListProps {
-  categories: Category[];
-  onEdit: (category: Category) => void;
-  onDelete: (id: number) => void;
+  onEdit: (category: Category) => void,
+  onDelete: (id: string) => void,
+  filters?: Partial<GeneralSearchParam>,
 }
 
-export function CategoryList({
-  categories,
-  onEdit,
-  onDelete
-}: CategoryListProps) {
+export function CategoryList({ onEdit, onDelete, filters }: CategoryListProps) {
+  const fetchDataAction = useCallback(async (params: GeneralSearchParam) => {
+    const {
+      data: {
+        data,
+        page: { totalElements }
+      }
+    } = await api.getCategories({
+      ...params,
+      ...filters
+    });
+
+    return {
+      rows: data,
+      totalRows: totalElements
+    };
+  }, []);
+
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Nomi</TableHead>
-          <TableHead>Tavsif</TableHead>
-          <TableHead>Holati</TableHead>
-          <TableHead>Yaratilgan Vaqt</TableHead>
-          <TableHead>Harakatlar</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {categories.map(category => (
-          <TableRow key={category.id}>
-            <TableCell className="font-medium">{category.name}</TableCell>
-            <TableCell>{category.description}</TableCell>
-            <TableCell>
-              <Badge
-                variant={
-                  category.status === RootStatus.ACTIVE
-                    ? "outline"
-                    : "destructive"
-                }
-              >
-                {category.status}
-              </Badge>
-            </TableCell>
-            <TableCell>{formatDate(category.created_at)}</TableCell>
-            <TableCell>
-              <div className="flex gap-2">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => onEdit(category)}
-                >
-                  <Edit className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => onDelete(category.id)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+    <>
+      <ServerDataTable
+        fetchDataAction={fetchDataAction}
+        columns={columns}
+        initialPageSize={PAGE_SIZE}
+        loadingComponent={<CategoriesTableSkeleton />}
+        hasActions={true}
+        onEdit={onEdit}
+        onDelete={onDelete}
+      />
+    </>
   );
 }

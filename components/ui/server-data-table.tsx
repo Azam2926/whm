@@ -25,15 +25,15 @@ import {
   DataTableToolbar,
   ToolbarFilterConfig
 } from "@/components/ui/data-table-toolbar";
+import { Sale } from "@/lib/types";
+import { SubRow } from "@/app/(dashboard)/sales/columns";
+import { GeneralSearchParam } from "@/lib/definitions";
+import { Button } from "@/components/ui/button";
+import { Edit, Trash2 } from "lucide-react";
 
 interface ServerSideDataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
-  fetchDataAction: (params: {
-    page: number;
-    size: number;
-    sorting?: SortingState;
-    columnFilters?: ColumnFiltersState;
-  }) => Promise<{
+  fetchDataAction: (params: GeneralSearchParam) => Promise<{
     rows: TData[];
     totalRows: number;
   }>;
@@ -43,16 +43,10 @@ interface ServerSideDataTableProps<TData, TValue> {
     filters?: ToolbarFilterConfig[];
   };
   loadingComponent?: React.JSX.Element;
-}
-
-function TableLoading(props: { colLength: number }) {
-  return (
-    <TableRow>
-      <TableCell colSpan={props.colLength} className="h-24 text-center">
-        Loading...
-      </TableCell>
-    </TableRow>
-  );
+  isRowExpanded?: boolean;
+  hasActions?: boolean;
+  onEdit?: (row: TData) => void;
+  onDelete?: (id: string) => void;
 }
 
 export function ServerDataTable<TData, TValue>({
@@ -60,7 +54,11 @@ export function ServerDataTable<TData, TValue>({
   fetchDataAction,
   initialPageSize = 10,
   toolbarConfig = { searchColumn: "", filters: [] },
-  loadingComponent
+  loadingComponent,
+  isRowExpanded = false,
+  hasActions = false,
+  onEdit = (row: TData) => console.log("onEdit", row),
+  onDelete = (id: string) => console.log("onDelete", id)
 }: ServerSideDataTableProps<TData, TValue>) {
   const [data, setData] = React.useState<TData[]>([]);
   const [totalRows, setTotalRows] = React.useState(0);
@@ -121,11 +119,19 @@ export function ServerDataTable<TData, TValue>({
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
     onPaginationChange: setPagination,
-    getCoreRowModel: getCoreRowModel()
+    getCoreRowModel: getCoreRowModel(),
+    getRowCanExpand: () => isRowExpanded
   });
 
-  return !isLoading && loadingComponent ? (
+  return (
     <div className="space-y-4">
+      {totalRows !== undefined && (
+        <div className="mb-4">
+          <p className="text-sm text-gray-500">
+            Umumiy sotuvlar soni: {totalRows}
+          </p>
+        </div>
+      )}
       <DataTableToolbar table={table} config={toolbarConfig} />
       <div className="rounded-md border">
         <Table>
@@ -142,35 +148,69 @@ export function ServerDataTable<TData, TValue>({
                         )}
                   </TableHead>
                 ))}
+                {hasActions && (
+                   <TableHead key={'actions'}>
+                    Harakatlar
+                  </TableHead>
+                )}
               </TableRow>
             ))}
           </TableHeader>
           <TableBody>
             {isLoading ? (
-              <TableLoading colLength={columns.length} />
+              loadingComponent
             ) : data.length ? (
               table.getRowModel().rows.map(row => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map(cell => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
+                <>
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map(cell => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                    {hasActions && (
+                      <TableCell>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => onEdit(row.original)}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => onDelete(row.id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    )}
+                  </TableRow>
+                  {row.getIsExpanded() && isRowExpanded && (
+                    <TableRow>
+                      <TableCell colSpan={columns.length}>
+                        <SubRow saleItems={(row.original as Sale).sale_items} />
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </>
               ))
             ) : (
-              <TableRow>
+              <TableRow key={"no-data"}>
                 <TableCell
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  Ma&#39;lumot topilmadi.
                 </TableCell>
               </TableRow>
             )}
@@ -179,7 +219,5 @@ export function ServerDataTable<TData, TValue>({
       </div>
       <DataTablePagination table={table} />
     </div>
-  ) : (
-    loadingComponent
   );
 }

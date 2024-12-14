@@ -18,7 +18,6 @@ import categoryService from "@/services/category.service";
 import { RootStatus } from "@/lib/enums";
 
 export default function CategoriesPage() {
-  const [categories, setCategories] = useState<Category[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
     null
@@ -28,33 +27,21 @@ export default function CategoriesPage() {
     search: ""
   });
 
-  const loadCategories = async () => {
-    const {
-      data: { sales }
-    } = await categoryService.getAll(filters);
-    setCategories(sales);
-  };
-
-  useEffect(() => {
-    loadCategories();
-  }, [filters]);
+  useEffect(() => {}, []);
 
   const handleCreate = async (category: Partial<Category>) => {
     await categoryService.create(category);
-    await loadCategories();
     setIsDialogOpen(false);
   };
 
   const handleUpdate = async (id: number, category: Partial<Category>) => {
     console.log("Updating category", id, category);
     await categoryService.update(id, category);
-    await loadCategories();
     setSelectedCategory(null);
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     await categoryService.delete(id);
-    await loadCategories();
   };
 
   return (
@@ -92,11 +79,7 @@ export default function CategoriesPage() {
         </Select>
       </div>
 
-      <CategoryList
-        categories={categories}
-        onEdit={setSelectedCategory}
-        onDelete={handleDelete}
-      />
+      <CategoryList filters={filters} onEdit={setSelectedCategory} onDelete={handleDelete} />
 
       <CategoryDialog
         open={isDialogOpen || !!selectedCategory}

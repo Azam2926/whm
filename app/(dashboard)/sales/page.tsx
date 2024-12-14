@@ -1,8 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { useEffect, useState } from "react";
-import { Coins, CreditCard, Plus } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { Coins, CreditCard, Plus, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SaleDialog } from "@/components/sales/sale-dialog";
 import { api } from "@/lib/services/api";
@@ -20,33 +20,37 @@ export default function SalesPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isLoading, setIsLoading] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0);
   const PAGE_SIZE = 10;
 
-  const fetchDataAction = async (params: {
-    page: number;
-    size: number;
-    sorting?: SortingState;
-    columnFilters?: ColumnFiltersState;
-  }) => {
-    const {
-      sales,
-      page: { totalElements }
-    } = await api.getSales(params);
+  const fetchDataAction = useCallback(
+    async (params: {
+      page: number;
+      size: number;
+      sorting?: SortingState;
+      columnFilters?: ColumnFiltersState;
+    }) => {
+      const {
+        data,
+        page: { totalElements }
+      } = await api.getSales(params);
 
-    return {
-      rows: sales,
-      totalRows: totalElements
-    };
-  };
+      return {
+        rows: data,
+        totalRows: totalElements
+      };
+    },
+    []
+  );
   const loadData = async () => {
     try {
       setIsLoading(true);
       const [
         {
-          data: { sales: productsData }
+          data: { data: productsData }
         },
         {
-          data: { sales: customersData }
+          data: { data: customersData }
         }
       ] = await Promise.all([api.getProducts(), api.getCustomers()]);
 
@@ -71,31 +75,42 @@ export default function SalesPage() {
     setIsDialogOpen(false);
   };
 
+  const handleRefresh = useCallback(() => {
+    setRefreshKey(prev => prev + 1);
+  }, []);
+
   return (
     <div className="container mx-auto py-10">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Sotuvlar</h1>
-        <Button onClick={() => setIsDialogOpen(true)}>
-          <Plus className="mr-2 h-4 w-4" /> Sotuv qo&#39;shish
-        </Button>
+        <div>
+          <h1 className="text-3xl font-bold">Sotuvlar</h1>
+          <p className="text-gray-500 mt-1">Barcha sotuvlar ro&#39;yxati</p>
+        </div>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={handleRefresh}
+            disabled={isLoading}
+          >
+            <RefreshCw
+              className={`mr-2 h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
+            />
+            Yangilash
+          </Button>
+          <Button onClick={() => setIsDialogOpen(true)}>
+            <Plus className="mr-2 h-4 w-4" /> Sotuv qo&#39;shish
+          </Button>
+        </div>
       </div>
 
       <ServerDataTable
+        key={refreshKey}
         fetchDataAction={fetchDataAction}
         columns={columns}
         initialPageSize={PAGE_SIZE}
         toolbarConfig={{
           searchColumn: "",
           filters: [
-            {
-              columnName: "product",
-              type: "faceted",
-              placeholder: "Mahsulot",
-              options: products.map(p => ({
-                label: p.name,
-                value: p.id.toString()
-              }))
-            },
             {
               columnName: "customer",
               type: "faceted",
@@ -125,6 +140,7 @@ export default function SalesPage() {
           ]
         }}
         loadingComponent={<SalesTableSkeleton />}
+        isRowExpanded={true}
       />
 
       <SaleDialog

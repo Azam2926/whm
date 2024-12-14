@@ -3,7 +3,7 @@ import { Product } from "@/lib/types";
 
 const productService = {
   getAll: (params?: { search: string | undefined }) =>
-    api.get<{ sales: Product[]; page: object }>("product", {
+    api.get<{ data: Product[]; page: object }>("product", {
       params
     }),
   getById: (id: number) => api.get(`product/${id}`),

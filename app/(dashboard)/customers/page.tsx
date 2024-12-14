@@ -30,9 +30,9 @@ export default function CustomersPage() {
 
   const loadCategories = async () => {
     const {
-      data: { sales }
+      data: { data }
     } = await customerService.getAll(filters);
-    setCustomers(sales);
+    setCustomers(data);
   };
 
   useEffect(() => {
