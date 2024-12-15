@@ -1,18 +1,14 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { TableCell, TableRow } from "@/components/ui/table";
-import { ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
-export function SalesTableSkeleton() {
+export default function CategoriesTableSkeleton() {
   return Array.from({ length: 10 }).map((_, rowIndex) => (
     <TableRow key={rowIndex}>
       <TableCell>
-        <Button variant="ghost" size="sm" className="p-0 h-8 w-8">
-          <ChevronRight className="h-4 w-4" />
-        </Button>
+        <Skeleton className="h-6 w-24" />
       </TableCell>
       <TableCell>
-        <Skeleton className="h-6 w-24" />
+        <Skeleton className="h-6 w-32" />
       </TableCell>
       <TableCell>
         <Skeleton className="h-6 w-16" />
@@ -21,7 +17,7 @@ export function SalesTableSkeleton() {
         <Skeleton className="h-6 w-32" />
       </TableCell>
       <TableCell>
-        <Skeleton className="h-6 w-32" />
+        <Skeleton className="h-6 w-16" />
       </TableCell>
     </TableRow>
   ));

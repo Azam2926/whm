@@ -61,7 +61,7 @@ export function DataTableToolbar<TData>({
       <div className="flex flex-1 items-center space-x-2">
         {searchColumn && (
           <Input
-            placeholder={`Filter ${searchColumn}...`}
+            placeholder={`Filter ${searchColumn} ...`}
             value={getSearchInputValue()}
             onChange={handleSearchInputChange}
             className="h-8 w-[150px] lg:w-[250px]"

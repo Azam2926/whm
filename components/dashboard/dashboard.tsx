@@ -50,7 +50,7 @@ export default function Dashboard() {
       </div>
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="overview">Umumiy</TabsTrigger>
           <TabsTrigger value="products">Mahsulotlar</TabsTrigger>
         </TabsList>
         <TabsContent value="overview" className="space-y-4">
@@ -105,7 +105,7 @@ export default function Dashboard() {
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
             <Card className="col-span-4">
               <CardHeader>
-                <CardTitle>Overview</CardTitle>
+                <CardTitle>Toifalar sotuvi</CardTitle>
               </CardHeader>
               <CardContent className="pl-2">
                 <Overview data={analytics.category_wise_total_sales} />

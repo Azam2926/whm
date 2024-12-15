@@ -1,77 +1,65 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Edit, Trash2 } from "lucide-react";
+import { ShieldBan, ShieldCheck } from "lucide-react";
 import { Customer } from "@/lib/types";
 import { RootStatus } from "@/lib/enums";
-import { Badge } from "@/components/ui/badge";
+import * as React from "react";
+import { useCallback } from "react";
+import { GeneralSearchParam, PAGE_SIZE } from "@/lib/definitions";
+import { api } from "@/lib/services/api";
+import { columns } from "@/app/(dashboard)/customers/columns";
+import { ServerDataTable } from "@/components/ui/server-data-table";
+import CustomersTableSkeleton from "@/components/customers/customers-table-skeleton";
 
 interface CustomerListProps {
-  customers: Customer[];
   onEdit: (customer: Customer) => void;
-  onDelete: (id: number) => void;
+  onDelete: (id: string) => void;
 }
 
-export function CustomerList({
-  customers,
-  onEdit,
-  onDelete
-}: CustomerListProps) {
+export function CustomerList({ onEdit, onDelete }: CustomerListProps) {
+  const fetchDataAction = useCallback(async (params: GeneralSearchParam) => {
+    const {
+      data: {
+        data,
+        page: { totalElements }
+      }
+    } = await api.getCustomers(params);
+
+    return {
+      rows: data,
+      totalRows: totalElements
+    };
+  }, []);
+
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Nomi</TableHead>
-          <TableHead>Tel. nomer</TableHead>
-          <TableHead>Manzil</TableHead>
-          <TableHead>Holati</TableHead>
-          <TableHead>Harakatlar</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {customers.map(customer => (
-          <TableRow key={customer.id}>
-            <TableCell className="font-medium">{customer.name}</TableCell>
-            <TableCell>{customer.phone_number}</TableCell>
-            <TableCell>{customer.address}</TableCell>
-            <TableCell>
-              <Badge
-                variant={
-                  customer.status === RootStatus.ACTIVE
-                    ? "outline"
-                    : "destructive"
-                }
-              >
-                {customer.status}
-              </Badge>
-            </TableCell>
-            <TableCell>
-              <div className="flex gap-2">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => onEdit(customer)}
-                >
-                  <Edit className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => onDelete(customer.id)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+    <ServerDataTable
+      fetchDataAction={fetchDataAction}
+      columns={columns}
+      initialPageSize={PAGE_SIZE}
+      toolbarConfig={{
+        searchColumn: "name",
+        filters: [
+          {
+            columnName: "status",
+            type: "faceted",
+            placeholder: "Holat",
+            options: [
+              {
+                label: RootStatus.ACTIVE,
+                value: RootStatus.ACTIVE,
+                icon: ShieldCheck
+              },
+              {
+                label: RootStatus.INACTIVE,
+                value: RootStatus.INACTIVE,
+                icon: ShieldBan
+              }
+            ]
+          }
+        ]
+      }}
+      loadingComponent={<CustomersTableSkeleton />}
+      hasActions={true}
+      onEdit={onEdit}
+      onDelete={onDelete}
+    />
   );
 }

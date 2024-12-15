@@ -4,7 +4,7 @@ import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
 import { SaleStatus } from "@/lib/enums";
 
 interface SalesData {
-  sales: Sale[];
+  data: Sale[];
   page: {
     number: number;
     size: number;
@@ -16,7 +16,7 @@ interface SalesData {
 export interface SaleCreateRequest {
   customer_id: number;
   status: SaleStatus;
-  sales: { product_id: number; quantity: number; price: number }[];
+  sale_items: { product_id: number; quantity: number }[];
 }
 
 export interface SaleCreateResponse {

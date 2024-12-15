@@ -14,7 +14,7 @@ import {
 import { Sale } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { columns } from "@/app/sales/columns";
+import { columns } from "@/app/(dashboard)/sales/columns";
 
 interface SalesListProps {
   sales: Sale[];

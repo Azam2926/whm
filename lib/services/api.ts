@@ -4,14 +4,22 @@ import saleService, { SaleCreateRequest } from "@/services/sale.service";
 import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
 import reportService from "@/services/report.service";
 import { Report } from "@/lib/types/reports";
+import categoryService from "@/services/category.service";
+import { GeneralSearchParam } from "@/lib/definitions";
 
 // API service
 export const api = {
   // Products
-  getProducts: async () => productsService.getAll(),
+  getProducts: async (params?: GeneralSearchParam) =>
+    productsService.getAll(params),
 
   // Customers
-  getCustomers: async () => customerService.getAll(),
+  getCustomers: async (params?: GeneralSearchParam) =>
+    customerService.getAll(params),
+
+  // Categories
+  getCategories: async (params?: GeneralSearchParam) =>
+    await categoryService.getAll(params),
 
   // Sales
   getSales: async (
@@ -29,7 +37,7 @@ export const api = {
       | undefined
   ) => {
     const response = await saleService.getAll(filters);
-
+    console.log(response);
     return response.data;
   },
 

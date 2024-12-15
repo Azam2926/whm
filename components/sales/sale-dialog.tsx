@@ -35,8 +35,7 @@ import { SaleCreateRequest } from "@/services/sale.service";
 
 const saleItemSchema = z.object({
   product_id: z.string().min(1, "Mahsulot to'ldirilishi shart"),
-  quantity: z.string().min(1, "Soni to'ldirishi shart").transform(Number),
-  price: z.number()
+  quantity: z.string().min(1, "Soni to'ldirishi shart").transform(Number)
 });
 
 type SaleItemType = z.infer<typeof saleItemSchema>;
@@ -71,7 +70,7 @@ export function SaleDialog({
     defaultValues: {
       customer_id: "",
       status: SaleStatus.CASH,
-      sales: [{ product_id: "", quantity: 0, price: 0 }]
+      sales: [{ product_id: "", quantity: 0 }]
     }
   });
 
@@ -81,10 +80,9 @@ export function SaleDialog({
       await onSubmit({
         customer_id: parseInt(data.customer_id),
         status: data.status,
-        sales: data.sales.map(sale => ({
+        sale_items: data.sales.map(sale => ({
           product_id: parseInt(sale.product_id),
-          quantity: sale.quantity,
-          price: sale.price
+          quantity: sale.quantity
         }))
       });
       form.reset();
@@ -95,10 +93,7 @@ export function SaleDialog({
 
   const addSaleItem = () => {
     const currentSales = form.getValues("sales");
-    form.setValue("sales", [
-      ...currentSales,
-      { product_id: "", quantity: 0, price: 0 }
-    ]);
+    form.setValue("sales", [...currentSales, { product_id: "", quantity: 0 }]);
   };
 
   const removeSaleItem = (index: number) => {
@@ -108,13 +103,6 @@ export function SaleDialog({
         "sales",
         currentSales.filter((_, i) => i !== index)
       );
-    }
-  };
-
-  const updatePrice = (product_id: string, index: number) => {
-    const product = products.find(p => p.id === parseInt(product_id));
-    if (product) {
-      form.setValue(`sales.${index}.price`, product.price);
     }
   };
 
@@ -215,10 +203,7 @@ export function SaleDialog({
                       <FormItem className="flex-1">
                         <FormLabel>Mahsulot</FormLabel>
                         <Select
-                          onValueChange={value => {
-                            field.onChange(value);
-                            updatePrice(value, index);
-                          }}
+                          onValueChange={value => field.onChange(value)}
                           defaultValue={field.value}
                         >
                           <FormControl>
