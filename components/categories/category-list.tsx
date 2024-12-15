@@ -5,25 +5,23 @@ import * as React from "react";
 import { useCallback } from "react";
 import { api } from "@/lib/services/api";
 import { GeneralSearchParam, PAGE_SIZE } from "@/lib/definitions";
-import { CategoriesTableSkeleton } from "@/components/categories/categories-table-skeleton";
+import CategoriesTableSkeleton from "@/components/categories/categories-table-skeleton";
+import { RootStatus } from "@/lib/enums";
+import { ShieldBan, ShieldCheck } from "lucide-react";
 
 interface CategoryListProps {
-  onEdit: (category: Category) => void,
-  onDelete: (id: string) => void,
-  filters?: Partial<GeneralSearchParam>,
+  onEdit: (category: Category) => void;
+  onDelete: (id: string) => void;
 }
 
-export function CategoryList({ onEdit, onDelete, filters }: CategoryListProps) {
+export function CategoryList({ onEdit, onDelete }: CategoryListProps) {
   const fetchDataAction = useCallback(async (params: GeneralSearchParam) => {
     const {
       data: {
         data,
         page: { totalElements }
       }
-    } = await api.getCategories({
-      ...params,
-      ...filters
-    });
+    } = await api.getCategories(params);
 
     return {
       rows: data,
@@ -32,16 +30,36 @@ export function CategoryList({ onEdit, onDelete, filters }: CategoryListProps) {
   }, []);
 
   return (
-    <>
-      <ServerDataTable
-        fetchDataAction={fetchDataAction}
-        columns={columns}
-        initialPageSize={PAGE_SIZE}
-        loadingComponent={<CategoriesTableSkeleton />}
-        hasActions={true}
-        onEdit={onEdit}
-        onDelete={onDelete}
-      />
-    </>
+    <ServerDataTable
+      fetchDataAction={fetchDataAction}
+      columns={columns}
+      initialPageSize={PAGE_SIZE}
+      toolbarConfig={{
+        searchColumn: "name",
+        filters: [
+          {
+            columnName: "status",
+            type: "faceted",
+            placeholder: "Holat",
+            options: [
+              {
+                label: RootStatus.ACTIVE,
+                value: RootStatus.ACTIVE,
+                icon: ShieldCheck
+              },
+              {
+                label: RootStatus.INACTIVE,
+                value: RootStatus.INACTIVE,
+                icon: ShieldBan
+              }
+            ]
+          }
+        ]
+      }}
+      loadingComponent={<CategoriesTableSkeleton />}
+      hasActions={true}
+      onEdit={onEdit}
+      onDelete={onDelete}
+    />
   );
 }

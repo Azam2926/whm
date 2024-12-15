@@ -1,47 +1,37 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "@/components/ui/select";
 import { CategoryList } from "@/components/categories/category-list";
 import { CategoryDialog } from "@/components/categories/category-dialog";
 import { Category } from "@/lib/types";
 import categoryService from "@/services/category.service";
-import { RootStatus } from "@/lib/enums";
 
 export default function CategoriesPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
     null
   );
-  const [filters, setFilters] = useState({
-    status: "all", // Changed from empty string to 'all'
-    search: ""
-  });
-
-  useEffect(() => {}, []);
+  const [refreshKey, setRefreshKey] = useState<number>(0);
+  const updateRefreshKey = () => setRefreshKey(refreshKey + 1);
 
   const handleCreate = async (category: Partial<Category>) => {
     await categoryService.create(category);
     setIsDialogOpen(false);
+    updateRefreshKey();
   };
 
   const handleUpdate = async (id: number, category: Partial<Category>) => {
     console.log("Updating category", id, category);
     await categoryService.update(id, category);
     setSelectedCategory(null);
+    updateRefreshKey();
   };
 
   const handleDelete = async (id: string) => {
     await categoryService.delete(id);
+    updateRefreshKey();
   };
 
   return (
@@ -53,33 +43,11 @@ export default function CategoriesPage() {
         </Button>
       </div>
 
-      <div className="flex gap-4 mb-6">
-        <Input
-          placeholder="Search categories..."
-          value={filters.search}
-          onChange={e => setFilters({ ...filters, search: e.target.value })}
-          className="max-w-sm"
-        />
-        <Select
-          value={filters.status}
-          onValueChange={value => setFilters({ ...filters, status: value })}
-        >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Hamma holat</SelectItem>
-            <SelectItem value={RootStatus.ACTIVE}>
-              {RootStatus.ACTIVE}
-            </SelectItem>
-            <SelectItem value={RootStatus.INACTIVE}>
-              {RootStatus.INACTIVE}
-            </SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <CategoryList filters={filters} onEdit={setSelectedCategory} onDelete={handleDelete} />
+      <CategoryList
+        key={refreshKey}
+        onEdit={setSelectedCategory}
+        onDelete={handleDelete}
+      />
 
       <CategoryDialog
         open={isDialogOpen || !!selectedCategory}

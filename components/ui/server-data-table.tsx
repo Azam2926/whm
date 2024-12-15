@@ -127,17 +127,15 @@ export function ServerDataTable<TData, TValue>({
     <div className="space-y-4">
       {totalRows !== undefined && (
         <div className="mb-4">
-          <p className="text-sm text-gray-500">
-            Umumiy sotuvlar soni: {totalRows}
-          </p>
+          <p className="text-sm text-gray-500">Umumiy soni: {totalRows}</p>
         </div>
       )}
       <DataTableToolbar table={table} config={toolbarConfig} />
       <div className="rounded-md border">
         <Table>
           <TableHeader>
-            {table.getHeaderGroups().map(headerGroup => (
-              <TableRow key={headerGroup.id}>
+            {table.getHeaderGroups().map((headerGroup, index) => (
+              <TableRow key={index}>
                 {headerGroup.headers.map(header => (
                   <TableHead key={header.id} colSpan={header.colSpan}>
                     {header.isPlaceholder
@@ -149,9 +147,7 @@ export function ServerDataTable<TData, TValue>({
                   </TableHead>
                 ))}
                 {hasActions && (
-                   <TableHead key={'actions'}>
-                    Harakatlar
-                  </TableHead>
+                  <TableHead key={"actions"}>Harakatlar</TableHead>
                 )}
               </TableRow>
             ))}
@@ -160,12 +156,9 @@ export function ServerDataTable<TData, TValue>({
             {isLoading ? (
               loadingComponent
             ) : data.length ? (
-              table.getRowModel().rows.map(row => (
-                <>
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                  >
+              table.getRowModel().rows.map((row, index) => (
+                <React.Fragment key={index}>
+                  <TableRow data-state={row.getIsSelected() && "selected"}>
                     {row.getVisibleCells().map(cell => (
                       <TableCell key={cell.id}>
                         {flexRender(
@@ -175,7 +168,7 @@ export function ServerDataTable<TData, TValue>({
                       </TableCell>
                     ))}
                     {hasActions && (
-                      <TableCell>
+                      <TableCell key={"actions"}>
                         <div className="flex gap-2">
                           <Button
                             variant="ghost"
@@ -196,16 +189,16 @@ export function ServerDataTable<TData, TValue>({
                     )}
                   </TableRow>
                   {row.getIsExpanded() && isRowExpanded && (
-                    <TableRow>
+                    <TableRow key={-2}>
                       <TableCell colSpan={columns.length}>
                         <SubRow saleItems={(row.original as Sale).sale_items} />
                       </TableCell>
                     </TableRow>
                   )}
-                </>
+                </React.Fragment>
               ))
             ) : (
-              <TableRow key={"no-data"}>
+              <TableRow key={-1}>
                 <TableCell
                   colSpan={columns.length}
                   className="h-24 text-center"

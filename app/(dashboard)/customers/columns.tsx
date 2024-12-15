@@ -2,10 +2,9 @@ import { ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "@/components/ui/data-table-column-header";
 import { RootStatus } from "@/lib/enums";
 import { Badge } from "@/components/ui/badge";
-import { formatDate } from "@/utils/formatDate";
-import { Category } from "@/lib/types";
+import { Customer } from "@/lib/types";
 
-export const columns: ColumnDef<Category>[] = [
+export const columns: ColumnDef<Customer>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => (
@@ -13,9 +12,15 @@ export const columns: ColumnDef<Category>[] = [
     )
   },
   {
-    accessorKey: "description",
+    accessorKey: "phone_number",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Tavsif" />
+      <DataTableColumnHeader column={column} title="Tel. nomer" />
+    )
+  },
+  {
+    accessorKey: "address",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Manzil" />
     )
   },
   {
@@ -35,16 +40,6 @@ export const columns: ColumnDef<Category>[] = [
           {row.getValue("status")}
         </Badge>
       );
-    }
-  },
-  {
-    accessorKey: "created_at",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Vaqti" />
-    ),
-    cell: ({ row }) => {
-      const date = row.getValue("created_at");
-      return formatDate(date as string, "dd MMMM, yyyy");
     }
   }
 ];

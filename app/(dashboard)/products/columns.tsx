@@ -1,11 +1,9 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "@/components/ui/data-table-column-header";
-import { RootStatus } from "@/lib/enums";
-import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/utils/formatDate";
-import { Category } from "@/lib/types";
+import { Product } from "@/lib/types";
 
-export const columns: ColumnDef<Category>[] = [
+export const columns: ColumnDef<Product>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => (
@@ -13,29 +11,23 @@ export const columns: ColumnDef<Category>[] = [
     )
   },
   {
-    accessorKey: "description",
+    id: "category",
+    accessorKey: "category.name",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Tavsif" />
+      <DataTableColumnHeader column={column} title="Toifa" />
     )
   },
   {
-    accessorKey: "status",
+    accessorKey: "price",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Holati" />
-    ),
-    cell: ({ row }) => {
-      return (
-        <Badge
-          variant={
-            row.getValue("status") === RootStatus.ACTIVE
-              ? "default"
-              : "destructive"
-          }
-        >
-          {row.getValue("status")}
-        </Badge>
-      );
-    }
+      <DataTableColumnHeader column={column} title="Narxi" />
+    )
+  },
+  {
+    accessorKey: "quantity",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Soni" />
+    )
   },
   {
     accessorKey: "created_at",

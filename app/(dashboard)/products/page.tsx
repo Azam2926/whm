@@ -1,62 +1,70 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import * as React from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ProductList } from "@/components/products/product-list";
 import { ProductDialog } from "@/components/products/product-dialog";
 import { Category, Product } from "@/lib/types";
 import productsService from "@/services/products.service";
 import categoryService from "@/services/category.service";
+import { columns } from "@/app/(dashboard)/products/columns";
+import { GeneralSearchParam, PAGE_SIZE } from "@/lib/definitions";
+import ProductsTableSkeleton from "@/components/products/products-table-skeleton";
+import { ServerDataTable } from "@/components/ui/server-data-table";
+import { api } from "@/lib/services/api";
 
 export default function ProductsPage() {
-  const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState<Product | null>(
     null
   );
-  const [filters, setFilters] = useState({
-    search: ""
-  });
+  const [refreshKey, setRefreshKey] = useState<number>(0);
+  const updateRefreshKey = () => setRefreshKey(refreshKey + 1);
 
-  const loadProducts = async () => {
+  const loadData = async () => {
     const {
-      data: { data: products }
-    } = await productsService.getAll({
-      search: filters.search ? filters.search : undefined
-    });
-    setProducts(products);
-
-    const {
-      data: { data: categories }
-    } = await categoryService.getAll();
-    setCategories(categories);
+      data: { data }
+    } = await categoryService.getAll({ size: 100 });
+    setCategories(data);
   };
 
   useEffect(() => {
-    loadProducts();
-  }, [filters]);
+    loadData();
+  }, []);
 
   const handleCreate = async (
     product: Omit<Product, "id" | "created_at" | "category">
   ) => {
     await productsService.create(product);
-    await loadProducts();
+    updateRefreshKey();
     setIsDialogOpen(false);
   };
 
   const handleUpdate = async (id: number, product: Partial<Product>) => {
     await productsService.update(id, product);
-    await loadProducts();
+    updateRefreshKey();
     setSelectedProducts(null);
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     await productsService.delete(id);
-    await loadProducts();
+    updateRefreshKey();
   };
+  const fetchDataAction = useCallback(async (params: GeneralSearchParam) => {
+    const {
+      data: {
+        data,
+        page: { totalElements }
+      }
+    } = await api.getProducts(params);
+
+    return {
+      rows: data,
+      totalRows: totalElements
+    };
+  }, []);
 
   return (
     <div className="container mx-auto py-10">
@@ -67,17 +75,27 @@ export default function ProductsPage() {
         </Button>
       </div>
 
-      <div className="flex gap-4 mb-6">
-        <Input
-          placeholder="Mahsulot qidirish..."
-          value={filters.search}
-          onChange={e => setFilters({ ...filters, search: e.target.value })}
-          className="max-w-sm"
-        />
-      </div>
-
-      <ProductList
-        products={products}
+      <ServerDataTable
+        key={refreshKey}
+        fetchDataAction={fetchDataAction}
+        columns={columns}
+        initialPageSize={PAGE_SIZE}
+        toolbarConfig={{
+          searchColumn: "name",
+          filters: [
+            {
+              columnName: "category",
+              type: "faceted",
+              placeholder: "Toifa",
+              options: categories.map(c => ({
+                label: c.name,
+                value: c.id.toString()
+              }))
+            }
+          ]
+        }}
+        loadingComponent={<ProductsTableSkeleton />}
+        hasActions={true}
         onEdit={setSelectedProducts}
         onDelete={handleDelete}
       />

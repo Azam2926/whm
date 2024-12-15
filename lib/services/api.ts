@@ -10,13 +10,15 @@ import { GeneralSearchParam } from "@/lib/definitions";
 // API service
 export const api = {
   // Products
-  getProducts: async () => productsService.getAll(),
+  getProducts: async (params?: GeneralSearchParam) =>
+    productsService.getAll(params),
 
   // Customers
-  getCustomers: async () => customerService.getAll(),
+  getCustomers: async (params?: GeneralSearchParam) =>
+    customerService.getAll(params),
 
   // Categories
-  getCategories: async (params: GeneralSearchParam) =>
+  getCategories: async (params?: GeneralSearchParam) =>
     await categoryService.getAll(params),
 
   // Sales

@@ -20,25 +20,22 @@ export const SignupFormSchema = z.object({
 
 export type FormState =
   | {
-  errors?: {
-    name?: string[];
-    email?: string[];
-    password?: string[];
-  };
-  message?: string;
-}
+      errors?: {
+        name?: string[];
+        email?: string[];
+        password?: string[];
+      };
+      message?: string;
+    }
   | undefined;
 
-export type GeneralSearchParam =
-  {
-    page: number;
-    size: number;
-    sorting?: SortingState;
-    columnFilters?: ColumnFiltersState;
-    status?: string;
-    search?: string;
-    name?: string;
-  }
+export type GeneralSearchParam = {
+  page: number;
+  size: number;
+  sorting?: SortingState;
+  columnFilters?: ColumnFiltersState;
+  name?: string;
+};
 
 export type GeneralResponse<T> = {
   data: T[];
