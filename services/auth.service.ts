@@ -22,7 +22,7 @@ const TOKEN_KEY = "auth_token";
 const authService = {
   getToken: async (): Promise<string> => {
     return await httpService.post(
-      "https://warehouse-app-l6ug.onrender.com/auth/login",
+      "auth/login",
       {
         email: process.env.NEXT_PUBLIC_API_EMAIL,
         password: process.env.NEXT_PUBLIC_API_PASSWORD
@@ -33,7 +33,7 @@ const authService = {
   login: async (credentials: LoginCredentials): Promise<LoginResponse> => {
     try {
       const response = await httpService.post(
-        "https://warehouse-app-l6ug.onrender.com/auth/login",
+        "auth/login",
         credentials
       );
 
