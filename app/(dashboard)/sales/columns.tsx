@@ -3,7 +3,7 @@ import { Sale, SaleItem } from "@/lib/types";
 import { DataTableColumnHeader } from "@/components/ui/data-table-column-header";
 import { SaleStatus } from "@/lib/enums";
 import { Badge } from "@/components/ui/badge";
-import { formatDate } from "@/utils/formatDate";
+import { formatCurrency, formatDate } from "@/utils/formatDate";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -40,15 +40,6 @@ export const SubRow = ({ saleItems }: { saleItems: SaleItem[] }) => {
       </Table>
     </div>
   );
-};
-
-const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat("uz-UZ", {
-    style: "currency",
-    currency: "UZS",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  }).format(amount);
 };
 
 export const columns: ColumnDef<Sale>[] = [

@@ -52,7 +52,10 @@ export default function SalesPage() {
         {
           data: { data: customersData }
         }
-      ] = await Promise.all([api.getProducts(), api.getCustomers()]);
+      ] = await Promise.all([
+        api.getProducts({ size: 1000 }),
+        api.getCustomers({ size: 1000 })
+      ]);
 
       return {
         products: productsData,
