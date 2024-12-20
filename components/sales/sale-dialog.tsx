@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,13 +19,6 @@ import {
   FormLabel,
   FormMessage
 } from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Customer, Product } from "@/lib/types";
@@ -32,6 +26,8 @@ import { Plus, Trash2 } from "lucide-react";
 import { SaleStatus } from "@/lib/enums";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { SaleCreateRequest } from "@/services/sale.service";
+import { Combobox } from "@/components/ui/combobox";
+import { formatCurrency } from "@/utils/formatDate";
 
 const saleItemSchema = z.object({
   product_id: z.string().min(1, "Mahsulot to'ldirilishi shart"),
@@ -110,12 +106,12 @@ export function SaleDialog({
     const product = products.find(p => p.id.toString() === sale.product_id);
     if (!product) return "0.00";
 
-    return (product.price * sale.quantity).toFixed(2);
+    return formatCurrency(product.price * sale.quantity);
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-4xl">
         <DialogHeader>
           <DialogTitle>Sotuv yaratish</DialogTitle>
         </DialogHeader>
@@ -129,28 +125,16 @@ export function SaleDialog({
                 control={form.control}
                 name="customer_id"
                 render={({ field }) => (
-                  <FormItem className="w-1/2">
+                  <FormItem className="w-fill flex flex-col space-y-4">
                     <FormLabel>Mijoz</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Mijozni tanlang" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {customers.map(customer => (
-                          <SelectItem
-                            key={customer.id}
-                            value={customer.id.toString()}
-                          >
-                            {customer.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Combobox
+                      items={customers.map(c => ({
+                        value: c.id.toString(),
+                        label: c.name
+                      }))}
+                      placeholder="Mijozni tanlang ..."
+                      onSelect={item => field.onChange(item?.value)}
+                    />
                     <FormMessage />
                   </FormItem>
                 )}
@@ -200,31 +184,24 @@ export function SaleDialog({
                     control={form.control}
                     name={`sales.${index}.product_id`}
                     render={({ field }) => (
-                      <FormItem className="flex-1">
+                      <FormItem className="flex-1 flex flex-col space-y-4">
                         <FormLabel>Mahsulot</FormLabel>
-                        <Select
-                          onValueChange={value => field.onChange(value)}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Mahsulotni tanlang" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {products.map(product => (
-                              <SelectItem
-                                key={product.id}
-                                value={product.id.toString()}
-                              >
-                                {product.name}{" "}
+                        <Combobox
+                          items={products.map(item => ({
+                            value: item.id.toString(),
+                            label: item.name,
+                            children: (
+                              <>
+                                {item.name}{" "}
                                 <span className="text-gray-500">
-                                  ${product.price}, {product.quantity} ta
+                                  ${item.price}, {item.quantity} ta
                                 </span>
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                              </>
+                            )
+                          }))}
+                          placeholder="Mahsulotni tanlang ..."
+                          onSelect={item => field.onChange(item?.value)}
+                        ></Combobox>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -255,7 +232,7 @@ export function SaleDialog({
 
                   <div className="flex items-center gap-2">
                     <span className="text-sm text-muted-foreground">
-                      ${calculateTotal(sale)}
+                      {calculateTotal(sale)}
                     </span>
                     <Button
                       type="button"
