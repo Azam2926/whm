@@ -30,7 +30,7 @@ const authService = {
   login: async (credentials: LoginCredentials): Promise<LoginResponse> => {
     try {
       const response = await httpService.post("auth/login", credentials);
-
+      
       if (response.data?.jwt_token) {
         localStorage.setItem(TOKEN_KEY, response.data.jwt_token);
       }
