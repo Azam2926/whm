@@ -34,7 +34,7 @@ export const api = {
           sorting?: SortingState;
           columnFilters: ColumnFiltersState;
         }>
-      | undefined
+      | undefined,
   ) => {
     const response = await saleService.getAll(filters);
     console.log(response);
@@ -53,14 +53,17 @@ export const api = {
 
   // Analytics
   getAnalytics: async (): Promise<Report> => {
-    const [recent_sales, category_wise_total_sales] = await Promise.all([
-      reportService.get_recent_sales(),
-      reportService.get_category_wise_total_sales()
-    ]);
-
+    const [recent_sales, category_wise_total_sales, totals] = await Promise.all(
+      [
+        reportService.get_recent_sales(),
+        reportService.get_category_wise_total_sales(),
+        reportService.get_totals(),
+      ],
+    );
     return {
       recent_sales,
-      category_wise_total_sales
+      category_wise_total_sales,
+      totals,
     };
-  }
+  },
 };
