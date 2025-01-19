@@ -15,14 +15,14 @@ export default function Metrics({ totals }: MetricsProps) {
         icon={Package}
       />
       <MetricCard
+        title="Ombordagi qoldiq"
+        value={formatCurrency(totals?.total_summa)}
+        icon={BrickWall}
+      />
+      <MetricCard
         title="Sotuvlar"
         value={formatCurrency(totals?.total_sales)}
         icon={ShoppingCart}
-      />
-      <MetricCard
-        title="Mahsulotlar soni"
-        value={totals?.total_customers}
-        icon={BrickWall}
       />
       <MetricCard
         title="Mijozlar"

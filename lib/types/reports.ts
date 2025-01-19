@@ -12,6 +12,7 @@ export const DEFAULT_REPORT = {
     total_sales: 0,
     total_product_count: 0,
     total_customers: 0,
+    total_summa: 0,
   },
 };
 
@@ -28,6 +29,7 @@ export interface ReportCategoryWiseSales {
 }
 
 export interface ReportTotals {
+  total_summa: number;
   total_products: number;
   total_sales: number;
   total_product_count: number;

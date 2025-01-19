@@ -12,13 +12,13 @@ import * as React from "react";
 export default function CustomersPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
-    null
+    null,
   );
   const [refreshKey, setRefreshKey] = useState<number>(0);
   const updateRefreshKey = () => setRefreshKey(refreshKey + 1);
 
   const handleCreate = async (
-    customer: Omit<Customer, "id" | "created_at">
+    customer: Omit<Customer, "id" | "created_at">,
   ) => {
     await customerService.create(customer);
     setIsDialogOpen(false);
@@ -31,8 +31,8 @@ export default function CustomersPage() {
     updateRefreshKey();
   };
 
-  const handleDelete = async (id: string) => {
-    await customerService.delete(id);
+  const handleDelete = async (customer: Customer) => {
+    await customerService.delete(customer.id.toString());
     updateRefreshKey();
   };
 

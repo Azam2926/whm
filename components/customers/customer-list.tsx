@@ -11,7 +11,7 @@ import CustomersTableSkeleton from "@/components/customers/customers-table-skele
 
 interface CustomerListProps {
   onEdit: (customer: Customer) => void;
-  onDelete: (id: string) => void;
+  onDelete: (customer: Customer) => void;
 }
 
 export function CustomerList({ onEdit, onDelete }: CustomerListProps) {
@@ -19,13 +19,13 @@ export function CustomerList({ onEdit, onDelete }: CustomerListProps) {
     const {
       data: {
         data,
-        page: { totalElements }
-      }
+        page: { totalElements },
+      },
     } = await api.getCustomers(params);
 
     return {
       rows: data,
-      totalRows: totalElements
+      totalRows: totalElements,
     };
   }, []);
 
@@ -45,16 +45,16 @@ export function CustomerList({ onEdit, onDelete }: CustomerListProps) {
               {
                 label: RootStatus.ACTIVE,
                 value: RootStatus.ACTIVE,
-                icon: ShieldCheck
+                icon: ShieldCheck,
               },
               {
                 label: RootStatus.INACTIVE,
                 value: RootStatus.INACTIVE,
-                icon: ShieldBan
-              }
-            ]
-          }
-        ]
+                icon: ShieldBan,
+              },
+            ],
+          },
+        ],
       }}
       loadingComponent={<CustomersTableSkeleton />}
       hasActions={true}

@@ -13,19 +13,20 @@ import { GeneralSearchParam, PAGE_SIZE } from "@/lib/definitions";
 import ProductsTableSkeleton from "@/components/products/products-table-skeleton";
 import { ServerDataTable } from "@/components/ui/server-data-table";
 import { api } from "@/lib/services/api";
+import { Row } from "@tanstack/react-table";
 
 export default function ProductsPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState<Product | null>(
-    null
+    null,
   );
   const [refreshKey, setRefreshKey] = useState<number>(0);
   const updateRefreshKey = () => setRefreshKey(refreshKey + 1);
 
   const loadData = async () => {
     const {
-      data: { data }
+      data: { data },
     } = await categoryService.getAll({ size: 100 });
     setCategories(data);
   };
@@ -35,7 +36,7 @@ export default function ProductsPage() {
   }, []);
 
   const handleCreate = async (
-    product: Omit<Product, "id" | "created_at" | "category">
+    product: Omit<Product, "id" | "created_at" | "category">,
   ) => {
     await productsService.create(product);
     updateRefreshKey();
@@ -48,23 +49,32 @@ export default function ProductsPage() {
     setSelectedProducts(null);
   };
 
-  const handleDelete = async (id: string) => {
-    await productsService.delete(id);
+  const handleDelete = async (product: Product) => {
+    await productsService.delete(product.id.toString());
     updateRefreshKey();
   };
   const fetchDataAction = useCallback(async (params: GeneralSearchParam) => {
     const {
       data: {
         data,
-        page: { totalElements }
-      }
+        page: { totalElements },
+      },
     } = await api.getProducts(params);
 
     return {
       rows: data,
-      totalRows: totalElements
+      totalRows: totalElements,
     };
   }, []);
+
+  const getClassName = (row: Row<Product>): string => {
+    const count = row.original.quantity;
+    return count <= 11
+      ? "!bg-[#ff5555] text-white "
+      : count < 11
+        ? "!bg-[#f9e514]"
+        : "";
+  };
 
   return (
     <div className="container mx-auto py-10">
@@ -79,6 +89,7 @@ export default function ProductsPage() {
         key={refreshKey}
         fetchDataAction={fetchDataAction}
         columns={columns}
+        getClassName={getClassName}
         initialPageSize={PAGE_SIZE}
         toolbarConfig={{
           searchColumn: "name",
@@ -89,10 +100,10 @@ export default function ProductsPage() {
               placeholder: "Toifa",
               options: categories.map(c => ({
                 label: c.name,
-                value: c.id.toString()
-              }))
-            }
-          ]
+                value: c.id.toString(),
+              })),
+            },
+          ],
         }}
         loadingComponent={<ProductsTableSkeleton />}
         hasActions={true}

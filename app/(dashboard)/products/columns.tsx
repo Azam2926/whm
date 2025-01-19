@@ -11,6 +11,12 @@ export const columns: ColumnDef<Product>[] = [
     )
   },
   {
+    accessorKey: "measurement",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Birligi" />
+    )
+  },
+  {
     id: "category",
     accessorKey: "category.name",
     header: ({ column }) => (
@@ -22,6 +28,18 @@ export const columns: ColumnDef<Product>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Narxi" />
     )
+  },
+  {
+    id: "total",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Umumiy narx" />
+    ),
+    cell: ({ row }) => {
+      const price = row.getValue("price") as number;
+      const quantity = row.getValue("quantity") as number;
+      const total = price * quantity;
+      return total.toFixed(2);
+    }
   },
   {
     accessorKey: "quantity",

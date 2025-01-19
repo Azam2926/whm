@@ -6,7 +6,7 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTitle
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,16 +16,18 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage
+  FormMessage,
 } from "@/components/ui/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
+  SelectValue,
 } from "@/components/ui/select";
 import { Category, Product } from "@/lib/types";
+import { Measurement } from "@/lib/enums";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 // Form schema only includes editable fields
 const formSchema = z.object({
@@ -38,13 +40,14 @@ const formSchema = z.object({
       z
         .string()
         .regex(/^\d*\.?\d*$/)
-        .transform(Number)
+        .transform(Number),
     ),
   quantity: z
     .number()
     .int()
     .min(0, "Quantity must be a positive integer")
-    .or(z.string().regex(/^\d+$/).transform(Number))
+    .or(z.string().regex(/^\d+$/).transform(Number)),
+  measurement: z.nativeEnum(Measurement),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -62,7 +65,7 @@ export function ProductDialog({
   onOpenChange,
   product,
   categories,
-  onSubmit
+  onSubmit,
 }: ProductDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -72,8 +75,8 @@ export function ProductDialog({
       name: "",
       category_id: undefined,
       price: 0,
-      quantity: 0
-    }
+      quantity: 0,
+    },
   });
 
   // Reset form when dialog opens/closes or product changes
@@ -83,7 +86,7 @@ export function ProductDialog({
         name: product.name,
         category_id: product.category?.id,
         price: product.price,
-        quantity: product.quantity
+        quantity: product.quantity,
       });
     } else if (!open) {
       form.reset(); // Reset to default values when closing
@@ -95,7 +98,7 @@ export function ProductDialog({
       setIsSubmitting(true);
       await onSubmit({
         ...data,
-        id: product?.id // Include the id if we're editing an existing product
+        id: product?.id, // Include the id if we're editing an existing product
       });
       onOpenChange(false);
     } catch (error) {
@@ -159,6 +162,73 @@ export function ProductDialog({
                     <Input {...field} placeholder="Mahsulot nomini kiriting" />
                   </FormControl>
                   <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="measurement"
+              render={({ field }) => (
+                <FormItem className="space-y-1">
+                  <FormLabel>Birligi</FormLabel>
+                  <FormMessage />
+                  <ToggleGroup
+                    type="single"
+                    variant="outline"
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormItem>
+                      <FormControl>
+                        <ToggleGroupItem
+                          value={Measurement.UNKNOWN}
+                          aria-label="Toggle Naqd"
+                        >
+                          {Measurement.UNKNOWN}
+                        </ToggleGroupItem>
+                      </FormControl>
+                    </FormItem>
+                    <FormItem>
+                      <FormControl>
+                        <ToggleGroupItem
+                          value={Measurement.KG}
+                          aria-label="Toggle Naqd"
+                        >
+                          {Measurement.KG}
+                        </ToggleGroupItem>
+                      </FormControl>
+                    </FormItem>
+                    <FormItem>
+                      <FormControl>
+                        <ToggleGroupItem
+                          value={Measurement.QOP}
+                          aria-label="Toggle Naqd"
+                        >
+                          {Measurement.QOP}
+                        </ToggleGroupItem>
+                      </FormControl>
+                    </FormItem>
+                    <FormItem>
+                      <FormControl>
+                        <ToggleGroupItem
+                          value={Measurement.METR}
+                          aria-label="Toggle Naqd"
+                        >
+                          {Measurement.METR}
+                        </ToggleGroupItem>
+                      </FormControl>
+                    </FormItem>
+                    <FormItem>
+                      <FormControl>
+                        <ToggleGroupItem
+                          value={Measurement.DONA}
+                          aria-label="Toggle Naqd"
+                        >
+                          {Measurement.DONA}
+                        </ToggleGroupItem>
+                      </FormControl>
+                    </FormItem>
+                  </ToggleGroup>
                 </FormItem>
               )}
             />

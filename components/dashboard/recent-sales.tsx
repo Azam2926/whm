@@ -1,5 +1,6 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ReportRecentSales } from "@/lib/types/reports";
+import { formatCurrency } from "@/utils/formatDate";
 
 interface RecentSalesProps {
   data: ReportRecentSales[];
@@ -22,7 +23,7 @@ export function RecentSales({ data }: RecentSalesProps) {
             <p className="text-sm text-muted-foreground">{sale.product_name}</p>
           </div>
           <div className="ml-auto font-medium">
-            +${sale.total_price.toFixed(2)}
+            {formatCurrency(sale.total_price)}
           </div>
         </div>
       ))}

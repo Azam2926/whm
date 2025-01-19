@@ -11,7 +11,7 @@ import categoryService from "@/services/category.service";
 export default function CategoriesPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
-    null
+    null,
   );
   const [refreshKey, setRefreshKey] = useState<number>(0);
   const updateRefreshKey = () => setRefreshKey(refreshKey + 1);
@@ -29,8 +29,8 @@ export default function CategoriesPage() {
     updateRefreshKey();
   };
 
-  const handleDelete = async (id: string) => {
-    await categoryService.delete(id);
+  const handleDelete = async (category: Category) => {
+    await categoryService.delete(category.id.toString());
     updateRefreshKey();
   };
 

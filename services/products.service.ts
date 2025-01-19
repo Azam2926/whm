@@ -30,7 +30,7 @@ const productService = {
     return api.get<GeneralResponse<Product>>("product", {
       params: {
         pageNumber: filters?.page || 1,
-        pageSize: filters?.size || 10,
+        pageSize: filters?.size || 100,
         name: filters?.name,
         category_ids: filters?.category_ids,
         sortDirection,
