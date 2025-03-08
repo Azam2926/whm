@@ -12,7 +12,7 @@ const appConfigService = {
     await api.post(url, data),
 
   update: async (data: { key: string; value: string }) =>
-    await api.put(url, {}, { params: data }),
+    await api.put(url, data),
 };
 
 export default appConfigService;

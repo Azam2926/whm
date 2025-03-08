@@ -15,7 +15,7 @@ const fetchKurs = async () => {
 };
 
 export default function KursPage() {
-  const [kurs, setKurs] = useState(0);
+  const [kurs, setKurs] = useState("0");
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -33,11 +33,6 @@ export default function KursPage() {
 
     loadData();
   }, []);
-
-  const handleChange = e => {
-    console.log(e.target.value);
-    setKurs(e.target.value);
-  };
 
   const handleSave = async () => {
     setIsLoading(true);
@@ -67,7 +62,9 @@ export default function KursPage() {
           type={"number"}
           disabled={isLoading}
           value={kurs}
-          onChange={handleChange}
+          onChange={e => {
+            setKurs(e.target.value);
+          }}
         />
         <Button disabled={isLoading} onClick={handleSave}>
           Saqlash

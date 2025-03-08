@@ -16,3 +16,8 @@ export enum Measurement {
   DONA = "Dona",
   PACHKA = "Pachka",
 }
+
+export enum TypePrice {
+  USD = "Dollar",
+  SUM = "So'm",
+}

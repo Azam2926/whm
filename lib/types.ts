@@ -1,4 +1,4 @@
-import { RootStatus, SaleStatus } from "./enums";
+import { Measurement, RootStatus, SaleStatus, TypePrice } from "./enums";
 
 export interface Category {
   id: number;
@@ -16,6 +16,8 @@ export interface Product {
   quantity: number;
   created_at: string;
   category?: Category;
+  measurement?: Measurement;
+  type_price?: TypePrice;
 }
 
 export interface Customer {
