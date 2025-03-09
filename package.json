@@ -38,11 +38,13 @@
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.53.2",
     "react-remove-scroll": "^2.6.3",
+    "recharts": "^2.15.1",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.0.12",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
@@ -51,7 +53,7 @@
     "eslint-config-prettier": "^9.1.0",
     "postcss": "^8",
     "prettier": "3.4.1",
-    "tailwindcss": "^3.4.1",
+    "tailwindcss": "^4.0.12",
     "typescript": "^5"
   }
 }

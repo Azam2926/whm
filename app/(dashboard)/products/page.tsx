@@ -70,9 +70,9 @@ export default function ProductsPage() {
   const getClassName = (row: Row<Product>): string => {
     const count = row.original.quantity;
     return count <= 11
-      ? "!bg-[#ff5555] text-white "
+      ? "bg-[#ff5555]! text-white "
       : count < 11
-        ? "!bg-[#f9e514]"
+        ? "bg-[#f9e514]!"
         : "";
   };
 
