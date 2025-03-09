@@ -17,7 +17,10 @@ export const formatDate = (
   }
 };
 
-export const formatCurrency = (amount: number, type_price: TypePrice) => {
+export const formatCurrency = (
+  amount: number,
+  type_price: TypePrice = TypePrice.SUM,
+) => {
   const format = type_price === TypePrice.USD ? "usd-USD" : "uz-UZ";
   const currency = type_price === TypePrice.USD ? "USD" : "UZS";
   return new Intl.NumberFormat(format, {

@@ -8,7 +8,7 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTitle
+  DialogTitle,
 } from "@/components/ui/dialog";
 import {
   Form,
@@ -16,14 +16,14 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage
+  FormMessage,
 } from "@/components/ui/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
+  SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -33,7 +33,7 @@ import { RootStatus } from "@/lib/enums";
 const formSchema = z.object({
   name: z.string().min(1, "Nom to'ldirishi shart"),
   description: z.string().optional(),
-  status: z.nativeEnum(RootStatus)
+  status: z.nativeEnum(RootStatus),
 });
 
 interface CategoryDialogProps {
@@ -47,21 +47,21 @@ export function CategoryDialog({
   open,
   onOpenChange,
   category,
-  onSubmit
+  onSubmit,
 }: CategoryDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const defaultCategory = {
     name: category?.name || "",
     description: category?.description || "",
-    status: category?.status || RootStatus.ACTIVE
+    status: category?.status || RootStatus.ACTIVE,
   };
   useEffect(() => {
     form.reset(defaultCategory);
-  }, [open]);
+  }, [open, defaultCategory]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: defaultCategory
+    defaultValues: defaultCategory,
   });
   const handleSubmit = async (data: z.infer<typeof formSchema>) => {
     try {

@@ -37,6 +37,7 @@ export default function KursPage() {
       toast({
         description: "Dollar kursi muvaffaqiyatli saqlandi",
       });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
       toast({
         variant: "destructive",

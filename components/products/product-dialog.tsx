@@ -100,11 +100,10 @@ export function ProductDialog({
   const handleSubmit = async (data: FormData) => {
     try {
       setIsSubmitting(true);
-      console.log("data", data);
-      // await onSubmit({
-      //   ...data,
-      //   id: product?.id,
-      // });
+      await onSubmit({
+        ...data,
+        id: product?.id,
+      });
       onOpenChange(false);
     } catch (error) {
       console.error("Error submitting form:", error);

@@ -29,7 +29,7 @@ export function Overview({ data }: OverviewProps) {
           fontSize={12}
           tickLine={false}
           axisLine={false}
-          tickFormatter={formatCurrency}
+          tickFormatter={value => formatCurrency(value)}
         />
         <Bar
           dataKey="total"

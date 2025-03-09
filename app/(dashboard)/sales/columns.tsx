@@ -12,7 +12,7 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow
+  TableRow,
 } from "@/components/ui/table";
 
 export const SubRow = ({ saleItems }: { saleItems: SaleItem[] }) => {
@@ -32,8 +32,12 @@ export const SubRow = ({ saleItems }: { saleItems: SaleItem[] }) => {
             <TableRow key={index}>
               <TableCell>{item.product?.name ?? ""}</TableCell>
               <TableCell>{item.quantity}</TableCell>
-              <TableCell>{formatCurrency(item.price)}</TableCell>
-              <TableCell>{formatCurrency(item.total_price)}</TableCell>
+              <TableCell>
+                {formatCurrency(item.price, item.product?.type_price)}
+              </TableCell>
+              <TableCell>
+                {formatCurrency(item.total_price, item.product?.type_price)}
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -61,7 +65,7 @@ export const columns: ColumnDef<Sale>[] = [
           )}
         </Button>
       );
-    }
+    },
   },
   {
     accessorKey: "sale_date",
@@ -71,7 +75,7 @@ export const columns: ColumnDef<Sale>[] = [
     cell: ({ row }) => {
       const date = row.getValue("sale_date");
       return formatDate(date as string, "dd MMMM, yyyy");
-    }
+    },
   },
   {
     accessorKey: "status",
@@ -90,14 +94,14 @@ export const columns: ColumnDef<Sale>[] = [
           {row.getValue("status")}
         </Badge>
       );
-    }
+    },
   },
   {
     id: "customer",
     accessorKey: "customer.name",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Mijoz" />
-    )
+    ),
   },
   {
     accessorKey: "total_sum",
@@ -107,6 +111,6 @@ export const columns: ColumnDef<Sale>[] = [
     cell: ({ row }) => {
       const total = row.getValue("total_sum") as number;
       return formatCurrency(total);
-    }
-  }
+    },
+  },
 ];

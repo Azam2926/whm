@@ -4,8 +4,8 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { MainNav } from "@/components/layout/main-nav";
 import { ModeToggle } from "@/components/ModeToggle";
 import { Toaster } from "@/components/ui/toaster";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Providers from "@/app/(dashboard)/providers";
+import React from "react";
 
 const title = "Warehouse app Home";
 const description = "Warehouse app for management";

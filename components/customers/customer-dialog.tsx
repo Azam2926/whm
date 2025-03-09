@@ -8,7 +8,7 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTitle
+  DialogTitle,
 } from "@/components/ui/dialog";
 import {
   Form,
@@ -16,14 +16,14 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage
+  FormMessage,
 } from "@/components/ui/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
+  SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -37,7 +37,7 @@ const formSchema = z.object({
     .min(12, "Tel. nomer to'lidirilishi shart")
     .optional(),
   address: z.string().optional(),
-  status: z.nativeEnum(RootStatus)
+  status: z.nativeEnum(RootStatus),
 });
 
 type CustomerCreate = z.infer<typeof formSchema>;
@@ -53,23 +53,23 @@ export function CustomerDialog({
   open,
   onOpenChange,
   customer,
-  onSubmit
+  onSubmit,
 }: CategoryDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const default_form_values = {
     name: customer?.name || "",
     phone_number: customer?.phone_number || "",
     address: customer?.address || "",
-    status: customer?.status || RootStatus.ACTIVE
+    status: customer?.status || RootStatus.ACTIVE,
   };
 
   useEffect(() => {
     form.reset(default_form_values);
-  }, [open]);
+  }, [open, default_form_values]);
 
   const form = useForm<CustomerCreate>({
     resolver: zodResolver(formSchema),
-    defaultValues: default_form_values
+    defaultValues: default_form_values,
   });
   const handleSubmit = async (data: CustomerCreate) => {
     try {
