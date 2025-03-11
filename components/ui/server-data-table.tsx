@@ -8,7 +8,8 @@ import {
   VisibilityState,
   flexRender,
   getCoreRowModel,
-  useReactTable
+  useReactTable,
+  Row,
 } from "@tanstack/react-table";
 
 import {
@@ -17,13 +18,13 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow
+  TableRow,
 } from "@/components/ui/table";
 
 import { DataTablePagination } from "./data-table-pagination";
 import {
   DataTableToolbar,
-  ToolbarFilterConfig
+  ToolbarFilterConfig,
 } from "@/components/ui/data-table-toolbar";
 import { Sale } from "@/lib/types";
 import { SubRow } from "@/app/(dashboard)/sales/columns";
@@ -46,7 +47,8 @@ interface ServerSideDataTableProps<TData, TValue> {
   isRowExpanded?: boolean;
   hasActions?: boolean;
   onEdit?: (row: TData) => void;
-  onDelete?: (id: string) => void;
+  onDelete?: (row: TData) => void;
+  getClassName?: (row: Row<TData>) => string;
 }
 
 export function ServerDataTable<TData, TValue>({
@@ -58,7 +60,8 @@ export function ServerDataTable<TData, TValue>({
   isRowExpanded = false,
   hasActions = false,
   onEdit = (row: TData) => console.log("onEdit", row),
-  onDelete = (id: string) => console.log("onDelete", id)
+  onDelete = (row: TData) => console.log("onDelete", row),
+  getClassName = () => "",
 }: ServerSideDataTableProps<TData, TValue>) {
   const [data, setData] = React.useState<TData[]>([]);
   const [totalRows, setTotalRows] = React.useState(0);
@@ -66,12 +69,12 @@ export function ServerDataTable<TData, TValue>({
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    [],
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [pagination, setPagination] = React.useState({
     pageIndex: 0,
-    pageSize: initialPageSize
+    pageSize: initialPageSize,
   });
   const [isLoading, setIsLoading] = React.useState(true);
 
@@ -84,7 +87,7 @@ export function ServerDataTable<TData, TValue>({
           page: pagination.pageIndex,
           size: pagination.pageSize,
           sorting,
-          columnFilters
+          columnFilters,
         });
         setData(result.rows);
         setTotalRows(result.totalRows);
@@ -107,7 +110,7 @@ export function ServerDataTable<TData, TValue>({
       columnVisibility,
       rowSelection,
       columnFilters,
-      pagination
+      pagination,
     },
     pageCount: Math.ceil(totalRows / pagination.pageSize),
     manualPagination: true,
@@ -120,7 +123,7 @@ export function ServerDataTable<TData, TValue>({
     onColumnVisibilityChange: setColumnVisibility,
     onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
-    getRowCanExpand: () => isRowExpanded
+    getRowCanExpand: () => isRowExpanded,
   });
 
   return (
@@ -142,7 +145,7 @@ export function ServerDataTable<TData, TValue>({
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
-                          header.getContext()
+                          header.getContext(),
                         )}
                   </TableHead>
                 ))}
@@ -158,12 +161,15 @@ export function ServerDataTable<TData, TValue>({
             ) : data.length ? (
               table.getRowModel().rows.map((row, index) => (
                 <React.Fragment key={index}>
-                  <TableRow data-state={row.getIsSelected() && "selected"}>
+                  <TableRow
+                    className={getClassName(row) + " font-medium"}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
                     {row.getVisibleCells().map(cell => (
                       <TableCell key={cell.id}>
                         {flexRender(
                           cell.column.columnDef.cell,
-                          cell.getContext()
+                          cell.getContext(),
                         )}
                       </TableCell>
                     ))}
@@ -180,7 +186,7 @@ export function ServerDataTable<TData, TValue>({
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => onDelete(row.id)}
+                            onClick={() => onDelete(row.original)}
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>

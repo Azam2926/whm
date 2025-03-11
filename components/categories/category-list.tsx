@@ -11,7 +11,7 @@ import { ShieldBan, ShieldCheck } from "lucide-react";
 
 interface CategoryListProps {
   onEdit: (category: Category) => void;
-  onDelete: (id: string) => void;
+  onDelete: (category: Category) => void;
 }
 
 export function CategoryList({ onEdit, onDelete }: CategoryListProps) {
@@ -19,13 +19,13 @@ export function CategoryList({ onEdit, onDelete }: CategoryListProps) {
     const {
       data: {
         data,
-        page: { totalElements }
-      }
+        page: { totalElements },
+      },
     } = await api.getCategories(params);
 
     return {
       rows: data,
-      totalRows: totalElements
+      totalRows: totalElements,
     };
   }, []);
 
@@ -45,16 +45,16 @@ export function CategoryList({ onEdit, onDelete }: CategoryListProps) {
               {
                 label: RootStatus.ACTIVE,
                 value: RootStatus.ACTIVE,
-                icon: ShieldCheck
+                icon: ShieldCheck,
               },
               {
                 label: RootStatus.INACTIVE,
                 value: RootStatus.INACTIVE,
-                icon: ShieldBan
-              }
-            ]
-          }
-        ]
+                icon: ShieldBan,
+              },
+            ],
+          },
+        ],
       }}
       loadingComponent={<CategoriesTableSkeleton />}
       hasActions={true}

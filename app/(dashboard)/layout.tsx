@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "../globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import { Analytics } from "@vercel/analytics/next";
 import { MainNav } from "@/components/layout/main-nav";
 import { ModeToggle } from "@/components/ModeToggle";
 import { Toaster } from "@/components/ui/toaster";
@@ -24,20 +23,20 @@ export const metadata: Metadata = {
         url: image_url,
         width: 1200,
         height: 630,
-        alt: "A description of the image_url"
-      }
-    ]
+        alt: "A description of the image_url",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: title,
     description: description,
-    images: [image_url]
-  }
+    images: [image_url],
+  },
 };
 
 export default function RootLayout({
-  children
+  children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
@@ -56,10 +55,9 @@ export default function RootLayout({
             </div>
             <ModeToggle />
           </div>
-          {children}
+          <div className="mx-10">{children}</div>
           <Toaster />
         </ThemeProvider>
-        <Analytics />
       </body>
     </html>
   );

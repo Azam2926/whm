@@ -6,7 +6,7 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTitle
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,35 +16,39 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage
+  FormMessage,
 } from "@/components/ui/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
+  SelectValue,
 } from "@/components/ui/select";
 import { Category, Product } from "@/lib/types";
+import { Measurement, TypePrice } from "@/lib/enums";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 // Form schema only includes editable fields
 const formSchema = z.object({
   name: z.string().min(1, "Nomi to'lidirilishi shart"),
-  category_id: z.number().min(1, "Category is required"),
-  price: z
+  category_id: z.number(),
+  price: z.coerce
     .number()
     .min(0, "Price must be positive")
     .or(
       z
         .string()
         .regex(/^\d*\.?\d*$/)
-        .transform(Number)
+        .transform(Number),
     ),
   quantity: z
     .number()
     .int()
     .min(0, "Quantity must be a positive integer")
-    .or(z.string().regex(/^\d+$/).transform(Number))
+    .or(z.string().regex(/^\d+$/).transform(Number)),
+  measurement: z.nativeEnum(Measurement),
+  type_price: z.nativeEnum(TypePrice),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -62,7 +66,7 @@ export function ProductDialog({
   onOpenChange,
   product,
   categories,
-  onSubmit
+  onSubmit,
 }: ProductDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -72,8 +76,10 @@ export function ProductDialog({
       name: "",
       category_id: undefined,
       price: 0,
-      quantity: 0
-    }
+      quantity: 0,
+      measurement: Measurement.DONA,
+      type_price: TypePrice.SUM,
+    },
   });
 
   // Reset form when dialog opens/closes or product changes
@@ -83,7 +89,8 @@ export function ProductDialog({
         name: product.name,
         category_id: product.category?.id,
         price: product.price,
-        quantity: product.quantity
+        quantity: product.quantity,
+        measurement: product.measurement,
       });
     } else if (!open) {
       form.reset(); // Reset to default values when closing
@@ -93,10 +100,11 @@ export function ProductDialog({
   const handleSubmit = async (data: FormData) => {
     try {
       setIsSubmitting(true);
-      await onSubmit({
-        ...data,
-        id: product?.id // Include the id if we're editing an existing product
-      });
+      console.log("data", data);
+      // await onSubmit({
+      //   ...data,
+      //   id: product?.id,
+      // });
       onOpenChange(false);
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -110,7 +118,7 @@ export function ProductDialog({
       <DialogContent className="sm:max-w-[425px]" aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>
-            {product ? "Mahlutoni tahrirlash" : "Mahluton yaratish"}
+            {product ? "Mahsulotni tahrirlash" : "Mahsulot yaratish"}
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
@@ -162,27 +170,134 @@ export function ProductDialog({
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
-              name="price"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Narxi</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      placeholder="0.00"
-                      onChange={e => field.onChange(e.target.valueAsNumber)}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              name="measurement"
+              render={({ field }) => {
+                return (
+                  <FormItem className="space-y-1">
+                    <FormLabel>Birligi:</FormLabel>
+                    <FormMessage />
+                    <ToggleGroup
+                      type="single"
+                      variant="default"
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormItem>
+                        <FormControl>
+                          <ToggleGroupItem
+                            value={Measurement.UNKNOWN}
+                            aria-label="Toggle Naqd"
+                          >
+                            {Measurement.UNKNOWN}
+                          </ToggleGroupItem>
+                        </FormControl>
+                      </FormItem>
+                      <FormItem>
+                        <FormControl>
+                          <ToggleGroupItem
+                            value={Measurement.KG}
+                            aria-label="Toggle Naqd"
+                          >
+                            {Measurement.KG}
+                          </ToggleGroupItem>
+                        </FormControl>
+                      </FormItem>
+                      <FormItem>
+                        <FormControl>
+                          <ToggleGroupItem
+                            value={Measurement.QOP}
+                            aria-label="Toggle Naqd"
+                          >
+                            {Measurement.QOP}
+                          </ToggleGroupItem>
+                        </FormControl>
+                      </FormItem>
+                      <FormItem>
+                        <FormControl>
+                          <ToggleGroupItem
+                            value={Measurement.METR}
+                            aria-label="Toggle Naqd"
+                          >
+                            {Measurement.METR}
+                          </ToggleGroupItem>
+                        </FormControl>
+                      </FormItem>
+                      <FormItem>
+                        <FormControl>
+                          <ToggleGroupItem
+                            value={Measurement.DONA}
+                            aria-label="Toggle Naqd"
+                          >
+                            {Measurement.DONA}
+                          </ToggleGroupItem>
+                        </FormControl>
+                      </FormItem>
+                    </ToggleGroup>
+                  </FormItem>
+                );
+              }}
             />
+            <div className="flex gap-4">
+              <FormField
+                control={form.control}
+                name="price"
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormLabel>Narxi:</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        placeholder="0.00"
+                        onChange={e => field.onChange(e.target.valueAsNumber)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="type_price"
+                render={({ field }) => (
+                  <FormItem className="mr-auto space-y-1">
+                    <FormLabel>Turi:</FormLabel>
+                    <FormMessage />
+                    <ToggleGroup
+                      type="single"
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormItem>
+                        <FormControl>
+                          <ToggleGroupItem
+                            value={TypePrice.USD}
+                            aria-label="Toggle USD"
+                          >
+                            {TypePrice.USD}
+                          </ToggleGroupItem>
+                        </FormControl>
+                      </FormItem>
+                      <FormItem>
+                        <FormControl>
+                          <ToggleGroupItem
+                            value={TypePrice.SUM}
+                            aria-label="Toggle SUM"
+                          >
+                            {TypePrice.SUM}
+                          </ToggleGroupItem>
+                        </FormControl>
+                      </FormItem>
+                    </ToggleGroup>
+                  </FormItem>
+                )}
+              />
+            </div>
 
             <FormField
               control={form.control}

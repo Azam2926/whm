@@ -1,11 +1,11 @@
-import { format } from "date-fns";
-import { Locale } from "date-fns";
+import { format, Locale } from "date-fns";
 import { uz } from "date-fns/locale/uz";
+import { TypePrice } from "@/lib/enums";
 
 export const formatDate = (
   date: string | Date,
   formatStr: string = "dd MMMM, yyyy. HH:mm",
-  locale: Locale = uz
+  locale: Locale = uz,
 ): string => {
   if (!date) return "";
   try {
@@ -17,11 +17,13 @@ export const formatDate = (
   }
 };
 
-export const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat("uz-UZ", {
+export const formatCurrency = (amount: number, type_price: TypePrice) => {
+  const format = type_price === TypePrice.USD ? "usd-USD" : "uz-UZ";
+  const currency = type_price === TypePrice.USD ? "USD" : "UZS";
+  return new Intl.NumberFormat(format, {
     style: "currency",
-    currency: "UZS",
+    currency: currency,
     minimumFractionDigits: 0,
-    maximumFractionDigits: 0
+    maximumFractionDigits: 0,
   }).format(amount);
 };

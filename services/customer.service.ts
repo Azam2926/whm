@@ -29,7 +29,7 @@ const customerService = {
     return await api.get<GeneralResponse<Customer>>("customer", {
       params: {
         pageNumber: filters?.page || 1,
-        pageSize: filters?.size || 10,
+        pageSize: filters?.size || 100,
         name: filters?.name,
         status: filters?.status,
         sortDirection,

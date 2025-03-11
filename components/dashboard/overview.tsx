@@ -2,6 +2,7 @@
 
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import { ReportCategoryWiseSales } from "@/lib/types/reports";
+import { formatCurrency } from "@/utils/formatDate";
 
 interface OverviewProps {
   data: ReportCategoryWiseSales[];
@@ -10,7 +11,7 @@ interface OverviewProps {
 export function Overview({ data }: OverviewProps) {
   const chartData = data.map(item => ({
     name: item.category_name || `Category ${item.category_name}`,
-    total: item.total_sum
+    total: item.total_sum,
   }));
 
   return (
@@ -28,7 +29,7 @@ export function Overview({ data }: OverviewProps) {
           fontSize={12}
           tickLine={false}
           axisLine={false}
-          tickFormatter={value => `$${value}`}
+          tickFormatter={formatCurrency}
         />
         <Bar
           dataKey="total"

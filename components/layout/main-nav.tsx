@@ -8,35 +8,41 @@ import {
   Package,
   Tags,
   Users,
-  ShoppingCart
+  ShoppingCart,
+  DollarSign,
 } from "lucide-react";
 
 const items = [
   {
     title: "Umumiy",
     href: "/",
-    icon: LayoutDashboard
+    icon: LayoutDashboard,
   },
   {
     title: "Sotuvlar",
     href: "/sales",
-    icon: ShoppingCart
+    icon: ShoppingCart,
   },
   {
     title: "Toifalar",
     href: "/categories",
-    icon: Tags
+    icon: Tags,
   },
   {
     title: "Mahsulotlar",
     href: "/products",
-    icon: Package
+    icon: Package,
   },
   {
     title: "Mijozlar",
     href: "/customers",
-    icon: Users
-  }
+    icon: Users,
+  },
+  {
+    title: "Kurs",
+    href: "/kurs",
+    icon: DollarSign,
+  },
 ];
 
 export function MainNav() {
@@ -52,7 +58,7 @@ export function MainNav() {
             href={item.href}
             className={cn(
               "flex items-center text-sm font-medium transition-colors hover:text-primary",
-              pathname === item.href ? "text-primary" : "text-muted-foreground"
+              pathname === item.href ? "text-primary" : "text-muted-foreground",
             )}
           >
             <Icon className="mr-2 h-4 w-4" />
