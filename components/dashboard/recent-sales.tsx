@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ReportRecentSales } from "@/lib/types/reports";
-import { formatCurrency } from "@/utils/formatDate";
+import { formatCurrency } from "@/utils/utils";
 
 interface RecentSalesProps {
   data: ReportRecentSales[];

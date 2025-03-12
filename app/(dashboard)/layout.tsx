@@ -3,7 +3,7 @@ import "../globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { MainNav } from "@/components/layout/main-nav";
 import { ModeToggle } from "@/components/ModeToggle";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "@/components/ui/sonner";
 import Providers from "@/app/(dashboard)/providers";
 import React from "react";
 
@@ -59,7 +59,7 @@ export default function RootLayout({
               <ModeToggle />
             </div>
             <div className="mx-10">{children}</div>
-            <Toaster />
+            <Toaster richColors />
           </Providers>
         </ThemeProvider>
       </body>

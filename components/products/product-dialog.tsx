@@ -26,7 +26,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Category, Product } from "@/lib/types";
-import { Measurement, TypePrice } from "@/lib/enums";
+import { Measurement, RootStatus, TypePrice } from "@/lib/enums";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 // Form schema only includes editable fields
@@ -69,32 +69,23 @@ export function ProductDialog({
   onSubmit,
 }: ProductDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const default_form_values = {
+    name: product?.name,
+    category_id: product?.category?.id,
+    price: product?.price,
+    quantity: product?.quantity,
+    measurement: product?.measurement,
+    type_price: product?.type_price,
+  };
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      category_id: undefined,
-      price: 0,
-      quantity: 0,
-      measurement: Measurement.DONA,
-      type_price: TypePrice.SUM,
-    },
+    defaultValues: default_form_values,
   });
 
   // Reset form when dialog opens/closes or product changes
   useEffect(() => {
-    if (open && product) {
-      form.reset({
-        name: product.name,
-        category_id: product.category?.id,
-        price: product.price,
-        quantity: product.quantity,
-        measurement: product.measurement,
-      });
-    } else if (!open) {
-      form.reset(); // Reset to default values when closing
-    }
+    form.reset(default_form_values); // Reset to default values when closing
   }, [open, product, form]);
 
   const handleSubmit = async (data: FormData) => {

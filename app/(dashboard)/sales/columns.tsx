@@ -1,9 +1,9 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Sale, SaleItem } from "@/lib/types";
 import { DataTableColumnHeader } from "@/components/ui/data-table-column-header";
-import { SaleStatus } from "@/lib/enums";
+import { SaleStatus, TypePrice } from "@/lib/enums";
 import { Badge } from "@/components/ui/badge";
-import { formatCurrency, formatDate } from "@/utils/formatDate";
+import { formatCurrency, formatDate } from "@/utils/utils";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -37,6 +37,12 @@ export const SubRow = ({ saleItems }: { saleItems: SaleItem[] }) => {
               </TableCell>
               <TableCell>
                 {formatCurrency(item.total_price, item.product?.type_price)}
+                <br />
+                {item.product?.type_price === TypePrice.USD && (
+                  <span className="text-muted-foreground">
+                    Kurs: {item.total_price / (item.quantity * item.price)}
+                  </span>
+                )}
               </TableCell>
             </TableRow>
           ))}

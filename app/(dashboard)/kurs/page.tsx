@@ -5,11 +5,10 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAppConfig } from "@/hooks/useAppConfig";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 export default function KursPage() {
   // Use the hook with the specific config key
-  const { toast } = useToast();
   const {
     value: dollarRate,
     isLoading,
@@ -34,15 +33,10 @@ export default function KursPage() {
 
     try {
       update(inputValue);
-      toast({
-        description: "Dollar kursi muvaffaqiyatli saqlandi",
-      });
+      toast("Dollar kursi muvaffaqiyatli saqlandi");
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
-      toast({
-        variant: "destructive",
-        description: "Dollar kursini saqlashda xatolik yuz berdi",
-      });
+      toast.error("Dollar kursini saqlashda xatolik yuz berdi");
     }
   };
 

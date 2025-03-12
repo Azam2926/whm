@@ -65,7 +65,7 @@ export function CustomerDialog({
 
   useEffect(() => {
     form.reset(default_form_values);
-  }, [open, default_form_values]);
+  }, [open]);
 
   const form = useForm<CustomerCreate>({
     resolver: zodResolver(formSchema),

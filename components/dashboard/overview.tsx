@@ -2,7 +2,7 @@
 
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import { ReportCategoryWiseSales } from "@/lib/types/reports";
-import { formatCurrency } from "@/utils/formatDate";
+import { formatCurrency } from "@/utils/utils";
 
 interface OverviewProps {
   data: ReportCategoryWiseSales[];

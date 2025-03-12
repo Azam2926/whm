@@ -8,9 +8,9 @@ import { RecentSales } from "@/components/dashboard/recent-sales";
 import { api } from "@/lib/services/api";
 import { DEFAULT_REPORT, Report } from "@/lib/types/reports";
 import Metrics from "@/components/dashboard/metrics";
-import { Toast, ToastDescription } from "@/components/ui/toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 const TABS = {
   OVERVIEW: "overview",
@@ -58,17 +58,17 @@ export default function Dashboard() {
     }
 
     if (error) {
-      return (
-        <Toast variant="destructive" className="my-4">
-          <ToastDescription>{error}</ToastDescription>
-        </Toast>
-      );
+      return toast.error(error);
     }
 
     return (
       <>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Metrics totals={analytics.totals} />
+          <Metrics
+            daily_turn_over={analytics.daily_turn_over}
+            monthly_turn_over={analytics.monthly_turn_over}
+            totals={analytics.totals}
+          />
         </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
           <CategorySalesCard data={analytics.category_wise_total_sales} />

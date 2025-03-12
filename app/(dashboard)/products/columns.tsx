@@ -1,6 +1,6 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "@/components/ui/data-table-column-header";
-import { formatCurrency, formatDate } from "@/utils/formatDate";
+import { formatCurrency, formatDate } from "@/utils/utils";
 import { Product } from "@/lib/types";
 
 export const columns: ColumnDef<Product>[] = [
@@ -34,6 +34,10 @@ export const columns: ColumnDef<Product>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Narxi" />
     ),
+    cell: ({ row }) => {
+      const price = row.getValue("price") as number;
+      return formatCurrency(price, row.getValue("type_price"));
+    },
   },
   {
     accessorKey: "quantity",

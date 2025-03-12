@@ -1,14 +1,47 @@
-import { ReportTotals } from "@/lib/types/reports";
+import {
+  ReportDailyTurnOver,
+  ReportMonthlyTurnOver,
+  ReportTotals,
+} from "@/lib/types/reports";
 import MetricCard from "@/components/dashboard/MetricCard";
-import { BrickWall, Package, ShoppingCart, Users } from "lucide-react";
-import { formatCurrency } from "@/utils/formatDate";
+import {
+  BrickWall,
+  Package,
+  ShoppingBag,
+  ShoppingCart,
+  Store,
+  Users,
+} from "lucide-react";
+import {
+  formatCurrency,
+  getUzbekDayMonth,
+  getUzbekMonthName,
+} from "@/utils/utils";
 
 interface MetricsProps {
   totals: ReportTotals;
+  daily_turn_over: ReportDailyTurnOver;
+  monthly_turn_over: ReportMonthlyTurnOver;
 }
-export default function Metrics({ totals }: MetricsProps) {
+export default function Metrics({
+  totals,
+  daily_turn_over,
+  monthly_turn_over,
+}: MetricsProps) {
   return (
     <>
+      <MetricCard
+        title="Bugungi savdo"
+        description={getUzbekDayMonth(daily_turn_over?.sale_date)}
+        value={formatCurrency(daily_turn_over?.total_turn_over)}
+        icon={ShoppingBag}
+      />
+      <MetricCard
+        title="Oylik savdo"
+        description={getUzbekMonthName(monthly_turn_over?.yearMonth)}
+        value={formatCurrency(monthly_turn_over?.totalTurnover)}
+        icon={Store}
+      />
       <MetricCard
         title="Mahsulotlar"
         value={totals?.total_products}

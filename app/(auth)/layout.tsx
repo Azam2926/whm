@@ -3,7 +3,7 @@ import "../globals.css";
 
 import { ThemeProvider } from "@/components/theme-provider";
 import { ModeToggle } from "@/components/ModeToggle";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "@/components/ui/sonner";
 import { Analytics } from "@vercel/analytics/next";
 
 const title = "Warehouse app Login";
@@ -55,7 +55,7 @@ export default function AuthLayout({
             <ModeToggle />
           </div>
           {children}
-          <Toaster />
+          <Toaster richColors />
         </ThemeProvider>
         <Analytics />
       </body>
