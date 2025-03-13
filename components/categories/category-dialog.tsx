@@ -50,19 +50,24 @@ export function CategoryDialog({
   onSubmit,
 }: CategoryDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const defaultCategory = {
-    name: category?.name || "",
-    description: category?.description || "",
-    status: category?.status || RootStatus.ACTIVE,
-  };
-  useEffect(() => {
-    form.reset(defaultCategory);
-  }, [open, defaultCategory]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: defaultCategory,
+    defaultValues: {
+      name: category?.name || "",
+      description: category?.description || "",
+      status: category?.status || RootStatus.ACTIVE,
+    },
   });
+
+  useEffect(() => {
+    form.reset({
+      name: category?.name || "",
+      description: category?.description || "",
+      status: category?.status || RootStatus.ACTIVE,
+    });
+  }, [open, form, category]);
+
   const handleSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
       setIsSubmitting(true);

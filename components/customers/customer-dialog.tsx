@@ -56,21 +56,25 @@ export function CustomerDialog({
   onSubmit,
 }: CategoryDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const default_form_values = {
-    name: customer?.name || "",
-    phone_number: customer?.phone_number || "",
-    address: customer?.address || "",
-    status: customer?.status || RootStatus.ACTIVE,
-  };
-
-  useEffect(() => {
-    form.reset(default_form_values);
-  }, [open]);
-
   const form = useForm<CustomerCreate>({
     resolver: zodResolver(formSchema),
-    defaultValues: default_form_values,
+    defaultValues: {
+      name: customer?.name || "",
+      phone_number: customer?.phone_number || "",
+      address: customer?.address || "",
+      status: customer?.status || RootStatus.ACTIVE,
+    },
   });
+
+  useEffect(() => {
+    form.reset({
+      name: customer?.name || "",
+      phone_number: customer?.phone_number || "",
+      address: customer?.address || "",
+      status: customer?.status || RootStatus.ACTIVE,
+    });
+  }, [open, form, customer]);
+
   const handleSubmit = async (data: CustomerCreate) => {
     try {
       setIsSubmitting(true);

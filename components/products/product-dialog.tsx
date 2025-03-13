@@ -26,7 +26,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Category, Product } from "@/lib/types";
-import { Measurement, RootStatus, TypePrice } from "@/lib/enums";
+import { Measurement, TypePrice } from "@/lib/enums";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 // Form schema only includes editable fields

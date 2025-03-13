@@ -49,7 +49,7 @@ export const getUzbekMonthName = (dateString: string) => {
   return uzbekMonths[monthNumber - 1];
 };
 
-export const getUzbekDayMonth = dateString => {
+export const getUzbekDayMonth = (dateString: string) => {
   const uzbekMonths = [
     "Yanvar",
     "Fevral",

@@ -6,7 +6,7 @@ export interface Report {
   monthly_turn_over: ReportMonthlyTurnOver;
 }
 
-export const DEFAULT_REPORT = {
+export const DEFAULT_REPORT: Report = {
   recent_sales: [],
   category_wise_total_sales: [],
   totals: {
@@ -18,7 +18,7 @@ export const DEFAULT_REPORT = {
   },
   daily_turn_over: {
     sale_date: "",
-    total_price: 0,
+    total_turn_over: 0,
   },
   monthly_turn_over: {
     yearMonth: "",
