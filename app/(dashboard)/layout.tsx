@@ -6,6 +6,7 @@ import { ModeToggle } from "@/components/ModeToggle";
 import { Toaster } from "@/components/ui/sonner";
 import Providers from "@/app/(dashboard)/providers";
 import React from "react";
+import { ReactScan } from "@/components/ReactScan";
 
 const title = "Warehouse app Home";
 const description = "Warehouse app for management";
@@ -44,6 +45,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <ReactScan />
       <body className="antialiased">
         <ThemeProvider
           attribute="class"

@@ -1,26 +1,28 @@
 "use client";
-
-import * as React from "react";
 import { useCallback, useEffect, useState } from "react";
 import { Coins, CreditCard, Plus, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SaleDialog } from "@/components/sales/sale-dialog";
 import { api } from "@/lib/services/api";
-import { Customer, Product } from "@/lib/types";
+import type { Customer, Product, Sale } from "@/lib/types";
 import { columns } from "@/app/(dashboard)/sales/columns";
 import { ServerDataTable } from "@/components/ui/server-data-table";
-import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
-import { SaleCreateRequest } from "@/services/sale.service";
+import type { ColumnFiltersState, SortingState } from "@tanstack/react-table";
+import type { SaleCreateRequest } from "@/services/sale.service";
 import { SaleStatus } from "@/lib/enums";
 import { SalesTableSkeleton } from "@/components/sales/sales-table-skeleton";
+import { pdfService } from "@/lib/services/pdf-service";
+import { PdfViewer } from "@/components/pdf/pdf-viewer";
 
 export default function SalesPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isLoading, setIsLoading] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [pdfUrl, setPdfUrl] = useState<string>("");
+  const [isPdfViewerOpen, setIsPdfViewerOpen] = useState(false);
+  const [selectedSale, setSelectedSale] = useState<Sale | null>(null);
   const PAGE_SIZE = 10;
 
   const fetchDataAction = useCallback(
@@ -42,6 +44,7 @@ export default function SalesPage() {
     },
     [],
   );
+
   const loadData = async () => {
     try {
       setIsLoading(true);
@@ -65,6 +68,7 @@ export default function SalesPage() {
       setIsLoading(false);
     }
   };
+
   useEffect(() => {
     loadData().then(data => {
       setProducts(data.products);
@@ -76,10 +80,23 @@ export default function SalesPage() {
     await api.createSale(saleData);
     await loadData();
     setIsDialogOpen(false);
+    handleRefresh();
   };
 
   const handleRefresh = useCallback(() => {
     setRefreshKey(prev => prev + 1);
+  }, []);
+
+  const handlePrint = useCallback((sale: Sale) => {
+    try {
+      setSelectedSale(sale);
+      const pdfDataUrl = pdfService.generateSalePdf(sale);
+      setPdfUrl(pdfDataUrl);
+      setIsPdfViewerOpen(true);
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      // You could add a toast notification here
+    }
   }, []);
 
   return (
@@ -109,7 +126,7 @@ export default function SalesPage() {
       <ServerDataTable
         key={refreshKey}
         fetchDataAction={fetchDataAction}
-        columns={columns({ onPrint: console.dir })}
+        columns={columns({ onPrint: handlePrint })}
         initialPageSize={PAGE_SIZE}
         toolbarConfig={{
           searchColumn: "",
@@ -153,6 +170,15 @@ export default function SalesPage() {
         products={products}
         customers={customers}
       />
+
+      {selectedSale && (
+        <PdfViewer
+          pdfUrl={pdfUrl}
+          fileName={`sale-${selectedSale.id}.pdf`}
+          open={isPdfViewerOpen}
+          onOpenChange={setIsPdfViewerOpen}
+        />
+      )}
     </div>
   );
 }
