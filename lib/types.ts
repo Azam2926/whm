@@ -40,7 +40,7 @@ export interface Sale {
 
 export interface SaleItem {
   id?: number;
-  product?: Product;
+  product: Product;
   quantity: number;
   price: number;
   total_price: number;

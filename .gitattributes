@@ -1,0 +1,24 @@
+# Ignore line ending differences
+* text=auto eol=lf
+
+# Mark image files as binary
+*.png binary
+*.jpg binary
+
+# Use custom merge strategy for lock files
+*.lock merge=ours
+
+# Custom diff for markdown files
+*.md diff=markdown
+
+# Exclude log files from archive exports
+*.log export-ignore
+
+# Force LF line endings for shell scripts
+*.sh text eol=lf
+
+# Apply custom filter to SVG files
+*.svg filter=svgcleaner
+
+# Apply text attribute to all files in the docs directory
+docs/* text

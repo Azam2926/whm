@@ -17,10 +17,18 @@ export const formatDate = (
   }
 };
 
+export const formatNumber = (
+  number: number,
+  options: Intl.NumberFormatOptions = { maximumFractionDigits: 3 },
+) => {
+  return new Intl.NumberFormat("uz-UZ", options).format(number);
+};
+
 export const formatCurrency = (
-  amount: number,
+  amount: number | undefined,
   type_price: TypePrice = TypePrice.SUM,
 ) => {
+  if (!amount) return "";
   const currency = type_price === TypePrice.USD ? "USD" : "UZS";
   return new Intl.NumberFormat("uz-UZ", {
     style: "currency",

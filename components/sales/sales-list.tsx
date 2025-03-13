@@ -1,7 +1,7 @@
 import {
   flexRender,
   getCoreRowModel,
-  useReactTable
+  useReactTable,
 } from "@tanstack/react-table";
 import {
   Table,
@@ -9,7 +9,7 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow
+  TableRow,
 } from "@/components/ui/table";
 import { Sale } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -27,12 +27,12 @@ export function SalesList({
   sales,
   currentPage,
   totalPages,
-  onPageChange
+  onPageChange,
 }: SalesListProps) {
   const table = useReactTable({
     data: sales,
     columns,
-    getCoreRowModel: getCoreRowModel()
+    getCoreRowModel: getCoreRowModel(),
   });
 
   if (sales.length === 0) {
@@ -57,7 +57,7 @@ export function SalesList({
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
-                          header.getContext()
+                          header.getContext(),
                         )}
                   </TableHead>
                 ))}
@@ -72,7 +72,7 @@ export function SalesList({
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}

@@ -86,7 +86,7 @@ export function ProductDialog({
   // Reset form when dialog opens/closes or product changes
   useEffect(() => {
     form.reset(default_form_values); // Reset to default values when closing
-  }, [open, product, form]);
+  }, [open, product, form, default_form_values]);
 
   const handleSubmit = async (data: FormData) => {
     try {

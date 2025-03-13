@@ -3,8 +3,8 @@ import { Sale, SaleItem } from "@/lib/types";
 import { DataTableColumnHeader } from "@/components/ui/data-table-column-header";
 import { SaleStatus, TypePrice } from "@/lib/enums";
 import { Badge } from "@/components/ui/badge";
-import { formatCurrency, formatDate } from "@/utils/utils";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { formatCurrency, formatDate, formatNumber } from "@/utils/utils";
+import { ChevronDown, ChevronRight, Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -14,6 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import * as React from "react";
 
 export const SubRow = ({ saleItems }: { saleItems: SaleItem[] }) => {
   return (
@@ -30,18 +31,23 @@ export const SubRow = ({ saleItems }: { saleItems: SaleItem[] }) => {
         <TableBody>
           {saleItems.map((item, index) => (
             <TableRow key={index}>
-              <TableCell>{item.product?.name ?? ""}</TableCell>
+              <TableCell>{item.product.name}</TableCell>
               <TableCell>{item.quantity}</TableCell>
               <TableCell>
-                {formatCurrency(item.price, item.product?.type_price)}
+                {formatCurrency(item.product.price, item.product.type_price)}
               </TableCell>
               <TableCell>
-                {formatCurrency(item.total_price, item.product?.type_price)}
+                {formatCurrency(item.total_price)}
                 <br />
-                {item.product?.type_price === TypePrice.USD && (
-                  <span className="text-muted-foreground">
-                    Kurs: {item.total_price / (item.quantity * item.price)}
-                  </span>
+                {item.product.type_price === TypePrice.USD && (
+                  <>
+                    <span className="text-muted-foreground">
+                      Kurs:{" "}
+                      {formatNumber(
+                        item.total_price / (item.quantity * item.product.price),
+                      )}
+                    </span>
+                  </>
                 )}
               </TableCell>
             </TableRow>
@@ -52,7 +58,11 @@ export const SubRow = ({ saleItems }: { saleItems: SaleItem[] }) => {
   );
 };
 
-export const columns: ColumnDef<Sale>[] = [
+export const columns = ({
+  onPrint,
+}: {
+  onPrint: (sale: Sale) => void;
+}): ColumnDef<Sale>[] => [
   {
     id: "expander",
     header: () => null,
@@ -117,6 +127,29 @@ export const columns: ColumnDef<Sale>[] = [
     cell: ({ row }) => {
       const total = row.getValue("total_sum") as number;
       return formatCurrency(total);
+    },
+  },
+  {
+    id: "actions",
+    header: ({ column }) => (
+      <DataTableColumnHeader
+        className="w-10"
+        column={column}
+        title="Harakatlar"
+      />
+    ),
+    cell: ({ row }) => {
+      return (
+        <div className="flex gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => onPrint(row.original)}
+          >
+            <Printer className="h-4 w-4" />
+          </Button>
+        </div>
+      );
     },
   },
 ];

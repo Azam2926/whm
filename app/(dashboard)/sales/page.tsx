@@ -32,34 +32,34 @@ export default function SalesPage() {
     }) => {
       const {
         data,
-        page: { totalElements }
+        page: { totalElements },
       } = await api.getSales(params);
 
       return {
         rows: data,
-        totalRows: totalElements
+        totalRows: totalElements,
       };
     },
-    []
+    [],
   );
   const loadData = async () => {
     try {
       setIsLoading(true);
       const [
         {
-          data: { data: productsData }
+          data: { data: productsData },
         },
         {
-          data: { data: customersData }
-        }
+          data: { data: customersData },
+        },
       ] = await Promise.all([
         api.getProducts({ size: 1000 }),
-        api.getCustomers({ size: 1000 })
+        api.getCustomers({ size: 1000 }),
       ]);
 
       return {
         products: productsData,
-        customers: customersData
+        customers: customersData,
       };
     } finally {
       setIsLoading(false);
@@ -109,7 +109,7 @@ export default function SalesPage() {
       <ServerDataTable
         key={refreshKey}
         fetchDataAction={fetchDataAction}
-        columns={columns}
+        columns={columns({ onPrint: console.dir })}
         initialPageSize={PAGE_SIZE}
         toolbarConfig={{
           searchColumn: "",
@@ -120,8 +120,8 @@ export default function SalesPage() {
               placeholder: "Mijoz",
               options: customers.map(c => ({
                 label: c.name,
-                value: c.id.toString()
-              }))
+                value: c.id.toString(),
+              })),
             },
             {
               columnName: "status",
@@ -131,16 +131,16 @@ export default function SalesPage() {
                 {
                   label: SaleStatus.CASH,
                   value: SaleStatus.CASH,
-                  icon: Coins
+                  icon: Coins,
                 },
                 {
                   label: SaleStatus.CREDIT,
                   value: SaleStatus.CREDIT,
-                  icon: CreditCard
-                }
-              ]
-            }
-          ]
+                  icon: CreditCard,
+                },
+              ],
+            },
+          ],
         }}
         loadingComponent={<SalesTableSkeleton />}
         isRowExpanded={true}
