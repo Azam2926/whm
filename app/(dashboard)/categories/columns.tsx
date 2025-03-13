@@ -2,7 +2,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "@/components/ui/data-table-column-header";
 import { RootStatus } from "@/lib/enums";
 import { Badge } from "@/components/ui/badge";
-import { formatDate } from "@/utils/formatDate";
+import { formatDate } from "@/utils/utils";
 import { Category } from "@/lib/types";
 
 export const columns: ColumnDef<Category>[] = [
@@ -10,13 +10,13 @@ export const columns: ColumnDef<Category>[] = [
     accessorKey: "name",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Nomi" />
-    )
+    ),
   },
   {
     accessorKey: "description",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Tavsif" />
-    )
+    ),
   },
   {
     accessorKey: "status",
@@ -35,7 +35,7 @@ export const columns: ColumnDef<Category>[] = [
           {row.getValue("status")}
         </Badge>
       );
-    }
+    },
   },
   {
     accessorKey: "created_at",
@@ -45,6 +45,6 @@ export const columns: ColumnDef<Category>[] = [
     cell: ({ row }) => {
       const date = row.getValue("created_at");
       return formatDate(date as string, "dd MMMM, yyyy");
-    }
-  }
+    },
+  },
 ];

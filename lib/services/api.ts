@@ -53,17 +53,26 @@ export const api = {
 
   // Analytics
   getAnalytics: async (): Promise<Report> => {
-    const [recent_sales, category_wise_total_sales, totals] = await Promise.all(
-      [
-        reportService.get_recent_sales(),
-        reportService.get_category_wise_total_sales(),
-        reportService.get_totals(),
-      ],
-    );
+    const [
+      recent_sales,
+      category_wise_total_sales,
+      totals,
+      daily_turn_over,
+      monthly_turn_over,
+    ] = await Promise.all([
+      reportService.get_recent_sales(),
+      reportService.get_category_wise_total_sales(),
+      reportService.get_totals(),
+      reportService.get_daily_turn_over(),
+      reportService.get_monthly_turn_over(),
+    ]);
+    console.log("daily_turn_over", daily_turn_over);
     return {
       recent_sales,
       category_wise_total_sales,
       totals,
+      daily_turn_over,
+      monthly_turn_over,
     };
   },
 };

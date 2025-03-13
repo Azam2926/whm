@@ -1,13 +1,13 @@
 import axios from "axios";
-import { toast } from "@/hooks/use-toast";
 import { redirectToLogin } from "@/lib/redirect";
+import { toast } from "sonner";
 
 export const API_URL =
   process.env.NEXT_PUBLIC_API_URL ||
   "https://warehouse-app-l6ug.onrender.com/v1";
 
 const api = axios.create({
-  baseURL: `${API_URL}/`
+  baseURL: `${API_URL}/`,
 });
 
 // Request Interceptor
@@ -21,7 +21,7 @@ api.interceptors.request.use(
   },
   error => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // Response Interceptor
@@ -31,10 +31,8 @@ api.interceptors.response.use(
     const message =
       error.response?.data?.message || error.message || "An error occurred";
 
-    toast({
-      variant: "destructive",
-      title: "Error",
-      description: message
+    toast.error("Error", {
+      description: message,
     });
     console.log(error);
     // Agar foydalanuvchi avtorizatsiya qilinmagan bo'lsa, login sahifasiga yo'naltirish
@@ -43,7 +41,7 @@ api.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;

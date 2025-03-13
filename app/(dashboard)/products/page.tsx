@@ -69,18 +69,29 @@ export default function ProductsPage() {
 
   const getClassName = (row: Row<Product>): string => {
     const count = row.original.quantity;
-    return count <= 11
-      ? "!bg-[#ff5555] text-white "
-      : count < 11
-        ? "!bg-[#f9e514]"
+    return count <= 10
+      ? "bg-red-200! dark:text-gray-900"
+      : count < 20
+        ? "bg-amber-200! dark:text-gray-900"
         : "";
   };
 
   return (
     <div className="container mx-auto py-10">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Mahsulotlar</h1>
-        <Button onClick={() => setIsDialogOpen(true)}>
+        <div>
+          <h1 className="text-3xl font-bold">Mahsulotlar</h1>
+          <div className="flex space-x-2 text-xs dark:text-gray-900">
+            <p className="rounded-sm p-1 bg-red-200">10 tadan kam</p>
+            <p className="rounded-sm p-1 bg-amber-200">20 tadan kam</p>
+          </div>
+        </div>
+        <Button
+          onClick={() => {
+            setIsDialogOpen(true);
+            setSelectedProducts(null);
+          }}
+        >
           <Plus className="mr-2 h-4 w-4" /> Mahsulot qo&#39;shish
         </Button>
       </div>

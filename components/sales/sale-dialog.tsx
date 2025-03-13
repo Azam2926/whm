@@ -9,7 +9,7 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTitle
+  DialogTitle,
 } from "@/components/ui/dialog";
 import {
   Form,
@@ -17,7 +17,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -27,11 +27,11 @@ import { SaleStatus } from "@/lib/enums";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { SaleCreateRequest } from "@/services/sale.service";
 import { Combobox } from "@/components/ui/combobox";
-import { formatCurrency } from "@/utils/formatDate";
+import { formatCurrency } from "@/utils/utils";
 
 const saleItemSchema = z.object({
   product_id: z.string().min(1, "Mahsulot to'ldirilishi shart"),
-  quantity: z.string().min(1, "Soni to'ldirishi shart").transform(Number)
+  quantity: z.string().min(1, "Soni to'ldirishi shart").transform(Number),
 });
 
 type SaleItemType = z.infer<typeof saleItemSchema>;
@@ -41,7 +41,7 @@ const formSchema = z.object({
   status: z.nativeEnum(SaleStatus),
   sales: z
     .array(saleItemSchema)
-    .min(1, "Kamida 1 ta mahsulot to'ldirilishi shart")
+    .min(1, "Kamida 1 ta mahsulot to'ldirilishi shart"),
 });
 
 interface SaleDialogProps {
@@ -57,7 +57,7 @@ export function SaleDialog({
   onOpenChange,
   onSubmit,
   products,
-  customers
+  customers,
 }: SaleDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -66,8 +66,8 @@ export function SaleDialog({
     defaultValues: {
       customer_id: "",
       status: SaleStatus.CASH,
-      sales: [{ product_id: "", quantity: 0 }]
-    }
+      sales: [{ product_id: "", quantity: 0 }],
+    },
   });
 
   const handleSubmit = async (data: z.infer<typeof formSchema>) => {
@@ -78,8 +78,8 @@ export function SaleDialog({
         status: data.status,
         sale_items: data.sales.map(sale => ({
           product_id: parseInt(sale.product_id),
-          quantity: sale.quantity
-        }))
+          quantity: sale.quantity,
+        })),
       });
       form.reset();
     } finally {
@@ -97,7 +97,7 @@ export function SaleDialog({
     if (currentSales.length > 1) {
       form.setValue(
         "sales",
-        currentSales.filter((_, i) => i !== index)
+        currentSales.filter((_, i) => i !== index),
       );
     }
   };
@@ -106,12 +106,12 @@ export function SaleDialog({
     const product = products.find(p => p.id.toString() === sale.product_id);
     if (!product) return "0.00";
 
-    return formatCurrency(product.price * sale.quantity);
+    return formatCurrency(product.price * sale.quantity, product.type_price);
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Sotuv yaratish</DialogTitle>
         </DialogHeader>
@@ -130,7 +130,7 @@ export function SaleDialog({
                     <Combobox
                       items={customers.map(c => ({
                         value: c.id.toString(),
-                        label: c.name
+                        label: c.name,
                       }))}
                       placeholder="Mijozni tanlang ..."
                       onSelect={item => field.onChange(item?.value)}
@@ -184,7 +184,7 @@ export function SaleDialog({
                     control={form.control}
                     name={`sales.${index}.product_id`}
                     render={({ field }) => (
-                      <FormItem className="flex-1 flex flex-col space-y-4">
+                      <FormItem className="flex flex-col space-y-4">
                         <FormLabel>Mahsulot</FormLabel>
                         <Combobox
                           items={products.map(item => ({
@@ -194,10 +194,11 @@ export function SaleDialog({
                               <>
                                 {item.name}{" "}
                                 <span className="text-gray-500">
-                                  ${item.price}, {item.quantity} ta
+                                  {formatCurrency(item.price, item.type_price)},{" "}
+                                  {item.quantity} ta
                                 </span>
                               </>
-                            )
+                            ),
                           }))}
                           placeholder="Mahsulotni tanlang ..."
                           onSelect={item => field.onChange(item?.value)}
@@ -219,7 +220,7 @@ export function SaleDialog({
                             min="1"
                             max={
                               products.find(
-                                p => p.id.toString() === sale.product_id
+                                p => p.id.toString() === sale.product_id,
                               )?.quantity
                             }
                             {...field}

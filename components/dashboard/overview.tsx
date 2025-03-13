@@ -2,7 +2,7 @@
 
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import { ReportCategoryWiseSales } from "@/lib/types/reports";
-import { formatCurrency } from "@/utils/formatDate";
+import { formatCurrency } from "@/utils/utils";
 
 interface OverviewProps {
   data: ReportCategoryWiseSales[];
@@ -29,7 +29,7 @@ export function Overview({ data }: OverviewProps) {
           fontSize={12}
           tickLine={false}
           axisLine={false}
-          tickFormatter={formatCurrency}
+          tickFormatter={value => formatCurrency(value)}
         />
         <Bar
           dataKey="total"

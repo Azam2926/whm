@@ -3,7 +3,9 @@ import "../globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { MainNav } from "@/components/layout/main-nav";
 import { ModeToggle } from "@/components/ModeToggle";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "@/components/ui/sonner";
+import Providers from "@/app/(dashboard)/providers";
+import React from "react";
 
 const title = "Warehouse app Home";
 const description = "Warehouse app for management";
@@ -49,14 +51,16 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="flex justify-between items-center border-b px-4">
-            <div className="flex h-16 items-center px-4">
-              <MainNav />
+          <Providers>
+            <div className="flex justify-between items-center border-b px-4">
+              <div className="flex h-16 items-center px-4">
+                <MainNav />
+              </div>
+              <ModeToggle />
             </div>
-            <ModeToggle />
-          </div>
-          <div className="mx-10">{children}</div>
-          <Toaster />
+            <div className="mx-10">{children}</div>
+            <Toaster richColors />
+          </Providers>
         </ThemeProvider>
       </body>
     </html>

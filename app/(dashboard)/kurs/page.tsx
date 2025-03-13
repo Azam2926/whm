@@ -1,51 +1,48 @@
 "use client";
 
 import * as React from "react";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import appConfigService from "@/services/appConfig.service";
-
-const fetchKurs = async () => {
-  const {
-    data: { value },
-  } = await appConfigService.get("dollar_rate");
-
-  return value;
-};
+import { useAppConfig } from "@/hooks/useAppConfig";
+import { toast } from "sonner";
 
 export default function KursPage() {
-  const [kurs, setKurs] = useState("0");
-  const [isLoading, setIsLoading] = useState(true);
+  // Use the hook with the specific config key
+  const {
+    value: dollarRate,
+    isLoading,
+    isUpdating,
+    error,
+    update,
+  } = useAppConfig("dollar_rate");
 
+  const [inputValue, setInputValue] = useState(dollarRate);
+
+  // Update local state when the value is loaded or changed
   useEffect(() => {
-    const loadData = async () => {
-      setIsLoading(true);
-      try {
-        const data = await fetchKurs();
-        setKurs(data);
-      } catch (error) {
-        console.error("Failed to fetch data:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    if (dollarRate) {
+      setInputValue(dollarRate);
+    }
+  }, [dollarRate]);
 
-    loadData();
-  }, []);
+  const hasChanges = inputValue !== dollarRate;
 
   const handleSave = async () => {
-    setIsLoading(true);
+    if (!hasChanges) return;
+
     try {
-      await appConfigService.update({
-        key: "dollar_rate",
-        value: kurs.toString(),
-      });
-    } catch (error) {
-      console.error("Failed to fetch data:", error);
-    } finally {
-      setIsLoading(false);
+      update(inputValue);
+      toast("Dollar kursi muvaffaqiyatli saqlandi");
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (err) {
+      toast.error("Dollar kursini saqlashda xatolik yuz berdi");
     }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleSave();
   };
 
   return (
@@ -57,19 +54,45 @@ export default function KursPage() {
         </div>
       </div>
 
-      <div className="w-64 flex gap-4">
-        <Input
-          type={"number"}
-          disabled={isLoading}
-          value={kurs}
-          onChange={e => {
-            setKurs(e.target.value);
-          }}
-        />
-        <Button disabled={isLoading} onClick={handleSave}>
-          Saqlash
-        </Button>
-      </div>
+      {error && (
+        <div
+          className="mb-4 p-3 bg-red-100 text-red-700 rounded-md"
+          role="alert"
+        >
+          {String(error)}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="max-w-sm">
+        <div className="flex gap-4 items-center">
+          <div className="flex-1">
+            <label
+              htmlFor="dollar-rate"
+              className="block text-sm font-medium mb-1"
+            >
+              Kurs qiymati
+            </label>
+            <Input
+              id="dollar-rate"
+              type="number"
+              min="0"
+              step="any"
+              disabled={isLoading || isUpdating}
+              value={inputValue}
+              onChange={e => setInputValue(e.target.value)}
+              placeholder="Dollar kursini kiriting"
+            />
+          </div>
+          <div className="flex-none mt-6">
+            <Button
+              type="submit"
+              disabled={isLoading || isUpdating || !hasChanges}
+            >
+              {isUpdating ? "Saqlanmoqda..." : "Saqlash"}
+            </Button>
+          </div>
+        </div>
+      </form>
     </div>
   );
 }
