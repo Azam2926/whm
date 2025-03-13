@@ -15,8 +15,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import * as React from "react";
+import { memo } from "react";
 
-export const SubRow = ({ saleItems }: { saleItems: SaleItem[] }) => {
+// Memoized SubRow component to prevent unnecessary re-renders
+export const SubRow = memo(({ saleItems }: { saleItems: SaleItem[] }) => {
   return (
     <div className="p-4 rounded-md">
       <Table>
@@ -29,8 +31,10 @@ export const SubRow = ({ saleItems }: { saleItems: SaleItem[] }) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {saleItems.map((item, index) => (
-            <TableRow key={index}>
+          {saleItems.map(item => (
+            <TableRow
+              key={item.id || `item-${item.product.id}-${item.created_at}`}
+            >
               <TableCell>{item.product.name}</TableCell>
               <TableCell>{item.quantity}</TableCell>
               <TableCell>
@@ -38,16 +42,13 @@ export const SubRow = ({ saleItems }: { saleItems: SaleItem[] }) => {
               </TableCell>
               <TableCell>
                 {formatCurrency(item.total_price)}
-                <br />
                 {item.product.type_price === TypePrice.USD && (
-                  <>
-                    <span className="text-muted-foreground">
-                      Kurs:{" "}
-                      {formatNumber(
-                        item.total_price / (item.quantity * item.product.price),
-                      )}
-                    </span>
-                  </>
+                  <div className="text-muted-foreground text-sm mt-1">
+                    Kurs:{" "}
+                    {formatNumber(
+                      item.total_price / (item.quantity * item.product.price),
+                    )}
+                  </div>
                 )}
               </TableCell>
             </TableRow>
@@ -56,13 +57,25 @@ export const SubRow = ({ saleItems }: { saleItems: SaleItem[] }) => {
       </Table>
     </div>
   );
+});
+SubRow.displayName = "SubRow";
+
+// Helper for status badge - extracted for readability
+const StatusBadge = ({ status }: { status: SaleStatus }) => {
+  return (
+    <Badge variant={status === SaleStatus.CASH ? "default" : "destructive"}>
+      {status}
+    </Badge>
+  );
 };
 
-export const columns = ({
-  onPrint,
-}: {
+// Type for the column configuration
+interface ColumnOptions {
   onPrint: (sale: Sale) => void;
-}): ColumnDef<Sale>[] => [
+}
+
+// Column definitions
+export const columns = ({ onPrint }: ColumnOptions): ColumnDef<Sale>[] => [
   {
     id: "expander",
     header: () => null,
@@ -73,6 +86,7 @@ export const columns = ({
           size="sm"
           className="p-0 h-8 w-8"
           onClick={() => row.toggleExpanded()}
+          aria-label={row.getIsExpanded() ? "Collapse row" : "Expand row"}
         >
           {row.getIsExpanded() ? (
             <ChevronDown className="h-4 w-4" />
@@ -90,6 +104,7 @@ export const columns = ({
     ),
     cell: ({ row }) => {
       const date = row.getValue("sale_date");
+      if (!date) return "-";
       return formatDate(date as string, "dd MMMM, yyyy");
     },
   },
@@ -98,18 +113,9 @@ export const columns = ({
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Holati" />
     ),
-    cell: ({ row }) => {
-      return (
-        <Badge
-          variant={
-            row.getValue("status") === SaleStatus.CASH
-              ? "default"
-              : "destructive"
-          }
-        >
-          {row.getValue("status")}
-        </Badge>
-      );
+    cell: ({ row }) => <StatusBadge status={row.getValue("status")} />,
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id));
     },
   },
   {
@@ -118,6 +124,10 @@ export const columns = ({
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Mijoz" />
     ),
+    cell: ({ row }) => {
+      const customerName = row.getValue("customer");
+      return customerName || "-";
+    },
   },
   {
     accessorKey: "total_sum",
@@ -144,7 +154,11 @@ export const columns = ({
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => onPrint(row.original)}
+            onClick={e => {
+              e.stopPropagation();
+              onPrint(row.original);
+            }}
+            aria-label="Print sale receipt"
           >
             <Printer className="h-4 w-4" />
           </Button>

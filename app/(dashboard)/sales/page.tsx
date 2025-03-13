@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 import { Coins, CreditCard, Plus, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SaleDialog } from "@/components/sales/sale-dialog";
@@ -14,7 +14,10 @@ import { SalesTableSkeleton } from "@/components/sales/sales-table-skeleton";
 import { pdfService } from "@/lib/services/pdf-service";
 import { PdfViewer } from "@/components/pdf/pdf-viewer";
 
+const PAGE_SIZE = 10;
+
 export default function SalesPage() {
+  // States
   const [products, setProducts] = useState<Product[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -23,8 +26,25 @@ export default function SalesPage() {
   const [pdfUrl, setPdfUrl] = useState<string>("");
   const [isPdfViewerOpen, setIsPdfViewerOpen] = useState(false);
   const [selectedSale, setSelectedSale] = useState<Sale | null>(null);
-  const PAGE_SIZE = 10;
 
+  // Memoized filter options for better performance
+  const statusFilterOptions = useMemo(
+    () => [
+      {
+        label: SaleStatus.CASH,
+        value: SaleStatus.CASH,
+        icon: Coins,
+      },
+      {
+        label: SaleStatus.CREDIT,
+        value: SaleStatus.CREDIT,
+        icon: CreditCard,
+      },
+    ],
+    [],
+  );
+
+  // Data fetching for the table
   const fetchDataAction = useCallback(
     async (params: {
       page: number;
@@ -32,20 +52,26 @@ export default function SalesPage() {
       sorting?: SortingState;
       columnFilters?: ColumnFiltersState;
     }) => {
-      const {
-        data,
-        page: { totalElements },
-      } = await api.getSales(params);
+      try {
+        const {
+          data,
+          page: { totalElements },
+        } = await api.getSales(params);
 
-      return {
-        rows: data,
-        totalRows: totalElements,
-      };
+        return {
+          rows: data,
+          totalRows: totalElements,
+        };
+      } catch (error) {
+        console.log(error, "Failed to fetch sales data");
+        return { rows: [], totalRows: 0 };
+      }
     },
     [],
   );
 
-  const loadData = async () => {
+  // Load reference data (products and customers)
+  const loadReferenceData = useCallback(async () => {
     try {
       setIsLoading(true);
       const [
@@ -60,27 +86,30 @@ export default function SalesPage() {
         api.getCustomers({ size: 1000 }),
       ]);
 
-      return {
-        products: productsData,
-        customers: customersData,
-      };
+      setProducts(productsData);
+      setCustomers(customersData);
+    } catch (error) {
+      console.log(error, "Failed to load reference data");
     } finally {
       setIsLoading(false);
     }
-  };
-
-  useEffect(() => {
-    loadData().then(data => {
-      setProducts(data.products);
-      setCustomers(data.customers);
-    });
   }, []);
 
+  // Initial data load
+  useEffect(() => {
+    loadReferenceData();
+  }, [loadReferenceData]);
+
+  // Handlers
   const handleCreate = async (saleData: SaleCreateRequest) => {
-    await api.createSale(saleData);
-    await loadData();
-    setIsDialogOpen(false);
-    handleRefresh();
+    try {
+      await api.createSale(saleData);
+      await loadReferenceData();
+      setIsDialogOpen(false);
+      handleRefresh();
+    } catch (error) {
+      console.log(error, "Failed to create sale");
+    }
   };
 
   const handleRefresh = useCallback(() => {
@@ -91,13 +120,29 @@ export default function SalesPage() {
     try {
       setSelectedSale(sale);
       const pdfDataUrl = pdfService.generateSalePdf(sale);
+      console.log("pdfUrl data", pdfDataUrl);
       setPdfUrl(pdfDataUrl);
       setIsPdfViewerOpen(true);
     } catch (error) {
-      console.error("Error generating PDF:", error);
-      // You could add a toast notification here
+      console.log(error, "Error generating PDF");
     }
   }, []);
+
+  // Memoize customer filter options for better performance
+  const customerFilterOptions = useMemo(
+    () =>
+      customers.map(c => ({
+        label: c.name,
+        value: c.id.toString(),
+      })),
+    [customers],
+  );
+
+  // Memoize table columns to prevent unnecessary re-renders
+  const tableColumns = useMemo(
+    () => columns({ onPrint: handlePrint }),
+    [handlePrint],
+  );
 
   return (
     <div className="container mx-auto py-10">
@@ -126,7 +171,7 @@ export default function SalesPage() {
       <ServerDataTable
         key={refreshKey}
         fetchDataAction={fetchDataAction}
-        columns={columns({ onPrint: handlePrint })}
+        columns={tableColumns}
         initialPageSize={PAGE_SIZE}
         toolbarConfig={{
           searchColumn: "",
@@ -135,27 +180,13 @@ export default function SalesPage() {
               columnName: "customer",
               type: "faceted",
               placeholder: "Mijoz",
-              options: customers.map(c => ({
-                label: c.name,
-                value: c.id.toString(),
-              })),
+              options: customerFilterOptions,
             },
             {
               columnName: "status",
               type: "faceted",
               placeholder: "Holat",
-              options: [
-                {
-                  label: SaleStatus.CASH,
-                  value: SaleStatus.CASH,
-                  icon: Coins,
-                },
-                {
-                  label: SaleStatus.CREDIT,
-                  value: SaleStatus.CREDIT,
-                  icon: CreditCard,
-                },
-              ],
+              options: statusFilterOptions,
             },
           ],
         }}
@@ -171,10 +202,10 @@ export default function SalesPage() {
         customers={customers}
       />
 
-      {selectedSale && (
+      {isPdfViewerOpen && (
         <PdfViewer
           pdfUrl={pdfUrl}
-          fileName={`sale-${selectedSale.id}.pdf`}
+          fileName={`sale-${selectedSale?.id || "unknown"}.pdf`}
           open={isPdfViewerOpen}
           onOpenChange={setIsPdfViewerOpen}
         />

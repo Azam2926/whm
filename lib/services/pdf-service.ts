@@ -4,60 +4,110 @@ import type { Sale, SaleItem } from "@/lib/types";
 import { formatCurrency, formatDate, formatNumber } from "@/utils/utils";
 import { TypePrice } from "@/lib/enums";
 
-// Add Uzbek font support
-// import { addFonts } from "./pdf-fonts";
+// Helper types for jsPDF with autoTable
+type JsPDFWithAutoTable = jsPDF & {
+  previousAutoTable?: { finalY: number };
+};
 
 export class PdfService {
-  private doc: jsPDF & { previousAutoTable?: { finalY: number } };
+  private doc: JsPDFWithAutoTable;
 
   constructor() {
-    this.doc = new jsPDF();
-    // Add custom fonts to support Uzbek characters
-    // addFonts(this.doc);
-    // this.doc.setFont("Roboto");
+    this.doc = new jsPDF({
+      orientation: "portrait",
+      format: [12, 3.15],
+    }) as JsPDFWithAutoTable;
+    this.setupFonts();
+  }
+
+  /**
+   * Configure fonts for the PDF
+   */
+  private setupFonts(): void {
+    // Use standard fonts for now
+    // Future implementation can add proper Unicode support for Uzbek
+    this.doc.setFont("helvetica");
   }
 
   /**
    * Generate a PDF for a sale
    */
   generateSalePdf(sale: Sale): string {
-    // Set up document
-    this.doc = new jsPDF();
-    // addFonts(this.doc);
-    // this.doc.setFont("Roboto");
+    this.doc = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: [80, 300], // 80mm width, height auto-expands
+    });
 
-    // Add header
-    this.addHeader(sale);
+    let y = 10;
+    this.doc.setFont("helvetica", "bold");
+    this.doc.setFontSize(12);
+    this.doc.text("TASHKENT METAL", 40, y, { align: "center" });
+    y += 6;
+    this.doc.setFontSize(10);
+    this.doc.text("KASSA CHEK", 40, y, { align: "center" });
+    y += 4;
 
-    // Add customer information
-    this.addCustomerInfo(sale);
+    // Sale info
+    this.doc.setFont("helvetica", "normal");
+    this.doc.setFontSize(8);
+    this.doc.text(`Chek raqami: ${sale.id}`, 5, y);
+    this.doc.text(`Sana: ${new Date().toLocaleDateString()}`, 55, y);
+    y += 6;
 
-    // Add sale items table
-    this.addSaleItemsTable(sale.sale_items);
+    // Table setup
+    const tableData = sale.sale_items.map(item => [
+      item.product.name,
+      item.quantity,
+      item.price.toLocaleString(),
+      item.total_price.toLocaleString(),
+    ]);
 
-    // Add summary
-    this.addSummary(sale);
+    autoTable(this.doc, {
+      startY: y,
+      head: [["Nomi", "Miqdor", "Narx", "Summa"]],
+      body: tableData,
+      theme: "grid",
+      styles: { fontSize: 8, cellPadding: 1 },
+      columnStyles: {
+        0: { cellWidth: 35 },
+        1: { cellWidth: 10, halign: "center" },
+        2: { cellWidth: 15, halign: "right" },
+        3: { cellWidth: 20, halign: "right" },
+      },
+    });
 
-    // Add footer
-    this.addFooter();
+    // Total amount
+    const finalY = (this.doc.previousAutoTable?.finalY || 0) + 5;
+    this.doc.setFont("helvetica", "bold");
+    this.doc.text(`JAMI: ${sale.total_sum.toLocaleString()} UZS`, 5, finalY);
 
-    // Return the PDF as a data URL
-    return this.doc.output("datauristring");
+    // Footer
+    this.doc.setFontSize(8);
+    this.doc.setFont("helvetica", "normal");
+    this.doc.text("Xaridingiz uchun rahmat!", 40, finalY + 6, {
+      align: "center",
+    });
+
+    // Generate PDF as Base64
+    return this.doc.output("dataurlstring");
   }
 
   /**
    * Add header to the PDF
    */
   private addHeader(sale: Sale): void {
+    const centerX = this.doc.internal.pageSize.width / 2;
+
     // Company logo and name
     this.doc.setFontSize(20);
     this.doc.setTextColor(41, 128, 185);
-    this.doc.text("WAREHOUSE MANAGEMENT", 105, 20, { align: "center" });
+    this.doc.text("WAREHOUSE MANAGEMENT", centerX, 20, { align: "center" });
 
     // Invoice title
     this.doc.setFontSize(16);
     this.doc.setTextColor(0, 0, 0);
-    this.doc.text("SOTUV CHEKI", 105, 30, { align: "center" });
+    this.doc.text("SOTUV CHEKI", centerX, 30, { align: "center" });
 
     // Sale information
     this.doc.setFontSize(10);
@@ -74,18 +124,24 @@ export class PdfService {
    * Add customer information to the PDF
    */
   private addCustomerInfo(sale: Sale): void {
-    if (sale.customer) {
-      this.doc.setFontSize(10);
-      this.doc.text("Mijoz ma'lumotlari:", 14, 60);
-      this.doc.text(`Nomi: ${sale.customer.name}`, 14, 65);
+    if (!sale.customer) return;
 
-      if (sale.customer.phone_number) {
-        this.doc.text(`Telefon: ${sale.customer.phone_number}`, 14, 70);
-      }
+    this.doc.setFontSize(10);
+    let yPos = 60;
+    const lineHeight = 5;
 
-      if (sale.customer.address) {
-        this.doc.text(`Manzil: ${sale.customer.address}`, 14, 75);
-      }
+    this.doc.text("Mijoz ma'lumotlari:", 14, yPos);
+    yPos += lineHeight;
+    this.doc.text(`Nomi: ${sale.customer.name}`, 14, yPos);
+    yPos += lineHeight;
+
+    if (sale.customer.phone_number) {
+      this.doc.text(`Telefon: ${sale.customer.phone_number}`, 14, yPos);
+      yPos += lineHeight;
+    }
+
+    if (sale.customer.address) {
+      this.doc.text(`Manzil: ${sale.customer.address}`, 14, yPos);
     }
   }
 
@@ -95,15 +151,20 @@ export class PdfService {
   private addSaleItemsTable(saleItems: SaleItem[]): void {
     const tableStartY = this.doc.previousAutoTable?.finalY || 85;
 
-    const tableBody = saleItems.map(item => [
-      item.product.name,
-      item.quantity.toString(),
-      formatCurrency(item.price, item.product.type_price),
-      formatCurrency(item.total_price),
-      item.product.type_price === TypePrice.USD
-        ? `Kurs: ${formatNumber(item.total_price / (item.quantity * item.product.price))}`
-        : "",
-    ]);
+    const tableBody = saleItems.map(item => {
+      const additionalInfo =
+        item.product.type_price === TypePrice.USD
+          ? `Kurs: ${formatNumber(item.total_price / (item.quantity * item.product.price))}`
+          : "";
+
+      return [
+        item.product.name,
+        item.quantity.toString(),
+        formatCurrency(item.price, item.product.type_price),
+        formatCurrency(item.total_price),
+        additionalInfo,
+      ];
+    });
 
     autoTable(this.doc, {
       startY: tableStartY,
@@ -117,7 +178,6 @@ export class PdfService {
         halign: "center",
       },
       styles: {
-        // font: "Roboto",
         overflow: "linebreak",
         cellPadding: 4,
       },
@@ -135,14 +195,14 @@ export class PdfService {
     const finalY = (this.doc.previousAutoTable?.finalY || 0) + 10;
 
     this.doc.setFontSize(12);
-    // this.doc.setFont("Roboto", "bold");
+    this.doc.setFont("helvetica", "bold");
     this.doc.text(
       `Umumiy summa: ${formatCurrency(sale.total_sum)}`,
       14,
       finalY,
     );
 
-    // this.doc.setFont("Roboto", "normal");
+    this.doc.setFont("helvetica", "normal");
     this.doc.setFontSize(10);
     this.doc.text(`To'lov turi: ${sale.status}`, 14, finalY + 7);
   }
@@ -152,35 +212,34 @@ export class PdfService {
    */
   private addFooter(): void {
     const pageCount = this.doc.getNumberOfPages();
+    const pageWidth = this.doc.internal.pageSize.width;
+    const pageHeight = this.doc.internal.pageSize.height;
 
     for (let i = 1; i <= pageCount; i++) {
       this.doc.setPage(i);
-
-      // Add page number
       this.doc.setFontSize(8);
+
+      // Page number
       this.doc.text(
         `Sahifa ${i} / ${pageCount}`,
-        this.doc.internal.pageSize.width / 2,
-        this.doc.internal.pageSize.height - 10,
+        pageWidth / 2,
+        pageHeight - 10,
         { align: "center" },
       );
 
-      // Add timestamp
+      // Timestamp
       const now = new Date();
       this.doc.text(
         `Yaratilgan vaqt: ${formatDate(now.toISOString(), "dd.MM.yyyy HH:mm")}`,
-        this.doc.internal.pageSize.width - 15,
-        this.doc.internal.pageSize.height - 10,
+        pageWidth - 15,
+        pageHeight - 10,
         { align: "right" },
       );
 
-      // Add company info
-      this.doc.text(
-        "Warehouse Management System",
-        15,
-        this.doc.internal.pageSize.height - 10,
-        { align: "left" },
-      );
+      // Company info
+      this.doc.text("Warehouse Management System", 15, pageHeight - 10, {
+        align: "left",
+      });
     }
   }
 }

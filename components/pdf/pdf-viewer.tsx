@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, memo } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,7 +20,13 @@ import {
 } from "lucide-react";
 
 // Set up the PDF.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+// This should be set once at the application level
+if (!pdfjs.GlobalWorkerOptions.workerSrc) {
+  pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+    "pdfjs-dist/build/pdf.worker.min.mjs",
+    import.meta.url,
+  ).toString();
+}
 
 interface PdfViewerProps {
   pdfUrl: string;
@@ -28,6 +34,14 @@ interface PdfViewerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
+
+// Loading component extracted for reuse
+const LoadingIndicator = memo(() => (
+  <div className="flex items-center justify-center h-[60vh]">
+    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+  </div>
+));
+LoadingIndicator.displayName = "LoadingIndicator";
 
 export function PdfViewer({
   pdfUrl,
@@ -39,81 +53,80 @@ export function PdfViewer({
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [scale, setScale] = useState<number>(1.0);
   const [loading, setLoading] = useState<boolean>(true);
-
+  console.log("pdfUrl", pdfUrl);
+  // Reset state when PDF changes or dialog opens
   useEffect(() => {
     if (open) {
       setLoading(true);
       setPageNumber(1);
+      setScale(1.0);
     }
   }, [open, pdfUrl]);
 
-  function onDocumentLoadSuccess({ numPages }: { numPages: number }) {
-    setNumPages(numPages);
-    setLoading(false);
-  }
+  // Memoized callbacks to prevent unnecessary rerenders
+  const onDocumentLoadSuccess = useCallback(
+    ({ numPages }: { numPages: number }) => {
+      setNumPages(numPages);
+      setLoading(false);
+    },
+    [],
+  );
 
-  function changePage(offset: number) {
-    setPageNumber(prevPageNumber => {
-      const newPageNumber = prevPageNumber + offset;
-      return Math.max(1, Math.min(numPages || 1, newPageNumber));
-    });
-  }
+  const changePage = useCallback(
+    (offset: number) => {
+      setPageNumber(prevPageNumber => {
+        const newPageNumber = prevPageNumber + offset;
+        return Math.max(1, Math.min(numPages || 1, newPageNumber));
+      });
+    },
+    [numPages],
+  );
 
-  function previousPage() {
-    changePage(-1);
-  }
+  const previousPage = useCallback(() => changePage(-1), [changePage]);
+  const nextPage = useCallback(() => changePage(1), [changePage]);
 
-  function nextPage() {
-    changePage(1);
-  }
-
-  function zoomIn() {
+  const zoomIn = useCallback(() => {
     setScale(prevScale => Math.min(2.0, prevScale + 0.1));
-  }
+  }, []);
 
-  function zoomOut() {
+  const zoomOut = useCallback(() => {
     setScale(prevScale => Math.max(0.5, prevScale - 0.1));
-  }
+  }, []);
 
-  function handleDownload() {
+  const handleDownload = useCallback(() => {
     const link = document.createElement("a");
     link.href = pdfUrl;
     link.download = fileName;
-    document.body.appendChild(link);
     link.click();
-    document.body.removeChild(link);
-  }
+  }, [pdfUrl, fileName]);
+
+  // Don't render anything if not open for performance
+  if (!open) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl w-[90vw] max-h-[90vh] flex flex-col">
+      <DialogContent className="max-w-4xl w-[200vw] max-h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>Chek ko'rinishi</DialogTitle>
         </DialogHeader>
 
         <div className="flex-1 overflow-auto my-4 flex justify-center">
-          {loading ? (
-            <div className="flex items-center justify-center h-[60vh]">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            </div>
-          ) : (
-            <Document
-              file={pdfUrl}
-              onLoadSuccess={onDocumentLoadSuccess}
-              loading={
-                <div className="flex items-center justify-center h-[60vh]">
-                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                </div>
-              }
-            >
-              <Page
-                pageNumber={pageNumber}
-                scale={scale}
-                renderTextLayer={false}
-                renderAnnotationLayer={false}
-              />
-            </Document>
-          )}
+          <Document
+            file={pdfUrl}
+            onLoadSuccess={onDocumentLoadSuccess}
+            loading={<LoadingIndicator />}
+            error={
+              <div className="text-red-500">Failed to load PDF document</div>
+            }
+          >
+            <Page
+              pageNumber={pageNumber}
+              scale={scale}
+              renderTextLayer={false}
+              renderAnnotationLayer={false}
+              loading={<LoadingIndicator />}
+            />
+          </Document>
         </div>
 
         <div className="flex items-center justify-between">
@@ -123,6 +136,7 @@ export function PdfViewer({
               size="icon"
               onClick={zoomOut}
               disabled={scale <= 0.5}
+              aria-label="Zoom out"
             >
               <ZoomOut className="h-4 w-4" />
             </Button>
@@ -132,6 +146,7 @@ export function PdfViewer({
               size="icon"
               onClick={zoomIn}
               disabled={scale >= 2.0}
+              aria-label="Zoom in"
             >
               <ZoomIn className="h-4 w-4" />
             </Button>
@@ -143,6 +158,7 @@ export function PdfViewer({
               size="icon"
               onClick={previousPage}
               disabled={pageNumber <= 1}
+              aria-label="Previous page"
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
@@ -154,6 +170,7 @@ export function PdfViewer({
               size="icon"
               onClick={nextPage}
               disabled={pageNumber >= (numPages || 1)}
+              aria-label="Next page"
             >
               <ChevronRight className="h-4 w-4" />
             </Button>

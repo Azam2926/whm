@@ -69,24 +69,30 @@ export function ProductDialog({
   onSubmit,
 }: ProductDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const default_form_values = {
-    name: product?.name,
-    category_id: product?.category?.id,
-    price: product?.price,
-    quantity: product?.quantity,
-    measurement: product?.measurement,
-    type_price: product?.type_price,
-  };
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
-    defaultValues: default_form_values,
+    defaultValues: {
+      name: product?.name,
+      category_id: product?.category?.id,
+      price: product?.price,
+      quantity: product?.quantity,
+      measurement: product?.measurement,
+      type_price: product?.type_price,
+    },
   });
 
   // Reset form when dialog opens/closes or product changes
   useEffect(() => {
-    form.reset(default_form_values); // Reset to default values when closing
-  }, [open, product, form, default_form_values]);
+    form.reset({
+      name: product?.name,
+      category_id: product?.category?.id,
+      price: product?.price,
+      quantity: product?.quantity,
+      measurement: product?.measurement,
+      type_price: product?.type_price,
+    }); // Reset to default values when closing
+  }, [open, product, form]);
 
   const handleSubmit = async (data: FormData) => {
     try {
