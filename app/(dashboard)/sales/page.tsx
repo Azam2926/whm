@@ -162,11 +162,19 @@ export default function SalesPage() {
             />
             Yangilash
           </Button>
-          <Button onClick={() => setIsDialogOpen(true)}>
+          <Button onClick={() => setIsDialogOpen(!isDialogOpen)}>
             <Plus className="mr-2 h-4 w-4" /> Sotuv qo&#39;shish
           </Button>
         </div>
       </div>
+
+      <SaleDialog
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        onSubmit={handleCreate}
+        products={products}
+        customers={customers}
+      />
 
       <ServerDataTable
         key={refreshKey}
@@ -192,14 +200,6 @@ export default function SalesPage() {
         }}
         loadingComponent={<SalesTableSkeleton />}
         isRowExpanded={true}
-      />
-
-      <SaleDialog
-        open={isDialogOpen}
-        onOpenChange={setIsDialogOpen}
-        onSubmit={handleCreate}
-        products={products}
-        customers={customers}
       />
 
       {isPdfViewerOpen && (

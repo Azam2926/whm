@@ -6,7 +6,7 @@ import { TypePrice } from "@/lib/enums";
 
 // Helper types for jsPDF with autoTable
 type JsPDFWithAutoTable = jsPDF & {
-  previousAutoTable?: { finalY: number };
+  lastAutoTable?: { finalY: number };
 };
 
 export class PdfService {
@@ -15,7 +15,8 @@ export class PdfService {
   constructor() {
     this.doc = new jsPDF({
       orientation: "portrait",
-      format: [12, 3.15],
+      unit: "mm",
+      format: [300, 100],
     }) as JsPDFWithAutoTable;
     this.setupFonts();
   }
@@ -65,22 +66,24 @@ export class PdfService {
 
     autoTable(this.doc, {
       startY: y,
+      margin: { horizontal: 1 },
       head: [["Nomi", "Miqdor", "Narx", "Summa"]],
       body: tableData,
       theme: "grid",
       styles: { fontSize: 8, cellPadding: 1 },
       columnStyles: {
         0: { cellWidth: 35 },
-        1: { cellWidth: 10, halign: "center" },
+        1: { cellWidth: 11, halign: "center" },
         2: { cellWidth: 15, halign: "right" },
         3: { cellWidth: 20, halign: "right" },
       },
     });
 
     // Total amount
-    const finalY = (this.doc.previousAutoTable?.finalY || 0) + 5;
-    this.doc.setFont("helvetica", "bold");
-    this.doc.text(`JAMI: ${sale.total_sum.toLocaleString()} UZS`, 5, finalY);
+    console.log("this.doc", this.doc);
+    const finalY = (this.doc.lastAutoTable?.finalY || 0) + 5;
+    // this.doc.setFont("helvetica", "bold");
+    this.doc.text(`Жами: ${sale.total_sum.toLocaleString()} UZS`, 5, finalY);
 
     // Footer
     this.doc.setFontSize(8);

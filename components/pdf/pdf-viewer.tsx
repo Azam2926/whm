@@ -28,6 +28,10 @@ if (!pdfjs.GlobalWorkerOptions.workerSrc) {
   ).toString();
 }
 
+const options = {
+  standardFontDataUrl: `https://unpkg.com/pdfjs-dist@${pdfjs.version}/standard_fonts`,
+};
+
 interface PdfViewerProps {
   pdfUrl: string;
   fileName?: string;
@@ -118,6 +122,7 @@ export function PdfViewer({
             error={
               <div className="text-red-500">Failed to load PDF document</div>
             }
+            options={options}
           >
             <Page
               pageNumber={pageNumber}

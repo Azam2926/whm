@@ -110,163 +110,161 @@ export function SaleDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Sotuv yaratish</DialogTitle>
-        </DialogHeader>
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(handleSubmit)}
-            className="space-y-6"
-          >
-            <div className="flex gap-4 items-end">
-              <FormField
-                control={form.control}
-                name="customer_id"
-                render={({ field }) => (
-                  <FormItem className="w-fill flex flex-col space-y-4">
-                    <FormLabel>Mijoz</FormLabel>
-                    <Combobox
-                      items={customers.map(c => ({
-                        value: c.id.toString(),
-                        label: c.name,
-                      }))}
-                      placeholder="Mijozni tanlang ..."
-                      onSelect={item => field.onChange(item?.value)}
-                    />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="status"
-                render={({ field }) => (
-                  <FormItem className="space-y-1">
-                    <FormLabel>Holati</FormLabel>
-                    <FormMessage />
-                    <ToggleGroup
-                      type="single"
-                      variant="outline"
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormItem>
-                        <FormControl>
-                          <ToggleGroupItem
-                            value={SaleStatus.CASH}
-                            aria-label="Toggle Naqd"
-                          >
-                            {SaleStatus.CASH}
-                          </ToggleGroupItem>
-                        </FormControl>
-                      </FormItem>
-                      <FormItem>
-                        <FormControl>
-                          <ToggleGroupItem
-                            value={SaleStatus.CREDIT}
-                            aria-label="Toggle Nasiya"
-                          >
-                            {SaleStatus.CREDIT}
-                          </ToggleGroupItem>
-                        </FormControl>
-                      </FormItem>
-                    </ToggleGroup>
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div className="space-y-4">
-              {form.watch("sales").map((sale, index) => (
-                <div key={index} className="flex gap-4 items-end">
-                  <FormField
-                    control={form.control}
-                    name={`sales.${index}.product_id`}
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col space-y-4">
-                        <FormLabel>Mahsulot</FormLabel>
-                        <Combobox
-                          items={products.map(item => ({
-                            value: item.id.toString(),
-                            label: item.name,
-                            children: (
-                              <>
-                                {item.name}{" "}
-                                <span className="text-gray-500">
-                                  {formatCurrency(item.price, item.type_price)},{" "}
-                                  {item.quantity} ta
-                                </span>
-                              </>
-                            ),
-                          }))}
-                          placeholder="Mahsulotni tanlang ..."
-                          onSelect={item => field.onChange(item?.value)}
-                        ></Combobox>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+    open && (
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(handleSubmit)}
+          className="mx-auto max-w-3xl space-y-6"
+        >
+          <div className="flex gap-4 items-end">
+            <FormField
+              control={form.control}
+              name="customer_id"
+              render={({ field }) => (
+                <FormItem className="w-fill flex flex-col space-y-4">
+                  <FormLabel>Mijoz</FormLabel>
+                  <Combobox
+                    items={customers.map(c => ({
+                      value: c.id.toString(),
+                      label: c.name,
+                    }))}
+                    placeholder="Mijozni tanlang ..."
+                    onSelect={item => field.onChange(item?.value)}
                   />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <FormItem className="space-y-1">
+                  <FormLabel>Holati</FormLabel>
+                  <FormMessage />
+                  <ToggleGroup
+                    type="single"
+                    variant="outline"
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    className="flex gap-2"
+                  >
+                    <FormItem>
+                      <FormControl>
+                        <ToggleGroupItem
+                          value={SaleStatus.CASH}
+                          aria-label="Toggle Naqd"
+                        >
+                          {SaleStatus.CASH}
+                        </ToggleGroupItem>
+                      </FormControl>
+                    </FormItem>
+                    <FormItem>
+                      <FormControl>
+                        <ToggleGroupItem
+                          value={SaleStatus.CREDIT}
+                          aria-label="Toggle Nasiya"
+                        >
+                          {SaleStatus.CREDIT}
+                        </ToggleGroupItem>
+                      </FormControl>
+                    </FormItem>
+                  </ToggleGroup>
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="border p-2 rounded space-y-4">
+            {form.watch("sales").map((sale, index) => (
+              <div key={index} className="flex gap-4 items-end">
+                <FormField
+                  control={form.control}
+                  name={`sales.${index}.product_id`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Mahsulot</FormLabel>
+                      <Combobox
+                        items={products.map(item => ({
+                          value: item.id.toString(),
+                          label: item.name,
+                          children: (
+                            <>
+                              {item.name}{" "}
+                              <span className="text-gray-500">
+                                {formatCurrency(item.price, item.type_price)},{" "}
+                                {item.quantity} ta
+                              </span>
+                            </>
+                          ),
+                        }))}
+                        placeholder="Mahsulotni tanlang ..."
+                        onSelect={item => field.onChange(item?.value)}
+                      ></Combobox>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                  <FormField
-                    control={form.control}
-                    name={`sales.${index}.quantity`}
-                    render={({ field }) => (
-                      <FormItem className="flex-1">
-                        <FormLabel>Quantity</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            min="1"
-                            max={
-                              products.find(
-                                p => p.id.toString() === sale.product_id,
-                              )?.quantity
-                            }
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                <FormField
+                  control={form.control}
+                  name={`sales.${index}.quantity`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Quantity</FormLabel>
+                      <FormControl>
+                        <Input
+                          className="w-100px"
+                          type="number"
+                          min="1"
+                          max={
+                            products.find(
+                              p => p.id.toString() === sale.product_id,
+                            )?.quantity
+                          }
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-muted-foreground">
-                      {calculateTotal(sale)}
-                    </span>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => removeSaleItem(index)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
+                <div className=" mr-0">
+                  <span className="text-sm text-muted-foreground">
+                    {calculateTotal(sale)}
+                  </span>
                 </div>
-              ))}
-            </div>
+                <Button
+                  className="flex-1"
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => removeSaleItem(index)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+          </div>
 
-            <Button type="button" variant="outline" onClick={addSaleItem}>
-              <Plus className="mr-2 h-4 w-4" /> Mahsulot qo&#39;shish
+          <Button type="button" variant="outline" onClick={addSaleItem}>
+            <Plus className="mr-2 h-4 w-4" /> Mahsulot qo&#39;shish
+          </Button>
+
+          <div className="flex justify-end gap-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+            >
+              Bekor qilish
             </Button>
-
-            <div className="flex justify-end gap-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-              >
-                Bekor qilish
-              </Button>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Yartilyapti..." : "Sotuv yaratish"}
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Yartilyapti..." : "Sotuv yaratish"}
+            </Button>
+          </div>
+        </form>
+      </Form>
+    )
   );
 }
