@@ -79,11 +79,11 @@ export default function ProductsPage() {
   return (
     <div className="container mx-auto py-10">
       <div className="flex justify-between items-center mb-8">
-        <div>
+        <div className="space-y-2">
           <h1 className="text-3xl font-bold">Mahsulotlar</h1>
-          <div className="flex space-x-2 text-xs dark:text-gray-900">
-            <p className="rounded-sm p-1 bg-red-200">10 tadan kam</p>
-            <p className="rounded-sm p-1 bg-amber-200">20 tadan kam</p>
+          <div className="flex gap-2 text-xs dark:text-gray-900">
+            <p className="rounded-sm p-1 bg-red-200">Soni 10 dan kam</p>
+            <p className="rounded-sm p-1 bg-amber-200">Soni 20 dan kam</p>
           </div>
         </div>
         <Button

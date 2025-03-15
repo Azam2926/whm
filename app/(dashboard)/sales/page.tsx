@@ -120,7 +120,6 @@ export default function SalesPage() {
     try {
       setSelectedSale(sale);
       const pdfDataUrl = pdfService.generateSalePdf(sale);
-      console.log("pdfUrl data", pdfDataUrl);
       setPdfUrl(pdfDataUrl);
       setIsPdfViewerOpen(true);
     } catch (error) {
@@ -204,6 +203,7 @@ export default function SalesPage() {
 
       {isPdfViewerOpen && (
         <PdfViewer
+          doc={pdfService.getDoc()}
           pdfUrl={pdfUrl}
           fileName={`sale-${selectedSale?.id || "unknown"}.pdf`}
           open={isPdfViewerOpen}

@@ -16,18 +16,9 @@ export class PdfService {
     this.doc = new jsPDF({
       orientation: "portrait",
       unit: "mm",
-      format: [300, 100],
+      format: [298, 80],
     }) as JsPDFWithAutoTable;
     this.setupFonts();
-  }
-
-  /**
-   * Configure fonts for the PDF
-   */
-  private setupFonts(): void {
-    // Use standard fonts for now
-    // Future implementation can add proper Unicode support for Uzbek
-    this.doc.setFont("helvetica");
   }
 
   /**
@@ -37,31 +28,36 @@ export class PdfService {
     this.doc = new jsPDF({
       orientation: "portrait",
       unit: "mm",
-      format: [80, 300], // 80mm width, height auto-expands
-    });
+      format: [298, 80],
+    }) as JsPDFWithAutoTable;
+    this.setupFonts();
 
     let y = 10;
-    this.doc.setFont("helvetica", "bold");
     this.doc.setFontSize(12);
-    this.doc.text("TASHKENT METAL", 40, y, { align: "center" });
-    y += 6;
+    this.doc.setFont("milk", "normal");
+    this.doc.text("Aka-Uka", 40, y, { align: "center" });
+    y += 12;
     this.doc.setFontSize(10);
-    this.doc.text("KASSA CHEK", 40, y, { align: "center" });
-    y += 4;
+    this.doc.setFont("PTSans", "normal");
+    this.doc.text("SOTUV CHEKI", 40, y, { align: "center" });
+    y += 8;
 
     // Sale info
-    this.doc.setFont("helvetica", "normal");
     this.doc.setFontSize(8);
-    this.doc.text(`Chek raqami: ${sale.id}`, 5, y);
-    this.doc.text(`Sana: ${new Date().toLocaleDateString()}`, 55, y);
-    y += 6;
+    this.doc.text(`Chek raqami: #${sale.id}`, 5, y);
+    this.doc.text(
+      `Sana: ${formatDate(new Date(sale.sale_date), "dd.MM.yyyy")}`,
+      50,
+      y,
+    );
+    y += 4;
 
     // Table setup
     const tableData = sale.sale_items.map(item => [
       item.product.name,
       item.quantity,
-      item.price.toLocaleString(),
-      item.total_price.toLocaleString(),
+      formatNumber(item.price),
+      formatNumber(item.total_price),
     ]);
 
     autoTable(this.doc, {
@@ -69,31 +65,52 @@ export class PdfService {
       margin: { horizontal: 1 },
       head: [["Nomi", "Miqdor", "Narx", "Summa"]],
       body: tableData,
-      theme: "grid",
-      styles: { fontSize: 8, cellPadding: 1 },
+      theme: "plain",
+      styles: {
+        font: "Roboto",
+        fontSize: 8,
+        cellPadding: 1,
+        lineWidth: 0.3,
+        lineColor: 0,
+      },
       columnStyles: {
-        0: { cellWidth: 35 },
-        1: { cellWidth: 11, halign: "center" },
+        0: { cellWidth: 30 },
+        1: { cellWidth: 12, halign: "center" },
         2: { cellWidth: 15, halign: "right" },
         3: { cellWidth: 20, halign: "right" },
       },
     });
 
     // Total amount
-    console.log("this.doc", this.doc);
     const finalY = (this.doc.lastAutoTable?.finalY || 0) + 5;
-    // this.doc.setFont("helvetica", "bold");
-    this.doc.text(`Жами: ${sale.total_sum.toLocaleString()} UZS`, 5, finalY);
+    this.doc.setFont("Roboto", "bold");
+    this.doc.text(`Jami: ${formatNumber(sale.total_sum)}`, 56, finalY);
 
     // Footer
     this.doc.setFontSize(8);
-    this.doc.setFont("helvetica", "normal");
-    this.doc.text("Xaridingiz uchun rahmat!", 40, finalY + 6, {
+    this.doc.setFont("Roboto", "normal");
+    this.doc.text("Xaridingiz uchun rahmat!", 63, finalY + 6, {
       align: "center",
     });
 
     // Generate PDF as Base64
     return this.doc.output("dataurlstring");
+  }
+
+  getDoc(): JsPDFWithAutoTable {
+    return this.doc;
+  }
+
+  /**
+   * Configure fonts for the PDF
+   */
+  private setupFonts(): void {
+    this.doc.addFont("/fonts/PTSansDemo.ttf", "PTSans", "normal");
+    this.doc.addFont("/fonts/milk.ttf", "milk", "normal");
+    this.doc.addFont("/fonts/Roboto/Roboto-Regular.ttf", "Roboto", "normal");
+    this.doc.addFont("/fonts/Roboto/Roboto-Bold.ttf", "Roboto", "bold");
+
+    this.doc.setFont("Roboto", "normal");
   }
 
   /**
@@ -152,7 +169,7 @@ export class PdfService {
    * Add sale items table to the PDF
    */
   private addSaleItemsTable(saleItems: SaleItem[]): void {
-    const tableStartY = this.doc.previousAutoTable?.finalY || 85;
+    const tableStartY = this.doc.lastAutoTable?.finalY || 85;
 
     const tableBody = saleItems.map(item => {
       const additionalInfo =
@@ -195,7 +212,7 @@ export class PdfService {
    * Add summary information to the PDF
    */
   private addSummary(sale: Sale): void {
-    const finalY = (this.doc.previousAutoTable?.finalY || 0) + 10;
+    const finalY = (this.doc.lastAutoTable?.finalY || 0) + 10;
 
     this.doc.setFontSize(12);
     this.doc.setFont("helvetica", "bold");

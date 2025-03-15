@@ -1,7 +1,7 @@
 // import { withSentryConfig } from "@sentry/nextjs";
 import type { NextConfig } from "next";
 
-export const nextConfig: NextConfig = {
+const nextConfig: NextConfig = {
   /* config options here */
   swcMinify: false,
 };

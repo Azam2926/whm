@@ -9,12 +9,12 @@ import {
   CommandGroup,
   CommandInput,
   CommandItem,
-  CommandList
+  CommandList,
 } from "@/components/ui/command";
 import {
   Popover,
   PopoverContent,
-  PopoverTrigger
+  PopoverTrigger,
 } from "@/components/ui/popover";
 
 type ComboboxItem = {
@@ -34,11 +34,10 @@ export function Combobox<T extends ComboboxItem>({
   items,
   placeholder = "Select an item...",
   onSelect,
-  selectedValue
+  selectedValue,
 }: ComboboxProps<T>) {
-  const defaultItem = selectedValue || items[0]?.value || "";
   const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState(defaultItem);
+  const [value, setValue] = React.useState(selectedValue);
 
   const handleSelect = (selectedValue: string) => {
     const selectedItem =
@@ -83,7 +82,7 @@ export function Combobox<T extends ComboboxItem>({
                   <Check
                     className={cn(
                       "ml-auto",
-                      value === item.value ? "opacity-100" : "opacity-0"
+                      value === item.value ? "opacity-100" : "opacity-0",
                     )}
                   />
                 </CommandItem>

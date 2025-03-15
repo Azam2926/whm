@@ -9,19 +9,19 @@ export const columns: ColumnDef<Customer>[] = [
     accessorKey: "name",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Nomi" />
-    )
+    ),
   },
   {
     accessorKey: "phone_number",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Tel. nomer" />
-    )
+    ),
   },
   {
     accessorKey: "address",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Manzil" />
-    )
+    ),
   },
   {
     accessorKey: "status",
@@ -40,6 +40,6 @@ export const columns: ColumnDef<Customer>[] = [
           {row.getValue("status")}
         </Badge>
       );
-    }
-  }
+    },
+  },
 ];

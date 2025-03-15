@@ -33,7 +33,7 @@ export interface Sale {
   id: number;
   customer?: Customer;
   sale_items: SaleItem[];
-  sale_date?: string;
+  sale_date: string;
   total_sum: number;
   status: SaleStatus;
 }

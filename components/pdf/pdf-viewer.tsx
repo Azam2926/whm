@@ -1,23 +1,25 @@
 "use client";
 
-import { useEffect, useState, useCallback, memo } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from "@/components/ui/dialog";
 import {
   ChevronLeft,
   ChevronRight,
   Download,
   Loader2,
+  Printer,
   ZoomIn,
   ZoomOut,
 } from "lucide-react";
+import { jsPDF } from "jspdf"; // Set up the PDF.js worker
 
 // Set up the PDF.js worker
 // This should be set once at the application level
@@ -37,6 +39,7 @@ interface PdfViewerProps {
   fileName?: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  doc?: jsPDF;
 }
 
 // Loading component extracted for reuse
@@ -52,18 +55,19 @@ export function PdfViewer({
   fileName = "document.pdf",
   open,
   onOpenChange,
+  doc,
 }: PdfViewerProps) {
   const [numPages, setNumPages] = useState<number | null>(null);
   const [pageNumber, setPageNumber] = useState<number>(1);
-  const [scale, setScale] = useState<number>(1.0);
+  const [scale, setScale] = useState<number>(1.8);
   const [loading, setLoading] = useState<boolean>(true);
-  console.log("pdfUrl", pdfUrl);
+  const pdfViewerRef = useRef<HTMLDivElement>(null);
   // Reset state when PDF changes or dialog opens
   useEffect(() => {
     if (open) {
       setLoading(true);
       setPageNumber(1);
-      setScale(1.0);
+      setScale(1.8);
     }
   }, [open, pdfUrl]);
 
@@ -114,7 +118,10 @@ export function PdfViewer({
           <DialogTitle>Chek ko'rinishi</DialogTitle>
         </DialogHeader>
 
-        <div className="flex-1 overflow-auto my-4 flex justify-center">
+        <div
+          ref={pdfViewerRef}
+          className="pdf-viewer flex-1 overflow-auto my-4 flex justify-center"
+        >
           <Document
             file={pdfUrl}
             onLoadSuccess={onDocumentLoadSuccess}
@@ -189,6 +196,15 @@ export function PdfViewer({
           <Button onClick={handleDownload}>
             <Download className="mr-2 h-4 w-4" />
             Yuklab olish
+          </Button>
+          <Button
+            onClick={() => {
+              doc?.autoPrint();
+              doc?.output("dataurlnewwindow");
+            }}
+          >
+            <Printer className="mr-2 h-4 w-4" />
+            Print
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -21,7 +21,9 @@ export const formatNumber = (
   number: number,
   options: Intl.NumberFormatOptions = { maximumFractionDigits: 3 },
 ) => {
-  return new Intl.NumberFormat("uz-UZ", options).format(number);
+  return new Intl.NumberFormat("uz-UZ", options)
+    .format(number)
+    .replaceAll(",", " ");
 };
 
 export const formatCurrency = (
@@ -35,7 +37,9 @@ export const formatCurrency = (
     currency: currency,
     minimumFractionDigits: 0,
     maximumFractionDigits: 5,
-  }).format(amount);
+  })
+    .format(amount)
+    .replaceAll(",", " ");
 };
 
 export const getUzbekMonthName = (dateString: string) => {

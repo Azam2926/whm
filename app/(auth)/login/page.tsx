@@ -1,6 +1,12 @@
 "use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { LoginForm } from "@/components/auth/login-form";
 
 export default function LoginPage() {
@@ -54,4 +60,4 @@ export default function LoginPage() {
       </div>
     </div>
   );
-} 
+}
