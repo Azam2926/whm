@@ -30,7 +30,7 @@ export interface Customer {
 }
 
 export interface Sale {
-  id: number;
+  sale_id: number;
   customer?: Customer;
   sale_items: SaleItem[];
   sale_date: string;

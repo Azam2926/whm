@@ -61,6 +61,7 @@ export function PdfViewer({
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [scale, setScale] = useState<number>(1.8);
   const [loading, setLoading] = useState<boolean>(true);
+  console.log("loading", loading);
   const pdfViewerRef = useRef<HTMLDivElement>(null);
   // Reset state when PDF changes or dialog opens
   useEffect(() => {

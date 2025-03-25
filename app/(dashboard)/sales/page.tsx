@@ -205,7 +205,7 @@ export default function SalesPage() {
         <PdfViewer
           doc={pdfService.getDoc()}
           pdfUrl={pdfUrl}
-          fileName={`sale-${selectedSale?.id || "unknown"}.pdf`}
+          fileName={`sale-${selectedSale?.sale_id || "unknown"}.pdf`}
           open={isPdfViewerOpen}
           onOpenChange={setIsPdfViewerOpen}
         />

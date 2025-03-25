@@ -34,17 +34,16 @@ export class PdfService {
 
     let y = 10;
     this.doc.setFontSize(12);
-    this.doc.setFont("milk", "normal");
-    this.doc.text("Aka-Uka", 40, y, { align: "center" });
+    this.doc.setFont("Roboto", "bold");
+    this.doc.text("Aka-Uka Qurilish Mollari", 40, y, { align: "center" });
     y += 12;
     this.doc.setFontSize(10);
-    this.doc.setFont("PTSans", "normal");
     this.doc.text("SOTUV CHEKI", 40, y, { align: "center" });
     y += 8;
 
     // Sale info
-    this.doc.setFontSize(8);
-    this.doc.text(`Chek raqami: #${sale.id}`, 5, y);
+    this.doc.setFontSize(9);
+    this.doc.text(`Chek raqami: #${sale.sale_id}`, 5, y);
     this.doc.text(
       `Sana: ${formatDate(new Date(sale.sale_date), "dd.MM.yyyy")}`,
       50,
@@ -68,7 +67,8 @@ export class PdfService {
       theme: "plain",
       styles: {
         font: "Roboto",
-        fontSize: 8,
+        fontStyle: "bold",
+        fontSize: 9,
         cellPadding: 1,
         lineWidth: 0.3,
         lineColor: 0,
@@ -83,16 +83,18 @@ export class PdfService {
 
     // Total amount
     const finalY = (this.doc.lastAutoTable?.finalY || 0) + 5;
+    this.doc.setFontSize(8);
     this.doc.setFont("Roboto", "bold");
     this.doc.text(`Jami: ${formatNumber(sale.total_sum)}`, 56, finalY);
 
     // Footer
     this.doc.setFontSize(8);
-    this.doc.setFont("Roboto", "normal");
-    this.doc.text("Xaridingiz uchun rahmat!", 63, finalY + 6, {
+    this.doc.text("Xaridingiz uchun rahmat!", 60, finalY + 6, {
       align: "center",
     });
-
+    this.doc.text("Tel: 998 93 930 83 86", 2, finalY + 6, {
+      align: "left",
+    });
     // Generate PDF as Base64
     return this.doc.output("dataurlstring");
   }
@@ -131,7 +133,7 @@ export class PdfService {
 
     // Sale information
     this.doc.setFontSize(10);
-    this.doc.text(`Chek raqami: #${sale.id}`, 14, 40);
+    this.doc.text(`Chek raqami: #${sale.sale_id}`, 14, 40);
     this.doc.text(
       `Sana: ${formatDate(sale.sale_date || "", "dd MMMM, yyyy")}`,
       14,
